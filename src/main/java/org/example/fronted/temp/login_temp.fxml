@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.fronted.controllers.LoginController"
+      alignment="CENTER"
+      spacing="20"
+      style="-fx-padding: 40; -fx-background-color: #f5f5f5; -fx-pref-width: 400; -fx-pref-height: 400;">
+
+    <!-- Logo o título -->
+    <Text text="🔐 Login Sistema Académico"
+          style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: #2E7D32;"/>
+
+    <Text text="Universidad del Cauca"
+          style="-fx-font-size: 14px; -fx-fill: #666;"/>
+
+    <!-- Formulario -->
+    <VBox spacing="15" style="-fx-pref-width: 300;">
+        <Label text="Correo electrónico:" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="emailField"
+                   promptText="ej: ana.gomez@unicauca.edu.co"
+                   style="-fx-pref-height: 35;"/>
+
+        <Label text="Contraseña:" style="-fx-font-weight: bold;"/>
+        <PasswordField fx:id="passwordField"
+                       promptText="Ingrese su contraseña"
+                       style="-fx-pref-height: 35;"/>
+
+        <!-- Botón de login -->
+        <Button fx:id="loginButton"
+                text="🔓 Ingresar al Sistema"
+                onAction="#handleLogin"
+                style="-fx-background-color: #2E7D32; -fx-text-fill: white;
+                       -fx-font-weight: bold; -fx-pref-height: 40; -fx-font-size: 14px;"/>
+
+        <!-- Mensaje de error -->
+        <Label fx:id="errorLabel"
+               style="-fx-text-fill: #d32f2f; -fx-font-size: 12px; -fx-wrap-text: true;"/>
+
+        <!-- Indicador de carga -->
+        <ProgressIndicator fx:id="progressIndicator" visible="false"/>
+    </VBox>
+
+    <!-- Información -->
+    <Text text="Usa: ana.gomez@unicauca.edu.co / Segura!2025"
+          style="-fx-font-size: 11px; -fx-fill: #666; -fx-font-style: italic;"/>
+</VBox>
