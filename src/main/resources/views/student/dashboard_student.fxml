@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.shape.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.fronted.controllers.EstudianteDashboardController"
+            stylesheets="@../../css/dashboardestudiante.css"
+            styleClass="dashboard-container">
+
+    <center>
+        <ScrollPane styleClass="scroll-pane" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+            <VBox styleClass="dashboard-content" spacing="30">
+
+                <padding>
+                    <Insets top="40" right="60" bottom="40" left="60"/>
+                </padding>
+
+                <!-- Título de la sección -->
+                <VBox spacing="5" alignment="CENTER_LEFT">
+                    <Label text="Mi Proyecto de Grado" styleClass="section-title"/>
+                    <Label text="Sigue el estado de tu proyecto en tiempo real" styleClass="section-subtitle"/>
+                </VBox>
+
+                <!-- Tarjeta de estado actual -->
+                <HBox styleClass="current-status-card" spacing="20">
+                    <padding>
+                        <Insets top="25" right="30" bottom="25" left="30"/>
+                    </padding>
+
+                    <!-- Icono de estado -->
+                    <StackPane styleClass="status-icon-container">
+                        <ImageView fitWidth="60" fitHeight="60" preserveRatio="true">
+                            <Image url="@../../images/project-status.png"/>
+                        </ImageView>
+                    </StackPane>
+
+                    <!-- Información del estado -->
+                    <VBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Estado Actual del Proyecto" styleClass="status-label"/>
+                        <Label fx:id="estadoActualLabel" text="Formato A en evaluación" styleClass="status-value"/>
+                        <Label fx:id="proyectoTituloLabel" text="Sistema de Gestión Académica" styleClass="project-title"/>
+                        <Label fx:id="directorLabel" text="Director: Dr. Juan Pérez" styleClass="project-info"/>
+                        <Label fx:id="modalidadLabel" text="Modalidad: Investigación" styleClass="project-info"/>
+                    </VBox>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <!-- Información de fechas -->
+                    <VBox spacing="8" alignment="CENTER_RIGHT">
+                        <Label text="Última actualización:" styleClass="date-label"/>
+                        <Label fx:id="fechaActualizacionLabel" text="15 Nov 2025" styleClass="date-value"/>
+                        <Label text="Próximo paso:" styleClass="next-step-label"/>
+                        <Label fx:id="proximoPasoLabel" text="Esperar evaluación del coordinador" styleClass="next-step-value"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Timeline del proyecto -->
+                <VBox styleClass="timeline-section" spacing="20">
+                    <Label text="Progreso del Proyecto" styleClass="timeline-title"/>
+
+                    <HBox styleClass="timeline-container" spacing="0" alignment="CENTER">
+                        <!-- Etapa 1: Formato A -->
+                        <VBox styleClass="timeline-step step-active" alignment="CENTER" spacing="5">
+                            <StackPane styleClass="timeline-circle circle-active">
+                                <Label text="1" styleClass="circle-label"/>
+                            </StackPane>
+                            <Label text="Formato A" styleClass="step-label"/>
+                            <Label text="Presentado" styleClass="step-status"/>
+                            <Label text="10 Nov 2025" styleClass="step-date"/>
+                        </VBox>
+
+                        <!-- Línea conectora 1 - CORREGIDO -->
+                        <Region styleClass="timeline-line line-active" prefWidth="100" minHeight="3"/>
+
+                        <!-- Etapa 2: Evaluación 1 -->
+                        <VBox styleClass="timeline-step step-current" alignment="CENTER" spacing="5">
+                            <StackPane styleClass="timeline-circle circle-current">
+                                <Label text="2" styleClass="circle-label"/>
+                            </StackPane>
+                            <Label text="Evaluación 1" styleClass="step-label"/>
+                            <Label text="En proceso" styleClass="step-status"/>
+                            <Label fx:id="fechaEvaluacion1Label" text="En evaluación" styleClass="step-date"/>
+                        </VBox>
+
+                        <!-- Línea conectora 2 - CORREGIDO -->
+                        <Region styleClass="timeline-line line-pending" prefWidth="100" minHeight="3"/>
+
+                        <!-- Etapa 3: Evaluación 2 -->
+                        <VBox styleClass="timeline-step step-pending" alignment="CENTER" spacing="5">
+                            <StackPane styleClass="timeline-circle circle-pending">
+                                <Label text="3" styleClass="circle-label"/>
+                            </StackPane>
+                            <Label text="Evaluación 2" styleClass="step-label"/>
+                            <Label text="Pendiente" styleClass="step-status"/>
+                            <Label text="-" styleClass="step-date"/>
+                        </VBox>
+
+                        <!-- Línea conectora 3 - CORREGIDO -->
+                        <Region styleClass="timeline-line line-pending" prefWidth="100" minHeight="3"/>
+
+                        <!-- Etapa 4: Anteproyecto -->
+                        <VBox styleClass="timeline-step step-pending" alignment="CENTER" spacing="5">
+                            <StackPane styleClass="timeline-circle circle-pending">
+                                <Label text="4" styleClass="circle-label"/>
+                            </StackPane>
+                            <Label text="Anteproyecto" styleClass="step-label"/>
+                            <Label text="Pendiente" styleClass="step-status"/>
+                            <Label text="-" styleClass="step-date"/>
+                        </VBox>
+
+                        <!-- Línea conectora 4 - CORREGIDO -->
+                        <Region styleClass="timeline-line line-pending" prefWidth="100" minHeight="3"/>
+
+                        <!-- Etapa 5: Evaluación Final -->
+                        <VBox styleClass="timeline-step step-pending" alignment="CENTER" spacing="5">
+                            <StackPane styleClass="timeline-circle circle-pending">
+                                <Label text="5" styleClass="circle-label"/>
+                            </StackPane>
+                            <Label text="Evaluación Final" styleClass="step-label"/>
+                            <Label text="Pendiente" styleClass="step-status"/>
+                            <Label text="-" styleClass="step-date"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Contador de intentos -->
+                    <HBox styleClass="attempts-container" alignment="CENTER" spacing="10">
+                        <Label text="Intento actual del Formato A:" styleClass="attempts-label"/>
+                        <HBox styleClass="attempts-dots" spacing="5">
+                            <Circle fx:id="attemptDot1" styleClass="attempt-dot dot-active" radius="8"/>
+                            <Circle fx:id="attemptDot2" styleClass="attempt-dot" radius="8"/>
+                            <Circle fx:id="attemptDot3" styleClass="attempt-dot" radius="8"/>
+                        </HBox>
+                        <Label text="(Máximo 3 intentos)" styleClass="attempts-note"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Sección: Documentos y Observaciones -->
+                <GridPane styleClass="documents-grid" hgap="30" vgap="20">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="300"/>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="300"/>
+                    </columnConstraints>
+
+                    <!-- Columna 1: Documentos -->
+                    <VBox styleClass="documents-section" spacing="15" GridPane.columnIndex="0">
+                        <Label text="Documentos del Proyecto" styleClass="documents-title"/>
+
+                        <VBox styleClass="documents-list" spacing="10">
+                            <!-- Documento 1 -->
+                            <HBox styleClass="document-item" spacing="10" alignment="CENTER_LEFT">
+                                <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
+                                    <Image url="@../../images/pdf-icon.png"/>
+                                </ImageView>
+                                <VBox spacing="2">
+                                    <Label text="Formato A - Versión 1" styleClass="document-name"/>
+                                    <Label text="Subido: 10 Nov 2025" styleClass="document-date"/>
+                                </VBox>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Button text="Ver" styleClass="document-button"/>
+                            </HBox>
+
+                            <!-- Documento 2 -->
+                            <HBox styleClass="document-item document-pending" spacing="10" alignment="CENTER_LEFT">
+                                <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
+                                    <Image url="@../../images/pdf-icon.png"/>
+                                </ImageView>
+                                <VBox spacing="2">
+                                    <Label text="Anteproyecto" styleClass="document-name"/>
+                                    <Label text="Disponible después de aprobación" styleClass="document-date"/>
+                                </VBox>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Button text="Subir" styleClass="document-button" disable="true"/>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+
+                    <!-- Columna 2: Observaciones -->
+                    <VBox styleClass="observations-section" spacing="15" GridPane.columnIndex="1">
+                        <Label text="Observaciones y Comentarios" styleClass="observations-title"/>
+
+                        <VBox fx:id="observacionesList" styleClass="observations-list" spacing="10">
+                            <!-- Observación 1 -->
+                            <VBox styleClass="observation-item">
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <Label text="📝" styleClass="observation-icon"/>
+                                    <Label text="Coordinador del Programa" styleClass="observation-author"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <Label text="12 Nov 2025" styleClass="observation-date"/>
+                                </HBox>
+                                <Label text="El formato A necesita ajustes en los objetivos específicos. Por favor, hacerlos más medibles."
+                                       styleClass="observation-text" wrapText="true"/>
+                            </VBox>
+
+                            <!-- Sin observaciones aún -->
+                            <VBox fx:id="noObservationsBox" styleClass="no-observations" alignment="CENTER" spacing="10">
+                                <Label text="📭" styleClass="no-observations-icon"/>
+                                <Label text="No hay observaciones pendientes" styleClass="no-observations-text"/>
+                            </VBox>
+                        </VBox>
+                    </VBox>
+                </GridPane>
+
+                <!-- Sección: Notificaciones Recientes -->
+                <VBox styleClass="notifications-section" spacing="15">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="Notificaciones Recientes" styleClass="notifications-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="Ver Todas" styleClass="small-link-button" onAction="#verTodasNotificaciones"/>
+                    </HBox>
+
+                    <VBox fx:id="notificationsList" styleClass="notifications-list" spacing="10">
+                        <!-- Notificación 1 -->
+                        <HBox styleClass="notification-item" spacing="15" alignment="CENTER_LEFT">
+                            <StackPane styleClass="notification-icon-container">
+                                <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                                    <Image url="@../../images/notification-info.png"/>
+                                </ImageView>
+                            </StackPane>
+                            <VBox spacing="3">
+                                <Label text="Tu Formato A ha sido recibido" styleClass="notification-title"/>
+                                <Label text="El coordinador revisará tu proyecto en los próximos días."
+                                       styleClass="notification-text" wrapText="true"/>
+                                <Label text="Hace 2 días" styleClass="notification-time"/>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Notificación 2 -->
+                        <HBox styleClass="notification-item" spacing="15" alignment="CENTER_LEFT">
+                            <StackPane styleClass="notification-icon-container">
+                                <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                                    <Image url="@../../images/notification-warning.png"/>
+                                </ImageView>
+                            </StackPane>
+                            <VBox spacing="3">
+                                <Label text="Recordatorio: Evaluación pendiente" styleClass="notification-title"/>
+                                <Label text="Tu proyecto está en proceso de evaluación por parte del coordinador."
+                                       styleClass="notification-text" wrapText="true"/>
+                                <Label text="Hoy, 10:30 AM" styleClass="notification-time"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <!-- Información de contacto -->
+                <HBox styleClass="contact-section" spacing="20" alignment="CENTER">
+                    <Label text="Director del Proyecto:" styleClass="contact-label"/>
+                    <Label fx:id="directorContactLabel" text="Dr. Juan Pérez - jperez@unicauca.edu.co" styleClass="contact-info"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="Coordinador:" styleClass="contact-label"/>
+                    <Label text="Mg. Ana García - coordinador.sistemas@unicauca.edu.co" styleClass="contact-info"/>
+                </HBox>
+
+                <!-- Espaciador final -->
+                <Region VBox.vgrow="ALWAYS" prefHeight="20"/>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>

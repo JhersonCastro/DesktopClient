@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.fronted.controllers.DocenteDashboardController"
+            stylesheets="@../../css/dashboarddocente.css"
+            fitToWidth="true"
+            hbarPolicy="NEVER"
+            vbarPolicy="AS_NEEDED"
+            style="-fx-background: transparent; -fx-background-color: transparent;">
+
+    <content>
+        <VBox styleClass="dashboard-content" spacing="30" minHeight="600">
+
+            <!-- Padding se mantiene dentro del VBox contenido -->
+            <padding>
+                <Insets top="40" right="60" bottom="40" left="60"/>
+            </padding>
+
+            <!-- Título de la sección -->
+            <VBox spacing="5" alignment="CENTER_LEFT">
+                <Label text="Panel del Docente" styleClass="section-title"/>
+                <Label text="Gestiona tus proyectos de grado y evaluaciones asignadas" styleClass="section-subtitle"/>
+            </VBox>
+
+            <!-- Tarjetas de estado -->
+            <GridPane styleClass="cards-grid" hgap="40" vgap="30">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="ALWAYS" minWidth="280"/>
+                    <ColumnConstraints hgrow="ALWAYS" minWidth="280"/>
+                    <ColumnConstraints hgrow="ALWAYS" minWidth="280"/>
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints vgrow="ALWAYS" minHeight="200"/>
+                </rowConstraints>
+
+                <!-- Tarjeta: Proyectos Pendientes -->
+                <VBox styleClass="status-card card-pending" GridPane.columnIndex="0">
+                    <padding>
+                        <Insets top="30" right="25" bottom="30" left="25"/>
+                    </padding>
+                    <VBox alignment="CENTER" spacing="20">
+                        <!-- Icono circular -->
+                        <StackPane styleClass="card-icon-container icon-pending">
+                            <ImageView fitWidth="40" fitHeight="40" preserveRatio="true">
+                                <Image url="@../../images/clock-icon.png"/>
+                            </ImageView>
+                        </StackPane>
+
+                        <!-- Contenido de la tarjeta -->
+                        <VBox alignment="CENTER" spacing="10">
+                            <Label text="Formato A Pendiente" styleClass="card-title"/>
+                            <Label fx:id="pendientesCount" text="0" styleClass="card-count"/>
+                            <Label text="En evaluación por coordinador" styleClass="card-subtitle"/>
+                        </VBox>
+
+                        <!-- Botón de acción -->
+                        <Button text="Ver Detalles" styleClass="card-button button-pending"
+                                onAction="#verProyectosPendientes"/>
+                    </VBox>
+                </VBox>
+
+                <!-- Tarjeta: Proyectos Aprobados -->
+                <VBox styleClass="status-card card-approved" GridPane.columnIndex="1">
+                    <padding>
+                        <Insets top="30" right="25" bottom="30" left="25"/>
+                    </padding>
+                    <VBox alignment="CENTER" spacing="20">
+                        <!-- Icono circular -->
+                        <StackPane styleClass="card-icon-container icon-approved">
+                            <ImageView fitWidth="40" fitHeight="40" preserveRatio="true">
+                                <Image url="@../../images/check-docente.png"/>
+                            </ImageView>
+                        </StackPane>
+
+                        <!-- Contenido de la tarjeta -->
+                        <VBox alignment="CENTER" spacing="10">
+                            <Label text="Formato A Aprobado" styleClass="card-title"/>
+                            <Label fx:id="aprobadosCount" text="0" styleClass="card-count"/>
+                            <Label text="Listo para anteproyecto" styleClass="card-subtitle"/>
+                        </VBox>
+
+                        <!-- Botón de acción -->
+                        <Button text="Subir Anteproyecto" styleClass="card-button button-approved"
+                                onAction="#subirAnteproyecto"/>
+                    </VBox>
+                </VBox>
+
+                <!-- Tarjeta: Evaluaciones Asignadas -->
+                <VBox styleClass="status-card card-evaluaciones" GridPane.columnIndex="2">
+                    <padding>
+                        <Insets top="30" right="25" bottom="30" left="25"/>
+                    </padding>
+                    <VBox alignment="CENTER" spacing="20">
+                        <!-- Icono circular -->
+                        <StackPane styleClass="card-icon-container icon-evaluaciones">
+                            <ImageView fitWidth="40" fitHeight="40" preserveRatio="true">
+                                <Image url="@../../images/review-icon.png"/>
+                            </ImageView>
+                        </StackPane>
+
+                        <!-- Contenido de la tarjeta -->
+                        <VBox alignment="CENTER" spacing="10">
+                            <Label text="Evaluaciones" styleClass="card-title"/>
+                            <Label fx:id="evaluacionesCount" text="0" styleClass="card-count"/>
+                            <Label text="Anteproyectos por revisar" styleClass="card-subtitle"/>
+                        </VBox>
+
+                        <!-- Botón de acción -->
+                        <Button text="Ver Evaluaciones" styleClass="card-button button-evaluaciones"
+                                onAction="#verEvaluacionesAsignadas"/>
+                    </VBox>
+                </VBox>
+            </GridPane>
+
+            <!-- Sección: Acciones Rápidas -->
+            <VBox styleClass="quick-actions-section" spacing="20">
+                <Label text="Acciones Rápidas" styleClass="actions-title"/>
+
+                <HBox styleClass="actions-container" spacing="20">
+                    <Button text="Nuevo Formato A" styleClass="action-button" onAction="#nuevoFormatoA">
+                        <graphic>
+                            <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
+                                <Image url="@../../images/add-docente.png"/>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+
+                    <Button text="Mis Proyectos" styleClass="action-button" onAction="#verMisProyectos">
+                        <graphic>
+                            <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
+                                <Image url="@../../images/projects-icon.png"/>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+
+                    <Button text="Historial" styleClass="action-button" onAction="#verHistorial">
+                        <graphic>
+                            <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
+                                <Image url="@../../images/history-icon.png"/>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                </HBox>
+            </VBox>
+
+            <!-- Sección: Proyectos Recientes -->
+            <VBox styleClass="recent-projects-section" spacing="15">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="Proyectos Recientes" styleClass="section-subtitle"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Ver Todos" styleClass="small-link-button" onAction="#verTodosProyectos"/>
+                </HBox>
+
+                <TableView fx:id="proyectosTable" styleClass="projects-table">
+                    <columns>
+                        <TableColumn text="Título" styleClass="table-column"/>
+                        <TableColumn text="Estado" styleClass="table-column"/>
+                        <TableColumn text="Fecha" styleClass="table-column"/>
+                        <TableColumn text="Acciones" styleClass="table-column-actions"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- Notificaciones Importantes -->
+            <VBox fx:id="notificacionesContainer" styleClass="notifications-section" spacing="15" visible="false">
+                <Label text="📢 Notificaciones Importantes" styleClass="notifications-title"/>
+
+                <VBox fx:id="notificacionesList" styleClass="notifications-list" spacing="10">
+                    <!-- Notificaciones se cargarán dinámicamente -->
+                </VBox>
+            </VBox>
+
+        </VBox>
+    </content>
+</ScrollPane>

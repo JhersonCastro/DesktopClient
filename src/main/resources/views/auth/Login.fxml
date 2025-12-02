@@ -47,15 +47,12 @@
                 <Label fx:id="passwordError" styleClass="error-label" visible="false" />
             </VBox>
 
-            <!-- Enlace olvidé contraseña -->
-            <Hyperlink onAction="#handleForgotPassword" styleClass="forgot-link" text="Olvidé mi contraseña" />
-
             <!-- Mensaje de estado -->
             <Label fx:id="lblMessage" alignment="CENTER" maxWidth="Infinity" styleClass="message-label" textAlignment="CENTER" wrapText="true" />
 
             <!-- Botones -->
             <VBox spacing="5">
-                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleLogin" styleClass="login-button" text="INGRESAR" />
+                <Button fx:id="loginButton" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleLogin" styleClass="login-button" text="INGRESAR" />
 
                 <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleRegister" styleClass="register-button" text="REGISTRARSE" />
             </VBox>

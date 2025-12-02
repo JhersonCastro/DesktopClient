@@ -31,12 +31,25 @@ BorderPane {
 /* Menú de usuario */
 .user-menu {
     -fx-alignment: center-right;
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-background-radius: 5px;
+    -fx-padding: 8px 12px;
+}
+
+.user-info-container {
+    -fx-alignment: center-right;
 }
 
 .user-name {
     -fx-text-fill: white;
     -fx-font-size: 14px;
-    -fx-font-weight: 500;
+    -fx-font-weight: 600;
+}
+
+.user-email {
+    -fx-text-fill: rgba(255, 255, 255, 0.7);
+    -fx-font-size: 12px;
+    -fx-font-weight: normal;
 }
 
 .logout-button {
@@ -89,6 +102,14 @@ BorderPane {
     .content-pane {
         -fx-padding: 15px;
     }
+
+    .user-name {
+        -fx-font-size: 13px;
+    }
+
+    .user-email {
+        -fx-font-size: 11px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -100,8 +121,26 @@ BorderPane {
         -fx-font-size: 16px;
     }
 
+    .app-subtitle {
+        -fx-font-size: 14px;
+    }
+
+    .user-menu {
+        -fx-spacing: 8px;
+        -fx-padding: 6px 8px;
+    }
+
     .user-name {
         -fx-font-size: 12px;
+    }
+
+    .user-email {
+        -fx-font-size: 10px;
+    }
+
+    .logout-button {
+        -fx-font-size: 11px;
+        -fx-padding: 3px 8px;
     }
 
     .footer-text {
@@ -109,4 +148,79 @@ BorderPane {
         -fx-wrap-text: true;
         -fx-text-alignment: center;
     }
+}
+
+@media (max-width: 480px) {
+    .user-menu {
+        -fx-spacing: 5px;
+        -fx-padding: 5px;
+    }
+
+    .user-name {
+        -fx-font-size: 11px;
+    }
+
+    .user-email {
+        -fx-font-size: 9px;
+        -fx-wrap-text: true;
+        -fx-max-width: 100px;
+    }
+
+    .logout-button {
+        -fx-font-size: 10px;
+        -fx-padding: 2px 6px;
+    }
+}
+/* ==============================================
+   SELECTOR DE ROL
+   ============================================== */
+
+.role-selector-container {
+    -fx-padding: 5px 0 0 0;
+    -fx-alignment: center-right;
+}
+
+.role-label {
+    -fx-text-fill: rgba(255, 255, 255, 0.7);
+    -fx-font-size: 11px;
+    -fx-font-weight: normal;
+}
+
+.role-combo {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-padding: 2px 5px;
+    -fx-pref-width: 120px;
+}
+
+.role-combo .list-cell {
+    -fx-text-fill: #0a1a3a;
+    -fx-font-size: 11px;
+}
+
+.role-combo .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.role-combo .arrow {
+    -fx-background-color: rgba(255, 255, 255, 0.7);
+}
+
+.role-combo:hover {
+    -fx-border-color: rgba(255, 255, 255, 0.5);
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+}
+
+.role-combo:focused {
+    -fx-border-color: #2196f3;
+}
+
+/* Estilo para el prompt text */
+.role-combo .prompt-text {
+    -fx-fill: rgba(255, 255, 255, 0.5);
 }

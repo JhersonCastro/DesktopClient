@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+
+<?import java.net.URL?>
+<ScrollPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.fronted.controllers.SubirAnteproyectoController"
+            fitToWidth="true"
+            hbarPolicy="NEVER"
+            styleClass="anteproyecto-scrollpane">
+
+    <stylesheets>
+        <URL value="@../../css/anteproyecto.css"/>
+    </stylesheets>
+
+    <VBox styleClass="anteproyecto-container" spacing="25">
+
+        <!-- Encabezado -->
+        <VBox styleClass="anteproyecto-header" spacing="10">
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <ImageView fitWidth="40" fitHeight="40" preserveRatio="true">
+                    <Image url="@../../images/anteproyecto-icon.png"/>
+                </ImageView>
+                <VBox spacing="5">
+                    <Label text="Subir Anteproyecto" styleClass="anteproyecto-title"/>
+                    <Label text="Complete el formulario para subir el anteproyecto de su proyecto de grado"
+                           styleClass="anteproyecto-subtitle"/>
+                </VBox>
+            </HBox>
+
+            <!-- Indicador -->
+            <HBox styleClass="anteproyecto-step-indicator" spacing="10" alignment="CENTER_LEFT">
+                <Label text="Formato A Aprobado → Anteproyecto" styleClass="anteproyecto-step-label"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="* Campos obligatorios" styleClass="anteproyecto-required-label"/>
+            </HBox>
+        </VBox>
+
+        <!-- Información del proyecto base -->
+        <VBox styleClass="project-info-section" spacing="15">
+            <Label text="Información del Proyecto" styleClass="section-title"/>
+
+            <GridPane styleClass="project-info-grid" hgap="20" vgap="15">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="150" halignment="RIGHT"/>
+                    <ColumnConstraints prefWidth="400" hgrow="ALWAYS"/>
+                </columnConstraints>
+
+                <!-- Proyecto seleccionado -->
+                <Label text="* Proyecto:" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                       styleClass="info-label required-field"/>
+                <VBox spacing="10" GridPane.rowIndex="0" GridPane.columnIndex="1">
+                    <ComboBox fx:id="proyectoComboBox" promptText="Seleccione un proyecto aprobado..."
+                              styleClass="anteproyecto-combobox"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <ImageView fitWidth="16" fitHeight="16">
+                            <Image url="@../../images/icons/info.png"/>
+                        </ImageView>
+                        <Label text="Solo se muestran proyectos con Formato A aprobado"
+                               styleClass="anteproyecto-hint"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Título del proyecto (autocompletado) -->
+                <Label text="Título:" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                       styleClass="info-label"/>
+                <TextField fx:id="tituloTextField" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                           editable="false" styleClass="anteproyecto-textfield-disabled"/>
+
+                <!-- Estudiante -->
+                <Label text="Estudiante:" GridPane.rowIndex="2" GridPane.columnIndex="0"
+                       styleClass="info-label"/>
+                <TextField fx:id="estudianteTextField" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                           editable="false" styleClass="anteproyecto-textfield-disabled"/>
+
+                <!-- Modalidad -->
+                <Label text="Modalidad:" GridPane.rowIndex="3" GridPane.columnIndex="0"
+                       styleClass="info-label"/>
+                <TextField fx:id="modalidadTextField" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                           editable="false" styleClass="anteproyecto-textfield-disabled"/>
+            </GridPane>
+        </VBox>
+
+        <!-- Formulario del anteproyecto -->
+        <VBox styleClass="anteproyecto-form-section" spacing="20">
+            <Label text="Documentos del Anteproyecto" styleClass="section-title"/>
+
+            <GridPane styleClass="form-grid" hgap="20" vgap="20">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="150" halignment="RIGHT"/>
+                    <ColumnConstraints prefWidth="400" hgrow="ALWAYS"/>
+                </columnConstraints>
+
+                <!-- 1. Título del Anteproyecto -->
+                <Label text="* Título del Anteproyecto:" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                       styleClass="anteproyecto-label required-field"/>
+                <TextField fx:id="tituloAnteproyectoTextField" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                           promptText="Título completo del anteproyecto..."
+                           styleClass="anteproyecto-textfield"/>
+
+                <!-- 2. Resumen Ejecutivo -->
+                <Label text="* Resumen Ejecutivo:" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                       styleClass="anteproyecto-label required-field"/>
+                <TextArea fx:id="resumenTextArea" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                          promptText="Resumen del anteproyecto (máximo 500 palabras)..."
+                          styleClass="anteproyecto-textarea"/>
+
+                <!-- 3. Palabras Clave -->
+                <Label text="* Palabras Clave:" GridPane.rowIndex="2" GridPane.columnIndex="0"
+                       styleClass="anteproyecto-label required-field"/>
+                <TextField fx:id="palabrasClaveTextField" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                           promptText="Ej: gestión, académica, sistema, universidad"
+                           styleClass="anteproyecto-textfield"/>
+
+                <!-- 4. Archivo Principal (PDF) -->
+                <Label text="* Documento Principal:" GridPane.rowIndex="3" GridPane.columnIndex="0"
+                       styleClass="anteproyecto-label required-field"/>
+                <VBox spacing="10" GridPane.rowIndex="3" GridPane.columnIndex="1">
+                    <HBox spacing="10">
+                        <TextField fx:id="archivoPrincipalTextField" editable="false" HBox.hgrow="ALWAYS"
+                                   promptText="Seleccione el archivo PDF del anteproyecto..."
+                                   styleClass="anteproyecto-textfield"/>
+                        <Button text="Examinar" onAction="#seleccionarArchivoPrincipal"
+                                styleClass="anteproyecto-secondary-button"/>
+                    </HBox>
+                    <Label text="Formato: PDF | Tamaño máximo: 20MB | Incluir portada, índice, contenido, bibliografía"
+                           styleClass="anteproyecto-hint"/>
+                </VBox>
+
+                <!-- 5. Anexos (Opcional) -->
+                <Label text="Anexos (Opcional):" GridPane.rowIndex="4" GridPane.columnIndex="0"
+                       styleClass="anteproyecto-label"/>
+                <VBox spacing="10" GridPane.rowIndex="4" GridPane.columnIndex="1">
+                    <HBox spacing="10">
+                        <TextField fx:id="anexosTextField" editable="false" HBox.hgrow="ALWAYS"
+                                   promptText="Seleccione archivos adicionales (diagramas, código, etc)..."
+                                   styleClass="anteproyecto-textfield"/>
+                        <Button text="Examinar" onAction="#seleccionarAnexos"
+                                styleClass="anteproyecto-secondary-button"/>
+                    </HBox>
+                    <Label text="Formatos: PDF, ZIP, DOCX | Tamaño máximo: 50MB en total"
+                           styleClass="anteproyecto-hint"/>
+                </VBox>
+
+                <!-- 6. Fecha de Entrega Estimada -->
+                <Label text="* Fecha Estimada de Finalización:" GridPane.rowIndex="5" GridPane.columnIndex="0"
+                       styleClass="anteproyecto-label required-field"/>
+                <DatePicker fx:id="fechaEstimadaDatePicker" GridPane.rowIndex="5" GridPane.columnIndex="1"
+                            styleClass="anteproyecto-datepicker"/>
+            </GridPane>
+        </VBox>
+
+        <!-- Sección de Requisitos -->
+        <VBox styleClass="requirements-section" spacing="15">
+            <Label text="Requisitos del Anteproyecto" styleClass="requirements-title"/>
+
+            <VBox styleClass="requirements-list" spacing="10">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <ImageView fitWidth="20" fitHeight="20">
+                        <Image url="@../../images/icons/check.png"/>
+                    </ImageView>
+                    <Label text="El documento debe seguir la plantilla oficial de la universidad"
+                           styleClass="requirement-item"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <ImageView fitWidth="20" fitHeight="20">
+                        <Image url="@../../images/icons/check.png"/>
+                    </ImageView>
+                    <Label text="Mínimo 30 páginas, máximo 80 páginas (sin contar anexos)"
+                           styleClass="requirement-item"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <ImageView fitWidth="20" fitHeight="20">
+                        <Image url="@../../images/icons/check.png"/>
+                    </ImageView>
+                    <Label text="Debe incluir: introducción, estado del arte, metodología, resultados esperados"
+                           styleClass="requirement-item"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <ImageView fitWidth="20" fitHeight="20">
+                        <Image url="@../../images/icons/check.png"/>
+                    </ImageView>
+                    <Label text="Cronograma de actividades detallado"
+                           styleClass="requirement-item"/>
+                </HBox>
+            </VBox>
+        </VBox>
+
+        <!-- Notificación automática -->
+        <VBox styleClass="notification-section" spacing="10">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <ImageView fitWidth="24" fitHeight="24">
+                    <Image url="@../../images/icons/notification.png"/>
+                </ImageView>
+                <Label text="Notificación Automática" styleClass="notification-title"/>
+            </HBox>
+            <Label text="Al enviar este anteproyecto, el sistema enviará automáticamente una notificación por correo electrónico al jefe de departamento para su asignación de evaluadores."
+                   styleClass="notification-text"/>
+        </VBox>
+
+        <!-- Botones de Acción -->
+        <HBox styleClass="anteproyecto-actions" spacing="20" alignment="CENTER_RIGHT">
+            <Button text="Cancelar" onAction="#cancelar" styleClass="anteproyecto-secondary-button"/>
+            <Button text="Guardar Borrador" onAction="#guardarBorrador"
+                    styleClass="anteproyecto-secondary-button"/>
+            <Button text="Enviar Anteproyecto" onAction="#enviarAnteproyecto"
+                    styleClass="anteproyecto-primary-button"/>
+        </HBox>
+
+        <!-- Pie de página informativo -->
+        <VBox styleClass="anteproyecto-footer" spacing="5">
+            <Separator styleClass="anteproyecto-separator"/>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <ImageView fitWidth="16" fitHeight="16">
+                    <Image url="@../../images/icons/warning.png"/>
+                </ImageView>
+                <Label text="Importante:" styleClass="anteproyecto-warning-title"/>
+            </HBox>
+            <Label text="1. Una vez enviado, no podrá modificar el anteproyecto hasta que sea evaluado por los jurados."
+                   styleClass="anteproyecto-warning-text"/>
+            <Label text="2. El jefe de departamento asignará dos evaluadores en un plazo de 5 días hábiles."
+                   styleClass="anteproyecto-warning-text"/>
+            <Label text="3. Mantenga copia de seguridad de todos los documentos subidos."
+                   styleClass="anteproyecto-warning-text"/>
+        </VBox>
+
+    </VBox>
+</ScrollPane>

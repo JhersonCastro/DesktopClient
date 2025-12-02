@@ -1,5 +1,6 @@
 package org.example.fronted.controllers;
 
+
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.example.fronted.api.AuthApi;
@@ -7,45 +8,61 @@ import reactor.core.scheduler.Schedulers;
 import javafx.application.Platform;
 
 public class LoginController {
-
-    @FXML
-    private TextField emailField;
-
-    @FXML
-    private PasswordField passwordField;
-
-    @FXML
-    private Button loginButton;
-
-    @FXML
-    private Label errorLabel;
-
+    public Button loginButton;
+    @FXML private TextField txtEmail;
+    @FXML private PasswordField txtPassword;
+    @FXML private TextField visiblePasswordField;
+    @FXML private Button togglePasswordBtn;
+    @FXML private Label lblMessage;
+    @FXML private Label emailError;
+    @FXML private Label passwordError;
     private AuthApi authApi;
+
+    private MainController mainController;
+    private boolean passwordVisible = false;
+
+    /**
+     * Inyecta el MainController para permitir navegación
+     */
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
 
     @FXML
     public void initialize() {
         authApi = new AuthApi();
-        errorLabel.setVisible(false);
 
-        // Enter para login
-        passwordField.setOnAction(event -> handleLogin());
+        togglePasswordBtn.setText("👁");
+        togglePasswordBtn.setOnAction(e -> togglePasswordVisibility());
+
+        // Sincronizar campos de contraseña
+        visiblePasswordField.textProperty().bindBidirectional(txtPassword.textProperty());
     }
 
     @FXML
-    private ProgressIndicator progressIndicator;
+    private void togglePasswordVisibility() {
+        passwordVisible = !passwordVisible;
 
-    // Y en el método setLoading:
-    private void setLoading(boolean loading) {
-        if (progressIndicator != null) {
-            progressIndicator.setVisible(loading);
+        if (passwordVisible) {
+            visiblePasswordField.setVisible(true);
+            visiblePasswordField.setManaged(true);
+            txtPassword.setVisible(false);
+            txtPassword.setManaged(false);
+            togglePasswordBtn.setText("🔒");
+            visiblePasswordField.requestFocus();
+        } else {
+            txtPassword.setVisible(true);
+            txtPassword.setManaged(true);
+            visiblePasswordField.setVisible(false);
+            visiblePasswordField.setManaged(false);
+            togglePasswordBtn.setText("👁");
+            txtPassword.requestFocus();
         }
-        // resto del código...
     }
-
     @FXML
     private void handleLogin() {
-        String email = emailField.getText().trim();
-        String password = passwordField.getText().trim();
+        String email = txtEmail.getText().trim();
+        String password = txtPassword.getText().trim();
 
         if (email.isEmpty() || password.isEmpty()) {
             showError("Ingrese email y contraseña");
@@ -53,7 +70,7 @@ public class LoginController {
         }
 
         loginButton.setDisable(true);
-        errorLabel.setVisible(false);
+        lblMessage.setVisible(false);
 
         authApi.login(email, password)
                 .publishOn(Schedulers.fromExecutor(Platform::runLater))
@@ -74,15 +91,68 @@ public class LoginController {
                     });
                 });
     }
-
-    // En LoginController.java, añade este método:
-    public void setMainController(MainController mainController) {
-        // Puede quedar vacío si no necesitas referencias
-        System.out.println("MainController establecido");
+    private void showError(String message) {
+        lblMessage.setText(message);
+        lblMessage.setVisible(true);
+    }
+    @FXML
+    private void handleRegister() {
+        if (mainController != null) {
+            mainController.loadRegisterView();
+        }
     }
 
-    private void showError(String message) {
-        errorLabel.setText(message);
-        errorLabel.setVisible(true);
+    private boolean validateForm(String email, String password) {
+        boolean isValid = true;
+
+        if (email.isEmpty()) {
+            emailError.setText("El usuario es obligatorio");
+            emailError.setVisible(true);
+            txtEmail.getStyleClass().add("error");
+            isValid = false;
+        } else if (!isValidEmail(email)) {
+            emailError.setText("Formato: usuario@unicauca.edu.co");
+            emailError.setVisible(true);
+            txtEmail.getStyleClass().add("error");
+            isValid = false;
+        } else {
+            emailError.setVisible(false);
+            txtEmail.getStyleClass().remove("error");
+        }
+
+        if (password.isEmpty()) {
+            passwordError.setText("La clave de acceso es obligatoria");
+            passwordError.setVisible(true);
+            (passwordVisible ? visiblePasswordField : txtPassword).getStyleClass().add("error");
+            isValid = false;
+        } else if (password.length() < 6) {
+            passwordError.setText("Mínimo 6 caracteres");
+            passwordError.setVisible(true);
+            (passwordVisible ? visiblePasswordField : txtPassword).getStyleClass().add("error");
+            isValid = false;
+        } else {
+            passwordError.setVisible(false);
+            (passwordVisible ? visiblePasswordField : txtPassword).getStyleClass().remove("error");
+        }
+
+        return isValid;
+    }
+
+    private boolean isValidEmail(String email) {
+        return email.matches("^[A-Za-z0-9+_.-]+@unicauca\\.edu\\.co$");
+    }
+
+    private boolean authenticateUser(String email, String password) {
+        // Simulación de autenticación
+        return email.contains("@unicauca.edu.co") && password.length() >= 6;
+    }
+
+    private void clearMessages() {
+        lblMessage.setText("");
+        emailError.setVisible(false);
+        passwordError.setVisible(false);
+        txtEmail.getStyleClass().remove("error");
+        txtPassword.getStyleClass().remove("error");
+        visiblePasswordField.getStyleClass().remove("error");
     }
 }

@@ -1,0 +1,106 @@
+package org.example.fronted.controllers;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import org.example.fronted.util.SessionManager;
+
+public class DocenteDashboardController {
+
+    @FXML private Label pendientesCount;
+    @FXML private Label aprobadosCount;
+    @FXML private Label evaluacionesCount;
+    @FXML private TableView<Proyecto> proyectosTable;
+    @FXML private VBox notificacionesContainer;
+    @FXML private VBox notificacionesList;
+
+    private SessionManager sessionManager;
+
+    @FXML
+    public void initialize() {
+        sessionManager = SessionManager.getInstance();
+        cargarEstadisticas();
+        cargarProyectosRecientes();
+        cargarNotificaciones();
+    }
+
+    private void cargarEstadisticas() {
+        // Aquí se cargarían las estadísticas reales desde el backend
+        pendientesCount.setText("3");
+        aprobadosCount.setText("2");
+        evaluacionesCount.setText("1");
+    }
+
+    private void cargarProyectosRecientes() {
+        // Configurar tabla de proyectos
+        // Aquí se cargarían los proyectos del docente desde el backend
+    }
+
+    private void cargarNotificaciones() {
+        // Mostrar notificaciones importantes
+        // Si hay notificaciones, mostrar el contenedor
+        notificacionesContainer.setVisible(true);
+    }
+
+    // ============ HANDLERS DE BOTONES ============
+
+    @FXML
+    private void verProyectosPendientes() {
+        System.out.println("Navegando a proyectos pendientes...");
+        // loadView("/views/docente/proyectos_pendientes.fxml");
+    }
+
+    @FXML
+    private void subirAnteproyecto() {
+        System.out.println("Navegando a subir anteproyecto...");
+        // loadView("/views/docente/subir_anteproyecto.fxml");
+    }
+
+    @FXML
+    private void verEvaluacionesAsignadas() {
+        System.out.println("Navegando a evaluaciones asignadas...");
+        // loadView("/views/docente/evaluaciones_asignadas.fxml");
+    }
+
+    @FXML
+    private void nuevoFormatoA() {
+        System.out.println("Navegando a nuevo formato A...");
+        // loadView("/views/docente/formatoA_nuevo.fxml");
+    }
+
+    @FXML
+    private void verMisProyectos() {
+        System.out.println("Navegando a mis proyectos...");
+        // loadView("/views/docente/mis_proyectos.fxml");
+    }
+
+    @FXML
+    private void verHistorial() {
+        System.out.println("Navegando a historial...");
+        // loadView("/views/docente/historial.fxml");
+    }
+
+    @FXML
+    private void verTodosProyectos() {
+        System.out.println("Navegando a todos los proyectos...");
+        verMisProyectos();
+    }
+
+    // ============ CLASE MODELO PARA PROYECTO ============
+
+    public static class Proyecto {
+        private String titulo;
+        private String estado;
+        private String fecha;
+
+        public Proyecto(String titulo, String estado, String fecha) {
+            this.titulo = titulo;
+            this.estado = estado;
+            this.fecha = fecha;
+        }
+
+        public String getTitulo() { return titulo; }
+        public String getEstado() { return estado; }
+        public String getFecha() { return fecha; }
+    }
+}

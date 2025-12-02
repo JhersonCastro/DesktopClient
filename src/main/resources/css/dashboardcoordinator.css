@@ -1,0 +1,372 @@
+/* ==============================================
+   DASHBOARD COORDINADOR - TEMA CELESTE MODERNO
+   Universidad del Cauca
+   ============================================== */
+
+/* Fondo principal celeste */
+.dashboard-content {
+    -fx-background-color: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+    -fx-padding: 40px 60px;
+}
+
+/* Títulos de sección */
+.section-title {
+    -fx-text-fill: #0d47a1;
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-alignment: center-left;
+    -fx-effect: dropshadow(gaussian, rgba(13, 71, 161, 0.15), 3, 0, 2, 2);
+}
+
+.section-subtitle {
+    -fx-text-fill: #1976d2;
+    -fx-font-size: 16px;
+    -fx-font-weight: normal;
+    -fx-alignment: center-left;
+}
+
+/* Grid de tarjetas */
+.cards-grid {
+    -fx-alignment: center;
+    -fx-hgap: 40px;
+    -fx-vgap: 30px;
+}
+
+/* Tarjetas de estado con estilo moderno */
+.status-card {
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #f8fdff);
+    -fx-background-radius: 20px;
+    -fx-border-color: rgba(33, 150, 243, 0.3);
+    -fx-border-width: 1px;
+    -fx-border-radius: 20px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.15), 20, 0, 0, 8);
+}
+
+.status-card:hover {
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #e3f2fd);
+    -fx-border-color: #2196f3;
+    -fx-translate-y: -5px;
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.25), 25, 0, 0, 12);
+}
+
+/* Colores específicos para cada tarjeta */
+.card-pending {
+    -fx-border-color: rgba(255, 193, 7, 0.4);
+}
+
+.card-pending:hover {
+    -fx-border-color: #ffc107;
+    -fx-effect: dropshadow(gaussian, rgba(255, 193, 7, 0.3), 25, 0, 0, 12);
+}
+
+.card-approved {
+    -fx-border-color: rgba(40, 167, 69, 0.4);
+}
+
+.card-approved:hover {
+    -fx-border-color: #28a745;
+    -fx-effect: dropshadow(gaussian, rgba(40, 167, 69, 0.3), 25, 0, 0, 12);
+}
+
+.card-rejected {
+    -fx-border-color: rgba(220, 53, 69, 0.4);
+}
+
+.card-rejected:hover {
+    -fx-border-color: #dc3545;
+    -fx-effect: dropshadow(gaussian, rgba(220, 53, 69, 0.3), 25, 0, 0, 12);
+}
+
+/* Contenedores de iconos */
+.card-icon-container {
+    -fx-background-radius: 50%;
+    -fx-padding: 25px;
+    -fx-min-width: 100px;
+    -fx-min-height: 100px;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.2), 10, 0, 0, 5);
+}
+
+/* Fondo de iconos con gradientes suaves */
+.icon-pending {
+    -fx-background-color: linear-gradient(135deg, #fff3cd 0%, #ffc107 100%);
+    -fx-effect: dropshadow(gaussian, rgba(255, 193, 7, 0.3), 15, 0, 0, 5);
+}
+
+.icon-approved {
+    -fx-background-color: linear-gradient(135deg, #d4edda 0%, #28a745 100%);
+    -fx-effect: dropshadow(gaussian, rgba(40, 167, 69, 0.3), 15, 0, 0, 5);
+}
+
+.icon-rejected {
+    -fx-background-color: linear-gradient(135deg, #f8d7da 0%, #dc3545 100%);
+    -fx-effect: dropshadow(gaussian, rgba(220, 53, 69, 0.3), 15, 0, 0, 5);
+}
+
+/* Iconos dentro de los contenedores */
+.card-icon-container .image-view {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 3, 0, 1, 1);
+}
+
+/* Texto de tarjetas */
+.card-title {
+    -fx-text-fill: #1565c0;
+    -fx-font-size: 28px;
+    -fx-font-weight: 600;
+    -fx-alignment: center;
+}
+
+.card-count {
+    -fx-text-fill: #0d47a1;
+    -fx-font-size: 56px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(13, 71, 161, 0.1), 3, 0, 1, 1);
+}
+
+.card-subtitle {
+    -fx-text-fill: #42a5f5;
+    -fx-font-size: 14px;
+    -fx-font-weight: normal;
+    -fx-alignment: center;
+}
+
+/* Botones de tarjetas */
+.card-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 12px 30px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-cursor: hand;
+    -fx-border-width: 2px;
+    -fx-border-style: solid;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 5, 0, 2, 2);
+}
+
+.button-pending {
+    -fx-background-color: #ffc107;
+    -fx-border-color: #ffc107;
+}
+
+.button-pending:hover {
+    -fx-background-color: #e0a800;
+    -fx-border-color: #e0a800;
+    -fx-effect: dropshadow(gaussian, rgba(255, 193, 7, 0.4), 8, 0, 0, 3);
+}
+
+.button-approved {
+    -fx-background-color: #28a745;
+    -fx-border-color: #28a745;
+}
+
+.button-approved:hover {
+    -fx-background-color: #218838;
+    -fx-border-color: #218838;
+    -fx-effect: dropshadow(gaussian, rgba(40, 167, 69, 0.4), 8, 0, 0, 3);
+}
+
+.button-rejected {
+    -fx-background-color: #dc3545;
+    -fx-border-color: #dc3545;
+}
+
+.button-rejected:hover {
+    -fx-background-color: #c82333;
+    -fx-border-color: #c82333;
+    -fx-effect: dropshadow(gaussian, rgba(220, 53, 69, 0.4), 8, 0, 0, 3);
+}
+
+/* Sección de acciones rápidas */
+.quick-actions-section {
+    -fx-alignment: center-left;
+    -fx-padding: 40px 0 0 0;
+}
+
+.actions-title {
+    -fx-text-fill: #1565c0;
+    -fx-font-size: 24px;
+    -fx-font-weight: 600;
+    -fx-effect: dropshadow(gaussian, rgba(13, 71, 161, 0.1), 3, 0, 1, 1);
+}
+
+.actions-container {
+    -fx-alignment: center-left;
+    -fx-spacing: 20px;
+}
+
+/* Botones de acción */
+.action-button {
+    -fx-background-color: linear-gradient(to bottom, #2196f3, #1976d2);
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 15px 30px;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-border-color: #0d47a1;
+    -fx-border-width: 1px;
+    -fx-cursor: hand;
+    -fx-alignment: center-left;
+    -fx-spacing: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.3), 10, 0, 0, 5);
+}
+
+.action-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #42a5f5, #2196f3);
+    -fx-border-color: #1565c0;
+    -fx-translate-y: -2px;
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.4), 15, 0, 0, 8);
+}
+
+.action-button .image-view {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 3, 0, 1, 1);
+}
+
+/* Efectos para botones presionados */
+.card-button:pressed, .action-button:pressed {
+    -fx-translate-y: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 3);
+}
+
+/* ==============================================
+   RESPONSIVIDAD
+   ============================================== */
+
+@media (max-width: 1024px) {
+    .dashboard-content {
+        -fx-padding: 30px 40px;
+    }
+
+    .section-title {
+        -fx-font-size: 32px;
+    }
+
+    .cards-grid {
+        -fx-hgap: 30px;
+        -fx-vgap: 20px;
+    }
+
+    .card-count {
+        -fx-font-size: 48px;
+    }
+
+    .card-icon-container {
+        -fx-padding: 20px;
+        -fx-min-width: 90px;
+        -fx-min-height: 90px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-content {
+        -fx-padding: 20px;
+    }
+
+    .section-title {
+        -fx-font-size: 28px;
+    }
+
+    .section-subtitle {
+        -fx-font-size: 14px;
+    }
+
+    .cards-grid {
+        -fx-hgap: 20px;
+        -fx-vgap: 15px;
+    }
+
+    .status-card {
+        -fx-padding: 25px 15px;
+    }
+
+    .card-title {
+        -fx-font-size: 24px;
+    }
+
+    .card-count {
+        -fx-font-size: 40px;
+    }
+
+    .card-icon-container {
+        -fx-padding: 15px;
+        -fx-min-width: 80px;
+        -fx-min-height: 80px;
+    }
+
+    .card-button {
+        -fx-font-size: 13px;
+        -fx-padding: 10px 20px;
+    }
+
+    .action-button {
+        -fx-font-size: 13px;
+        -fx-padding: 12px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-content {
+        -fx-padding: 15px;
+    }
+
+    .section-title {
+        -fx-font-size: 24px;
+    }
+
+    .cards-grid {
+        -fx-hgap: 15px;
+        -fx-vgap: 15px;
+    }
+
+    .card-title {
+        -fx-font-size: 20px;
+    }
+
+    .card-count {
+        -fx-font-size: 36px;
+    }
+
+    .action-button {
+        -fx-padding: 10px 15px;
+    }
+}
+
+/* ==============================================
+   ANIMACIONES Y TRANSICIONES
+   ============================================== */
+
+@keyframes fadeIn {
+    from {
+        -fx-opacity: 0;
+        -fx-translate-y: 20px;
+    }
+    to {
+        -fx-opacity: 1;
+        -fx-translate-y: 0;
+    }
+}
+
+.status-card {
+    -fx-animation: fadeIn 0.5s ease-out;
+}
+
+.card-pending {
+    -fx-animation-delay: 0.1s;
+}
+
+.card-approved {
+    -fx-animation-delay: 0.2s;
+}
+
+.card-rejected {
+    -fx-animation-delay: 0.3s;
+}
+
+/* Transiciones suaves para efectos hover */
+.status-card, .card-button, .action-button {
+    -fx-transition: -fx-background-color 0.3s, -fx-effect 0.3s, -fx-translate-y 0.3s, -fx-border-color 0.3s;
+}

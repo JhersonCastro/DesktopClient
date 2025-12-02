@@ -10,8 +10,6 @@
             stylesheets="@../css/main.css"
             prefWidth="1280" prefHeight="720">
 
-
-
     <!-- Top: Barra superior fija -->
     <top>
         <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="10">
@@ -34,8 +32,20 @@
             <Region HBox.hgrow="ALWAYS"/>
 
             <!-- Menú de usuario (inicialmente oculto) -->
-            <HBox fx:id="userMenu" styleClass="user-menu" visible="false" spacing="10">
-                <Label fx:id="userName" styleClass="user-name"/>
+            <HBox fx:id="userMenu" styleClass="user-menu" visible="false" alignment="CENTER_RIGHT" spacing="15">
+                <!-- Contenedor para información del usuario -->
+                <VBox alignment="CENTER_RIGHT" spacing="2">
+                    <Label fx:id="userName" styleClass="user-name" text="Nombre Usuario"/>
+                    <Label fx:id="userEmail" styleClass="user-email" text="usuario@ejemplo.com"/>
+
+                    <!-- Selector de rol (opcional, visible solo si tiene múltiples roles) -->
+                    <HBox fx:id="roleSelectorContainer" styleClass="role-selector-container" visible="false" spacing="5">
+                        <Label text="Rol:" styleClass="role-label"/>
+                        <ComboBox fx:id="roleComboBox" onAction="#handleRoleChange" styleClass="role-combo" promptText="Seleccionar rol"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Botón de cerrar sesión -->
                 <Button text="Cerrar Sesión" styleClass="logout-button" onAction="#handleLogout"/>
             </HBox>
         </HBox>
