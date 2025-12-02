@@ -1,0 +1,244 @@
+/* ==============================================
+   ESTILOS ESPECÍFICOS DEL LOGIN
+   ============================================== */
+
+/* Contenedor principal del login */
+.login-content {
+    -fx-background-color: transparent;
+    -fx-alignment: center;
+}
+
+/* Tarjeta del login */
+.login-container {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 25, 0.2, 0, 6);
+}
+
+/* Logo del login */
+.login-logo {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.4, 0, 3);
+}
+
+/* Títulos */
+.login-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0a1a3a;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+
+.login-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #666666;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+
+/* Sección del formulario */
+.form-section {
+    -fx-pref-width: 100%;
+}
+
+/* Labels de campos */
+.field-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #333333;
+}
+
+/* Campos de texto */
+.text-field, .password-field {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1.5px;
+    -fx-padding: 12px 14px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+    -fx-prompt-text-fill: #6c757d;
+    -fx-pref-height: 46px;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #8b0000;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(139, 0, 0, 0.15), 8, 0.3, 0, 2);
+    -fx-background-color: #ffffff;
+}
+
+/* Botón toggle contraseña */
+.password-toggle {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #6c757d;
+    -fx-font-size: 16px;
+    -fx-cursor: hand;
+    -fx-padding: 0 0 0 5px;
+}
+
+.password-toggle:hover {
+    -fx-text-fill: #8b0000;
+}
+
+/* Enlace olvidé contraseña */
+.forgot-link {
+    -fx-text-fill: #0a1a3a;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-border-color: transparent;
+    -fx-padding: 5px 0;
+    -fx-underline: false;
+    -fx-cursor: hand;
+    -fx-alignment: center-left;
+}
+
+.forgot-link:hover {
+    -fx-text-fill: #8b0000;
+    -fx-underline: true;
+}
+
+/* Mensajes */
+.message-label {
+    -fx-text-fill: #dc3545;
+    -fx-font-size: 12px;
+    -fx-wrap-text: true;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+    -fx-padding: 8px 0;
+}
+
+.error-label {
+    -fx-text-fill: #dc3545;
+    -fx-font-size: 12px;
+    -fx-padding: 4px 0 0 4px;
+}
+
+/* Botón INGRESAR */
+.login-button {
+    -fx-background-color: #8b0000;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-padding: 14px;
+    -fx-cursor: hand;
+    -fx-pref-height: 50px;
+}
+
+.login-button:hover {
+    -fx-background-color: #9e0000;
+    -fx-effect: dropshadow(gaussian, rgba(139, 0, 0, 0.3), 10, 0.3, 0, 3);
+}
+
+.login-button:pressed {
+    -fx-background-color: #660000;
+    -fx-translate-y: 2px;
+}
+
+/* Botón REGISTRARSE */
+.register-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #8b0000;
+    -fx-border-color: #8b0000;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 12px;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-pref-height: 46px;
+}
+
+.register-button:hover {
+    -fx-background-color: rgba(139, 0, 0, 0.05);
+    -fx-border-color: #9e0000;
+    -fx-text-fill: #9e0000;
+}
+
+/* ==============================================
+   RESPONSIVIDAD DEL LOGIN
+   ============================================== */
+
+@media (max-width: 1024px) {
+    .login-container {
+        -fx-pref-width: 420px;
+        -fx-pref-height: 560px;
+        -fx-padding: 35px;
+    }
+
+    .login-title {
+        -fx-font-size: 24px;
+    }
+
+    .login-subtitle {
+        -fx-font-size: 13px;
+    }
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        -fx-pref-width: 380px;
+        -fx-pref-height: 520px;
+        -fx-padding: 30px;
+        -fx-background-radius: 14px;
+    }
+
+    .login-logo {
+        -fx-fit-width: 70px;
+        -fx-fit-height: 70px;
+    }
+
+    .login-title {
+        -fx-font-size: 22px;
+    }
+
+    .text-field, .password-field {
+        -fx-padding: 10px 12px;
+        -fx-font-size: 13px;
+        -fx-pref-height: 44px;
+    }
+
+    .login-button, .register-button {
+        -fx-padding: 12px;
+        -fx-font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        -fx-pref-width: 340px;
+        -fx-min-width: 300px;
+        -fx-padding: 25px;
+        -fx-background-radius: 12px;
+    }
+
+    .login-logo {
+        -fx-fit-width: 60px;
+        -fx-fit-height: 60px;
+    }
+
+    .login-title {
+        -fx-font-size: 20px;
+    }
+
+    .field-label {
+        -fx-font-size: 12px;
+    }
+
+    .text-field, .password-field {
+        -fx-padding: 10px;
+        -fx-font-size: 12px;
+        -fx-pref-height: 42px;
+    }
+
+    .login-button, .register-button {
+        -fx-padding: 10px;
+        -fx-font-size: 13px;
+        -fx-pref-height: 44px;
+    }
+}

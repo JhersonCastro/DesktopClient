@@ -1,0 +1,257 @@
+/* ==============================================
+   ESTILOS DEL REGISTRO - Corregido para JavaFX
+   ============================================== */
+
+/* Contenedor principal */
+.register-content {
+    -fx-background-color: transparent;
+    -fx-alignment: center;
+}
+
+/* Tarjeta del registro */
+.register-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 25, 0.2, 0, 6);
+}
+
+/* Header del registro */
+.register-header {
+    -fx-padding: 0 0 20px 0;
+    -fx-border-color: #e9ecef;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.register-logo {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 8, 0.4, 0, 2);
+}
+
+.register-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0a1a3a;
+}
+
+.register-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #666666;
+}
+
+/* ScrollPane del formulario */
+.form-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-padding: 0;
+}
+
+.form-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.form-scroll .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.form-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(10, 26, 58, 0.2);
+    -fx-background-radius: 4px;
+}
+
+/* Grid del formulario - Responsive */
+.form-grid {
+    -fx-padding: 10px 0;
+    -fx-hgap: 20px;
+    -fx-vgap: 15px;
+}
+
+/* Para pantallas pequeñas (aplicar desde Java) */
+.form-grid.mobile {
+    -fx-hgap: 0px;
+    -fx-vgap: 10px;
+}
+
+/* Labels de campos */
+.field-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #333333;
+}
+
+/* Campos de texto */
+.text-field, .password-field {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1.5px;
+    -fx-padding: 12px 14px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+    -fx-prompt-text-fill: #6c757d;
+    -fx-pref-height: 46px;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #8b0000;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(139, 0, 0, 0.15), 8, 0.3, 0, 2);
+    -fx-background-color: #ffffff;
+}
+
+/* Para pantallas pequeñas */
+.form-grid.mobile .text-field,
+.form-grid.mobile .password-field {
+    -fx-pref-width: 100%;
+}
+
+/* Contenedor de roles */
+.roles-container {
+    -fx-padding: 10px 0;
+}
+
+/* Checkbox de roles */
+.role-checkbox {
+    -fx-font-size: 13px;
+    -fx-text-fill: #555;
+    -fx-cursor: hand;
+}
+
+.role-checkbox .box {
+    -fx-background-color: white;
+    -fx-border-color: #8b0000;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+.role-checkbox:selected .box {
+    -fx-background-color: #8b0000;
+    -fx-border-color: #8b0000;
+}
+
+.role-checkbox .mark {
+    -fx-background-color: white;
+}
+
+/* Sección de términos */
+.terms-section {
+    -fx-padding: 20px 0 10px 0;
+}
+
+/* Checkbox de términos */
+.terms-checkbox {
+    -fx-font-size: 13px;
+    -fx-text-fill: #555;
+    -fx-cursor: hand;
+    -fx-padding: 10px 0;
+}
+
+.terms-checkbox .box {
+    -fx-background-color: white;
+    -fx-border-color: #8b0000;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-pref-width: 18px;
+    -fx-pref-height: 18px;
+}
+
+.terms-checkbox:selected .box {
+    -fx-background-color: #8b0000;
+    -fx-border-color: #8b0000;
+}
+
+.terms-checkbox .mark {
+    -fx-background-color: white;
+}
+
+/* Mensajes */
+.message-label {
+    -fx-font-size: 13px;
+    -fx-wrap-text: true;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+    -fx-padding: 8px 0;
+}
+
+.message-label.success {
+    -fx-text-fill: #28a745;
+}
+
+.message-label.error {
+    -fx-text-fill: #dc3545;
+}
+
+.message-label.info {
+    -fx-text-fill: #17a2b8;
+}
+
+.error-label {
+    -fx-text-fill: #dc3545;
+    -fx-font-size: 12px;
+    -fx-padding: 4px 0 0 4px;
+}
+
+/* Estilo para campos con error */
+.error {
+    -fx-border-color: #dc3545 !important;
+    -fx-border-width: 2px !important;
+}
+
+/* Botones de acción */
+.action-buttons {
+    -fx-padding: 20px 0 0 0;
+    -fx-border-color: #e9ecef;
+    -fx-border-width: 1px 0 0 0;
+}
+
+/* Botón primario */
+.primary-button {
+    -fx-background-color: #8b0000;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-padding: 14px;
+    -fx-cursor: hand;
+    -fx-pref-height: 50px;
+}
+
+.primary-button:hover {
+    -fx-background-color: #9e0000;
+    -fx-effect: dropshadow(gaussian, rgba(139, 0, 0, 0.3), 10, 0.3, 0, 3);
+}
+
+.primary-button:pressed {
+    -fx-background-color: #660000;
+    -fx-translate-y: 2px;
+}
+
+.primary-button:disabled {
+    -fx-background-color: #b0bec5;
+    -fx-opacity: 1;
+    -fx-cursor: default;
+}
+
+/* Texto y botón de enlace */
+.link-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #666666;
+}
+
+.link-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #0a1a3a;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 2px 5px;
+    -fx-cursor: hand;
+    -fx-underline: false;
+    -fx-border-color: transparent;
+}
+
+.link-button:hover {
+    -fx-text-fill: #8b0000;
+    -fx-underline: true;
+}

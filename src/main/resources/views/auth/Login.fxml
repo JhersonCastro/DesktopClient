@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" maxHeight="600" maxWidth="500" minHeight="550" minWidth="380" prefHeight="580" prefWidth="450" styleClass="login-content" stylesheets="@../../css/login.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.fronted.controllers.LoginController">
+
+    <!-- Contenedor del formulario -->
+    <VBox alignment="CENTER" spacing="20" styleClass="login-container">
+        <padding>
+            <Insets bottom="40" left="40" right="40" top="40" />
+        </padding>
+
+        <!-- Logo de la universidad -->
+        <ImageView fitHeight="120" fitWidth="120" preserveRatio="true" styleClass="login-logo">
+         <image>
+            <Image url="@../../images/logo.png" />
+         </image>
+        </ImageView>
+
+        <!-- Título -->
+        <VBox alignment="CENTER" spacing="8">
+            <Label styleClass="login-title" text="Universidad del Cauca" />
+            <Label styleClass="login-subtitle" text="Acceso a servicios académicos" />
+        </VBox>
+
+        <!-- Formulario -->
+        <VBox spacing="12" styleClass="form-section" VBox.vgrow="ALWAYS">
+
+            <!-- Campo Usuario -->
+            <VBox spacing="6">
+                <Label styleClass="field-label" text="Usuario" />
+                <TextField fx:id="txtEmail" promptText="cualquiera@unicauca.edu.co" styleClass="text-field" />
+                <Label fx:id="emailError" styleClass="error-label" visible="false" />
+            </VBox>
+
+            <!-- Campo Clave -->
+            <VBox spacing="6">
+                <HBox alignment="CENTER_LEFT" spacing="5">
+                    <Label styleClass="field-label" text="Clave de acceso" />
+                    <Button fx:id="togglePasswordBtn" styleClass="password-toggle" text="👁" />
+                </HBox>
+                <TextField fx:id="visiblePasswordField" managed="false" promptText="Ingrese su clave" styleClass="text-field" visible="false" />
+                <PasswordField fx:id="txtPassword" promptText="Ingrese su clave" styleClass="text-field" />
+                <Label fx:id="passwordError" styleClass="error-label" visible="false" />
+            </VBox>
+
+            <!-- Enlace olvidé contraseña -->
+            <Hyperlink onAction="#handleForgotPassword" styleClass="forgot-link" text="Olvidé mi contraseña" />
+
+            <!-- Mensaje de estado -->
+            <Label fx:id="lblMessage" alignment="CENTER" maxWidth="Infinity" styleClass="message-label" textAlignment="CENTER" wrapText="true" />
+
+            <!-- Botones -->
+            <VBox spacing="5">
+                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleLogin" styleClass="login-button" text="INGRESAR" />
+
+                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleRegister" styleClass="register-button" text="REGISTRARSE" />
+            </VBox>
+        </VBox>
+    </VBox>
+</VBox>

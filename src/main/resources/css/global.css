@@ -1,0 +1,217 @@
+/* ==============================================
+   CSS GLOBAL - APLICABLE A TODAS LAS PANTALLAS
+   ============================================== */
+
+/* Variables globales */
+.root {
+    /* Paleta de colores institucional */
+    -unicauca-primary: #8b0000;
+    -unicauca-secondary: #0a1a3a;
+    -unicauca-accent: #0e2a46;
+    -unicauca-light: #f8f9fa;
+    -unicauca-dark: #212529;
+
+    /* Colores de estado */
+    -color-success: #28a745;
+    -color-danger: #dc3545;
+    -color-warning: #ffc107;
+    -color-info: #17a2b8;
+
+    /* Tipografía */
+    -font-primary: 'Segoe UI', 'Roboto', sans-serif;
+    -font-secondary: 'Arial', sans-serif;
+
+    /* Espaciado */
+    -spacing-xs: 4px;
+    -spacing-sm: 8px;
+    -spacing-md: 16px;
+    -spacing-lg: 24px;
+    -spacing-xl: 32px;
+
+    /* Bordes */
+    -border-radius-sm: 4px;
+    -border-radius-md: 8px;
+    -border-radius-lg: 16px;
+
+    /* Sombras */
+    -shadow-sm: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);
+    -shadow-md: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 4);
+    -shadow-lg: dropshadow(gaussian, rgba(0,0,0,0.2), 12, 0, 0, 6);
+}
+
+/* Reset y estilos base */
+* {
+    -fx-font-family: -font-primary;
+    -fx-font-smoothing-type: gray;
+}
+
+/* Estilos para ventanas/dialogs */
+.dialog-pane {
+    -fx-background-color: white;
+    -fx-background-radius: -border-radius-md;
+    -fx-border-radius: -border-radius-md;
+    -fx-effect: -shadow-lg;
+}
+
+/* Estilos para tooltips */
+.tooltip {
+    -fx-background-color: -unicauca-dark;
+    -fx-text-fill: white;
+    -fx-background-radius: -border-radius-sm;
+    -fx-padding: -spacing-sm -spacing-md;
+    -fx-font-size: 12px;
+}
+
+/* Estilos para menús */
+.menu-bar {
+    -fx-background-color: white;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 0 0 1 0;
+}
+
+.menu-item {
+    -fx-padding: -spacing-sm -spacing-xl -spacing-sm -spacing-lg;
+}
+
+.menu-item:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+/* Clases utilitarias */
+.text-primary {
+    -fx-text-fill: -unicauca-primary !important;
+}
+
+.text-secondary {
+    -fx-text-fill: -unicauca-secondary !important;
+}
+
+.text-success {
+    -fx-text-fill: -color-success !important;
+}
+
+.text-danger {
+    -fx-text-fill: -color-danger !important;
+}
+
+.text-center {
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+
+.text-right {
+    -fx-alignment: center-right;
+    -fx-text-alignment: right;
+}
+
+.bg-primary {
+    -fx-background-color: -unicauca-primary !important;
+}
+
+.bg-secondary {
+    -fx-background-color: -unicauca-secondary !important;
+}
+
+.bg-light {
+    -fx-background-color: -unicauca-light !important;
+}
+
+/* Botones base */
+.btn {
+    -fx-background-radius: -border-radius-md;
+    -fx-border-radius: -border-radius-md;
+    -fx-cursor: hand;
+    -fx-font-weight: 500;
+    -fx-padding: -spacing-sm -spacing-lg;
+    -fx-transition: all 0.2s ease;
+}
+
+.btn:hover {
+    -fx-opacity: 0.9;
+}
+
+.btn:pressed {
+    -fx-translate-y: 1px;
+}
+
+/* Campos de formulario base */
+.form-control {
+    -fx-background-color: white;
+    -fx-border-color: #ced4da;
+    -fx-border-radius: -border-radius-md;
+    -fx-border-width: 1px;
+    -fx-padding: -spacing-sm -spacing-md;
+    -fx-font-size: 14px;
+}
+
+.form-control:focused {
+    -fx-border-color: -unicauca-primary;
+    -fx-border-width: 2px;
+    -fx-background-color: #fff5f5;
+}
+
+/* Tablas */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: -border-radius-md;
+}
+
+.table-column {
+    -fx-alignment: center-left;
+    -fx-padding: -spacing-md;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #e9ecef;
+}
+
+/* Cards/paneles */
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: -border-radius-md;
+    -fx-border-radius: -border-radius-md;
+    -fx-effect: -shadow-md;
+    -fx-padding: -spacing-lg;
+}
+
+/* Grid y layout */
+.container {
+    -fx-padding: -spacing-xl;
+}
+
+.row {
+    -fx-spacing: -spacing-md;
+}
+
+.col {
+    -fx-spacing: -spacing-sm;
+}
+
+/* Animaciones */
+.fade-in {
+    -fx-opacity: 0;
+    -fx-animation: fadeIn 0.3s ease-in forwards;
+}
+
+@keyframes fadeIn {
+    from { -fx-opacity: 0; }
+    to { -fx-opacity: 1; }
+}
+
+.slide-in-up {
+    -fx-translate-y: 20px;
+    -fx-opacity: 0;
+    -fx-animation: slideInUp 0.4s ease-out forwards;
+}
+
+@keyframes slideInUp {
+    from {
+        -fx-translate-y: 20px;
+        -fx-opacity: 0;
+    }
+    to {
+        -fx-translate-y: 0;
+        -fx-opacity: 1;
+    }
+}

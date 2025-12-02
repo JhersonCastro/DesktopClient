@@ -1,0 +1,223 @@
+/* ==============================================
+   ESTILOS DEL DASHBOARD
+   ============================================== */
+
+.dashboard-content {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 20, 0, 0, 5);
+}
+
+/* Header del dashboard */
+.dashboard-header {
+    -fx-padding: 0 0 20px 0;
+    -fx-border-color: #e9ecef;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.welcome-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0a1a3a;
+}
+
+.user-email {
+    -fx-font-size: 14px;
+    -fx-text-fill: #6c757d;
+}
+
+.logout-btn {
+    -fx-background-color: #8b0000;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-padding: 8px 20px;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.logout-btn:hover {
+    -fx-background-color: #9e0000;
+}
+
+/* Tarjetas de resumen */
+.summary-cards {
+    -fx-alignment: center;
+    -fx-padding: 10px 0;
+}
+
+.summary-card {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-padding: 20px;
+    -fx-pref-width: 200px;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 5, 0, 0, 2);
+}
+
+.summary-card:hover {
+    -fx-background-color: #e9ecef;
+    -fx-translate-y: -2px;
+}
+
+.card-title {
+    -fx-font-size: 14px;
+    -fx-text-fill: #6c757d;
+    -fx-font-weight: 600;
+}
+
+.card-value {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0a1a3a;
+}
+
+.card-subtext {
+    -fx-font-size: 12px;
+    -fx-text-fill: #28a745;
+}
+
+/* Secciones */
+.section-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0a1a3a;
+    -fx-padding: 0 0 10px 0;
+}
+
+/* Actividades */
+.activity-section {
+    -fx-padding: 20px 0;
+}
+
+.activity-list {
+    -fx-padding: 10px;
+}
+
+.activity-item {
+    -fx-padding: 12px 15px;
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+}
+
+.activity-item:hover {
+    -fx-background-color: #e9ecef;
+}
+
+.activity-icon {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 1);
+}
+
+.activity-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+    -fx-font-weight: 500;
+    -fx-wrap-text: true;
+}
+
+.activity-time {
+    -fx-font-size: 12px;
+    -fx-text-fill: #6c757d;
+    -fx-font-style: italic;
+}
+
+/* Accesos rápidos */
+.quick-access-section {
+    -fx-padding: 20px 0 0 0;
+}
+
+.quick-access-buttons {
+    -fx-alignment: center;
+    -fx-flex-wrap: wrap;
+}
+
+.quick-btn {
+    -fx-background-color: #0a1a3a;
+    -fx-text-fill: white;
+    -fx-font-weight: 500;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-padding: 10px 20px;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-pref-width: 150px;
+}
+
+.quick-btn:hover {
+    -fx-background-color: #0c2340;
+    -fx-effect: dropshadow(gaussian, rgba(10, 26, 58, 0.3), 8, 0, 0, 2);
+}
+
+/* ==============================================
+   RESPONSIVIDAD DASHBOARD
+   ============================================== */
+
+@media (max-width: 1024px) {
+    .dashboard-content {
+        -fx-pref-width: 900px;
+        -fx-pref-height: 550px;
+    }
+
+    .summary-card {
+        -fx-pref-width: 180px;
+        -fx-padding: 15px;
+    }
+
+    .quick-btn {
+        -fx-pref-width: 130px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-content {
+        -fx-pref-width: 700px;
+        -fx-min-width: 600px;
+        -fx-padding: 20px;
+    }
+
+    .summary-cards {
+        -fx-spacing: 15px;
+        -fx-alignment: center;
+    }
+
+    .summary-card {
+        -fx-pref-width: 160px;
+    }
+
+    .quick-access-buttons {
+        -fx-spacing: 10px;
+    }
+
+    .quick-btn {
+        -fx-pref-width: 120px;
+        -fx-padding: 8px 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-content {
+        -fx-pref-width: 350px;
+        -fx-min-width: 320px;
+        -fx-padding: 15px;
+    }
+
+    .summary-cards {
+        -fx-orientation: vertical;
+    }
+
+    .summary-card {
+        -fx-pref-width: 100%;
+    }
+
+    .quick-access-buttons {
+        -fx-orientation: vertical;
+        -fx-alignment: center;
+    }
+
+    .quick-btn {
+        -fx-pref-width: 200px;
+    }
+}

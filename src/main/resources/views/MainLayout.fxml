@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.fronted.controllers.MainController"
+            stylesheets="@../css/main.css"
+            prefWidth="1280" prefHeight="720">
+
+
+
+    <!-- Top: Barra superior fija -->
+    <top>
+        <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="10">
+            <padding>
+                <Insets top="15" right="30" bottom="15" left="30"/>
+            </padding>
+
+            <!-- Logo y nombre de la universidad -->
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <ImageView fitWidth="80" fitHeight="80" preserveRatio="true">
+                    <Image url="@../images/logo.png"/>
+                </ImageView>
+                <VBox alignment="CENTER_LEFT" spacing="2">
+                    <Label text="Universidad del Cauca" styleClass="app-title"/>
+                    <Label text="Posteris lumen moriturus edat" styleClass="app-subtitle"/>
+                </VBox>
+            </HBox>
+
+            <!-- Espacio flexible -->
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- Menú de usuario (inicialmente oculto) -->
+            <HBox fx:id="userMenu" styleClass="user-menu" visible="false" spacing="10">
+                <Label fx:id="userName" styleClass="user-name"/>
+                <Button text="Cerrar Sesión" styleClass="logout-button" onAction="#handleLogout"/>
+            </HBox>
+        </HBox>
+    </top>
+
+    <!-- Center: Contenido dinámico (aquí se carga login.fxml, dashboard.fxml, etc.) -->
+    <center>
+        <StackPane fx:id="contentPane" styleClass="content-pane"/>
+    </center>
+
+    <!-- Bottom: Pie de página fijo -->
+    <bottom>
+        <HBox styleClass="footer-bar" alignment="CENTER">
+            <padding>
+                <Insets top="10" right="30" bottom="10" left="30"/>
+            </padding>
+            <Label text="© 2025 Universidad del Cauca - Todos los derechos reservados" styleClass="footer-text"/>
+        </HBox>
+    </bottom>
+</BorderPane>
