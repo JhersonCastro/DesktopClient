@@ -1,14 +1,19 @@
 package org.example.fronted.controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import org.example.fronted.api.UserApi;
+import org.example.fronted.dto.RegistroUsuarioDTO;
+import org.example.fronted.models.Rol;
+import reactor.core.scheduler.Schedulers;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
 public class RegisterController extends UIBase implements Initializable {
-
 
     // Campos del formulario
     @FXML private TextField txtNames;
@@ -49,6 +54,9 @@ public class RegisterController extends UIBase implements Initializable {
     private static final Pattern PASSWORD_LOWERCASE = Pattern.compile(".*[a-z].*");
     private static final Pattern PASSWORD_NUMBER = Pattern.compile(".*\\d.*");
     private static final Pattern PASSWORD_SPECIAL = Pattern.compile(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?].*");
+
+    // Fachada hacia el microservicio de usuarios
+    private final UserApi userApi = new UserApi();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -258,17 +266,18 @@ public class RegisterController extends UIBase implements Initializable {
     private void updateRegisterButtonState() {
         boolean isFormValid = isFormValid();
 
+        // Aquí había un bug: siempre lo ponías en false.
+        btnRegister.setDisable(!isFormValid);
+
         if (isFormValid) {
-            btnRegister.setDisable(false);
             btnRegister.setStyle("-fx-background-color: #28a745; -fx-text-fill: white; -fx-cursor: hand;");
         } else {
-            btnRegister.setDisable(false);
             btnRegister.setStyle("-fx-background-color: #6c757d; -fx-text-fill: white;");
         }
     }
 
     /**
-     * Verifica si el formulario es válido
+     * Verifica si el formulario es válido (versión rápida usada solo para habilitar botón)
      */
     private boolean isFormValid() {
         // Validar nombres
@@ -325,39 +334,64 @@ public class RegisterController extends UIBase implements Initializable {
     }
 
     /**
-     * Maneja el registro del usuario
+     * Maneja el registro del usuario (click en REGISTRARSE)
      */
     @FXML
     private void handleRegister() {
         clearMessages();
 
-        // Validar todos los campos
+        // Validar todos los campos (validación completa)
         boolean isValid = validateForm();
 
-        if (isValid) {
-            // Mostrar mensaje de procesamiento
-            showMessage("Validando datos...", "info");
-
-            // TODO: Conectar con API para registro real
-            // 1. Crear DTO con datos del formulario
-            // 2. Llamar al servicio de autenticación
-            // 3. Manejar respuesta del servidor
-            // 4. Redirigir a login si es exitoso
-
-            System.out.println("=== DATOS VALIDADOS PARA REGISTRO ===");
-            System.out.println("Nombres: " + txtNames.getText().trim());
-            System.out.println("Apellidos: " + txtLastNames.getText().trim());
-            System.out.println("Email: " + txtEmail.getText().trim());
-            System.out.println("Teléfono: " + txtPhone.getText().trim());
-            System.out.println("Roles: " + getSelectedRoles());
-            System.out.println("======================================");
-
-            // Mostrar mensaje de éxito
-            showMessage("✓ Datos validados correctamente. Listo para conectar con API.", "success");
-
-        } else {
+        if (!isValid) {
             showMessage("Por favor, corrija los errores en el formulario", "error");
+            return;
         }
+
+        // Resolver rol principal según los checkboxes
+        Rol rol = resolverRolPrincipal();
+        if (rol == null) {
+            showMessage("Debe seleccionar al menos un rol", "error");
+            return;
+        }
+
+        // Construir DTO para el microservicio
+        RegistroUsuarioDTO dto = new RegistroUsuarioDTO();
+        dto.setNombres(txtNames.getText().trim());
+        dto.setApellidos(txtLastNames.getText().trim());
+        dto.setEmail(txtEmail.getText().trim());
+        dto.setPassword(txtPassword.getText());
+        dto.setCelular(txtPhone.getText().trim());
+        dto.setRolPrincipal(rol);
+
+        System.out.println("=== DATOS VALIDADOS PARA REGISTRO ===");
+        System.out.println("Nombres: " + dto.getNombres());
+        System.out.println("Apellidos: " + dto.getApellidos());
+        System.out.println("Email: " + dto.getEmail());
+        System.out.println("Teléfono: " + dto.getCelular());
+        System.out.println("Rol principal: " + dto.getRolPrincipal());
+        System.out.println("======================================");
+
+        // Llamar al microservicio
+        btnRegister.setDisable(true);
+        showMessage("Registrando usuario...", "info");
+
+        userApi.registrarUsuario(dto)
+                .subscribeOn(Schedulers.boundedElastic())
+                .subscribe(success -> Platform.runLater(() -> {
+                            btnRegister.setDisable(false);
+                            if (success) {
+                                showMessage("✓ Registro exitoso. Ahora puede iniciar sesión.", "success");
+                                // Aquí puedes navegar a login si ya tienes el mecanismo:
+                                // loadView("/views/auth/login.fxml");
+                            } else {
+                                showMessage("No se pudo completar el registro. Intente nuevamente.", "error");
+                            }
+                        }),
+                        error -> Platform.runLater(() -> {
+                            btnRegister.setDisable(false);
+                            showMessage("Error al registrar: " + error.getMessage(), "error");
+                        }));
     }
 
     /**
@@ -449,12 +483,31 @@ public class RegisterController extends UIBase implements Initializable {
     }
 
     /**
+     * Decide qué rol principal se envía al microservicio según las selecciones
+     */
+    private Rol resolverRolPrincipal() {
+        if (chkEstudiante.isSelected()) {
+            return Rol.ESTUDIANTE;
+        } else if (chkCoordinador.isSelected()) {
+            return Rol.COORDINADOR;
+        } else if (chkJefeDepartamento.isSelected()) {
+            return Rol.JEFE_DEPARTAMENTO;
+        } else if (chkDirector.isSelected() || chkJurado.isSelected()) {
+            // Director y Jurado se registran como DOCENTE en el backend
+            return Rol.DOCENTE;
+        }
+        return null;
+    }
+
+    /**
      * Muestra un error en un campo específico
      */
     private void showFieldError(Label errorLabel, String message, TextInputControl field) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
-        field.getStyleClass().add("error");
+        if (!field.getStyleClass().contains("error")) {
+            field.getStyleClass().add("error");
+        }
     }
 
     /**
@@ -466,7 +519,7 @@ public class RegisterController extends UIBase implements Initializable {
     }
 
     /**
-     * Obtiene los roles seleccionados
+     * Obtiene los roles seleccionados (solo para logs)
      */
     private String getSelectedRoles() {
         StringBuilder roles = new StringBuilder();
@@ -485,7 +538,7 @@ public class RegisterController extends UIBase implements Initializable {
     }
 
     /**
-     * Muestra un mensaje
+     * Muestra un mensaje general en la parte inferior
      */
     private void showMessage(String message, String type) {
         lblRegisterMessage.setText(message);
