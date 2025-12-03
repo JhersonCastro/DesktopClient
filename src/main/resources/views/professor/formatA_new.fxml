@@ -50,7 +50,7 @@
             </columnConstraints>
 
             <!-- 1. Selección de Estudiante -->
-            <Label styleClass="formato-a-label required-field" text="* Estudiante:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <Label styleClass="formato-a-label" text="* Estudiante:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
             <VBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="0">
                 <TextField fx:id="estudianteTextField" promptText="Escriba nombre, email o código y presione ENTER..." styleClass="formato-a-autocomplete" />
 
@@ -69,11 +69,11 @@
             </VBox>
 
             <!-- 2. Título del Proyecto -->
-            <Label styleClass="formato-a-label required-field" text="* Título del Proyecto:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <Label styleClass="formato-a-label" text="* Título del Proyecto:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
             <TextField fx:id="tituloTextField" promptText="Ej: Sistema de gestión de proyectos de grado para la Universidad del Cauca" styleClass="formato-a-textfield" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
             <!-- 3. Modalidad -->
-            <Label styleClass="formato-a-label required-field" text="* Modalidad:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+            <Label styleClass="formato-a-label" text="* Modalidad:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
             <VBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="3">
                 <HBox spacing="30">
                     <RadioButton fx:id="radioInvestigacion" selected="true" styleClass="formato-a-radiobutton" text="Investigación" userData="INVESTIGACION">
@@ -116,11 +116,11 @@
             </ComboBox>
 
             <!-- 7. Objetivo General -->
-            <Label styleClass="formato-a-label required-field" text="* Objetivo General:" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+            <Label styleClass="formato-a-label" text="* Objetivo General:" GridPane.columnIndex="0" GridPane.rowIndex="7" />
             <TextArea fx:id="objetivoGeneralTextArea" promptText="Describa el objetivo principal del proyecto..." styleClass="formato-a-textarea" GridPane.columnIndex="1" GridPane.rowIndex="7" />
 
             <!-- 8. Objetivos Específicos -->
-            <Label styleClass="formato-a-label required-field" text="* Objetivos Específicos:" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+            <Label styleClass="formato-a-label" text="* Objetivos Específicos:" GridPane.columnIndex="0" GridPane.rowIndex="8" />
             <VBox spacing="10" styleClass="formato-a-objetivos-container" GridPane.columnIndex="1" GridPane.rowIndex="8">
                 <TextArea fx:id="objetivoEspecifico1TextArea" promptText="Objetivo específico 1..." styleClass="formato-a-textarea-small" />
                 <TextArea fx:id="objetivoEspecifico2TextArea" promptText="Objetivo específico 2..." styleClass="formato-a-textarea-small" />
@@ -129,7 +129,7 @@
             </VBox>
 
             <!-- 9. Archivo del Formato A (PDF) -->
-            <Label styleClass="formato-a-label required-field" text="* Formato A (PDF):" GridPane.columnIndex="0" GridPane.rowIndex="9" />
+            <Label styleClass="formato-a-label" text="* Formato A (PDF):" GridPane.columnIndex="0" GridPane.rowIndex="9" />
             <VBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="9">
                 <HBox spacing="10">
                     <TextField fx:id="archivoPdfTextField" editable="false" promptText="Seleccione el archivo PDF del Formato A..." styleClass="formato-a-textfield" HBox.hgrow="ALWAYS" />
@@ -141,7 +141,7 @@
             <!-- 10. Carta de Aceptación (Solo para Práctica Profesional) -->
             <VBox fx:id="cartaAceptacionContainer" managed="false" styleClass="formato-a-carta-container" visible="false" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="10">
                 <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label styleClass="formato-a-label required-field" text="* Carta de Aceptación de Empresa:" />
+                    <Label styleClass="formato-a-label" text="* Carta de Aceptación de Empresa:" />
                     <Label styleClass="formato-a-carta-label" text="(Requerido para Práctica Profesional)" />
                 </HBox>
                 <HBox spacing="10" styleClass="formato-a-carta-input">
