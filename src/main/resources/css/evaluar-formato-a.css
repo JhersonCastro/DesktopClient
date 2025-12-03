@@ -1,0 +1,95 @@
+/* CONTENEDOR PRINCIPAL */
+.dashboard-content {
+    -fx-background-color: #f5f6fa;
+    -fx-padding: 20;
+    -fx-spacing: 30;
+    -fx-font-family: "Segoe UI";
+}
+
+/* TITULOS */
+.section-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.section-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #6d7a8b;
+}
+
+/* TARJETAS */
+.status-card {
+    -fx-background-color: white;
+    -fx-padding: 25;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #d9d9d9;
+    -fx-border-width: 1;
+}
+
+/* DIFERENTES ESTADOS (aunque en tu vista no cambian dinámicamente, igual las definimos) */
+.card-pending {
+    -fx-border-color: #f1c40f;
+}
+
+.card-rejected {
+    -fx-border-color: #e74c3c;
+}
+
+/* TITULOS DE TARJETAS */
+.card-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #34495e;
+}
+
+/* VALORES DE INFORMACIÓN */
+.info-value {
+    -fx-font-size: 14px;
+    -fx-text-fill: #2c3e50;
+}
+
+/* TEXTAREA */
+.text-area {
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.text-area:focused {
+    -fx-border-color: #2980b9;
+}
+
+/* BOTONES GENERALES */
+.action-button {
+    -fx-background-color: #2980b9;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+    -fx-padding: 8 16;
+    -fx-font-weight: bold;
+}
+
+.action-button:hover {
+    -fx-background-color: #1f6fa5;
+}
+
+/* BOTÓN ESPECÍFICO PARA RECHAZAR */
+.button-rejected {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+    -fx-font-weight: bold;
+}
+
+.button-rejected:hover {
+    -fx-background-color: #c0392b;
+}
+
+/* BOTÓN DENTRO DE TARJETA */
+.card-button {
+    -fx-padding: 8 16;
+    -fx-background-radius: 6;
+    -fx-font-size: 14px;
+}

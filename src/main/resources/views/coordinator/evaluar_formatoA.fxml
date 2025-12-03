@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+
+<?import java.lang.String?>
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.fronted.controllers.EvaluarFormatoAController"
+      stylesheets="@../../css/evaluar-formato-a.css"
+      spacing="30">
+
+    <styleClass>
+        <String>dashboard-content</String>
+    </styleClass>
+
+    <padding>
+        <Insets top="40" right="60" bottom="40" left="60"/>
+    </padding>
+
+    <!-- TÍTULO -->
+    <VBox spacing="5" alignment="CENTER_LEFT">
+        <Label text="Evaluación Formato A">
+            <styleClass>
+                <String>section-title</String>
+            </styleClass>
+        </Label>
+        <Label text="Revisa el formato A enviado por el docente">
+            <styleClass>
+                <String>section-subtitle</String>
+            </styleClass>
+        </Label>
+    </VBox>
+
+    <!-- DATOS DEL PROYECTO -->
+    <VBox spacing="25">
+        <styleClass>
+            <String>status-card</String>
+            <String>card-pending</String>
+        </styleClass>
+
+        <padding>
+            <Insets top="30" right="30" bottom="30" left="30"/>
+        </padding>
+
+        <Label text="Información del Proyecto">
+            <styleClass>
+                <String>card-title</String>
+            </styleClass>
+        </Label>
+
+        <GridPane hgap="20" vgap="15">
+            <columnConstraints>
+                <ColumnConstraints minWidth="150"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+            </columnConstraints>
+
+            <Label text="Título:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <Label fx:id="tituloProyectoLabel" text="-" GridPane.rowIndex="0" GridPane.columnIndex="1">
+                <styleClass>
+                    <String>info-value</String>
+                </styleClass>
+            </Label>
+
+            <Label text="Modalidad:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <Label fx:id="modalidadLabel" text="-" GridPane.rowIndex="1" GridPane.columnIndex="1">
+                <styleClass>
+                    <String>info-value</String>
+                </styleClass>
+            </Label>
+
+            <Label text="Estudiante:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <Label fx:id="estudianteLabel" text="-" GridPane.rowIndex="2" GridPane.columnIndex="1">
+                <styleClass>
+                    <String>info-value</String>
+                </styleClass>
+            </Label>
+
+            <Label text="Director:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <Label fx:id="directorLabel" text="-" GridPane.rowIndex="3" GridPane.columnIndex="1">
+                <styleClass>
+                    <String>info-value</String>
+                </styleClass>
+            </Label>
+        </GridPane>
+
+        <Button text="Ver PDF" onAction="#verPDF">
+            <styleClass>
+                <String>action-button</String>
+            </styleClass>
+            <graphic>
+                <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
+                    <Image url="@../../images/icons/folder.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+    </VBox>
+
+    <!-- OBSERVACIONES -->
+    <VBox spacing="10">
+        <styleClass>
+            <String>status-card</String>
+            <String>card-rejected</String>
+        </styleClass>
+
+        <padding>
+            <Insets top="30" right="30" bottom="30" left="30"/>
+        </padding>
+
+        <Label text="Observaciones del Coordinador">
+            <styleClass>
+                <String>card-title</String>
+            </styleClass>
+        </Label>
+
+        <TextArea fx:id="observacionesTextArea"
+                  promptText="Escribe las observaciones aquí..."
+                  prefRowCount="6"
+                  wrapText="true"/>
+
+        <Button text="Guardar Observaciones" onAction="#guardarEvaluacion">
+            <styleClass>
+                <String>card-button</String>
+                <String>button-rejected</String>
+            </styleClass>
+        </Button>
+    </VBox>
+
+    <!-- ACCIONES -->
+    <HBox spacing="20" alignment="CENTER">
+        <Button text="Aprobar" onAction="#aprobarFormatoA">
+            <styleClass>
+                <String>action-button</String>
+            </styleClass>
+            <graphic>
+                <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
+                    <Image url="@../../images/icons/check.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+
+        <Button text="Rechazar" onAction="#rechazarFormatoA">
+            <styleClass>
+                <String>action-button</String>
+            </styleClass>
+            <graphic>
+                <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
+                    <Image url="@../../images/icons/x.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+    </HBox>
+
+</VBox>
