@@ -1,33 +1,26 @@
 package org.example.fronted.controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javafx.scene.Scene;
-import javafx.scene.Parent;
-import javafx.fxml.FXMLLoader;
+import javafx.scene.layout.HBox;
+import org.example.fronted.util.SessionManager;
+
 import java.io.File;
 import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.List;
 import java.util.ArrayList;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.Alert.AlertType;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import java.io.IOException;
-import javafx.util.Callback;
-import javafx.util.StringConverter;
-import javafx.scene.layout.HBox;
+import java.util.List;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
-public class DocenteNuevoFormatoAController implements Initializable {
+public class DocenteNuevoFormatoAController extends UIBase implements Initializable {
 
     // ========== COMPONENTES FXML ==========
-    @FXML private ComboBox<EstudianteAutoComplete> estudianteComboBox;
+    @FXML private TextField estudianteTextField; // Cambiado de ComboBox a TextField
     @FXML private TextField tituloTextField;
     @FXML private RadioButton radioInvestigacion;
     @FXML private RadioButton radioPracticaProfesional;
@@ -42,31 +35,40 @@ public class DocenteNuevoFormatoAController implements Initializable {
     @FXML private VBox cartaAceptacionContainer;
     @FXML private TextField cartaAceptacionTextField;
 
+    // Para mostrar resultados de búsqueda
+    @FXML private VBox resultadosBusquedaContainer;
+    @FXML private VBox resultadosList;
+
     // ToggleGroup para radio buttons
     private ToggleGroup modalidadToggleGroup;
 
     // Variables de estado
     private File archivoPdfSeleccionado;
     private File cartaAceptacionSeleccionada;
-    private ObservableList<EstudianteAutoComplete> todosEstudiantes = FXCollections.observableArrayList();
-    private ObservableList<EstudianteAutoComplete> estudiantesFiltrados = FXCollections.observableArrayList();
+    private SessionManager sessionManager;
+    private EstudianteAutoComplete estudianteSeleccionado;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        sessionManager = SessionManager.getInstance();
+
         // 1. Inicializar ToggleGroup
         inicializarToggleGroup();
 
         // 2. Cargar datos del docente
         cargarDatosDocente();
 
-        // 3. Configurar autocompletado para estudiantes
-        configurarAutocompletadoEstudiantes();
+        // 3. Configurar búsqueda por Enter en el TextField
+        configurarBusquedaPorEnter();
 
         // 4. Cargar datos iniciales
         cargarDatosIniciales();
 
         // 5. Configurar listeners
         configurarListeners();
+
+        // 6. Ocultar contenedor de resultados inicialmente
+        resultadosBusquedaContainer.setVisible(false);
     }
 
     private void inicializarToggleGroup() {
@@ -77,153 +79,164 @@ public class DocenteNuevoFormatoAController implements Initializable {
     }
 
     private void cargarDatosDocente() {
-        // Obtener datos del docente desde JWT/sesión
-        String docenteNombre = "Dr. Juan Pérez";
+        String docenteNombre = sessionManager.getUserFullName();
         nombreDocenteLabel.setText(docenteNombre + " (Usted)");
     }
 
-    private void configurarAutocompletadoEstudiantes() {
-        // 1. Hacer el ComboBox editable
-        estudianteComboBox.setEditable(true);
-
-        // 2. Configurar StringConverter para mostrar texto personalizado
-        estudianteComboBox.setConverter(new StringConverter<EstudianteAutoComplete>() {
-            @Override
-            public String toString(EstudianteAutoComplete estudiante) {
-                if (estudiante == null) {
-                    return "";
+    private void configurarBusquedaPorEnter() {
+        // Configurar para que al presionar Enter en el TextField, se realice la búsqueda
+        estudianteTextField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                String busqueda = estudianteTextField.getText().trim();
+                if (busqueda.length() >= 2) {
+                    buscarEstudiantesEnServidor(busqueda);
+                } else {
+                    mostrarMensaje("Ingrese al menos 2 caracteres para buscar", Alert.AlertType.WARNING);
                 }
-                return estudiante.getDisplayText();
-            }
-
-            @Override
-            public EstudianteAutoComplete fromString(String string) {
-                // Buscar estudiante por texto ingresado
-                return todosEstudiantes.stream()
-                        .filter(e -> e.matches(string))
-                        .findFirst()
-                        .orElse(null);
             }
         });
 
-        // 3. Configurar CellFactory para mostrar múltiples líneas
-        estudianteComboBox.setCellFactory(new Callback<ListView<EstudianteAutoComplete>,
-                ListCell<EstudianteAutoComplete>>() {
-            @Override
-            public ListCell<EstudianteAutoComplete> call(ListView<EstudianteAutoComplete> param) {
-                return new ListCell<EstudianteAutoComplete>() {
-                    @Override
-                    protected void updateItem(EstudianteAutoComplete estudiante, boolean empty) {
-                        super.updateItem(estudiante, empty);
-                        if (empty || estudiante == null) {
-                            setText(null);
-                            setGraphic(null);
-                        } else {
-                            // Crear VBox con múltiples líneas
-                            VBox vbox = new VBox(3);
-                            vbox.setStyle("-fx-padding: 5px;");
-
-                            // Nombre en negrita
-                            Label nombreLabel = new Label(estudiante.getNombreCompleto());
-                            nombreLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #2e7d32;");
-
-                            // Información adicional
-                            HBox infoLine = new HBox(15);
-
-                            Label codigoLabel = new Label("Código: " + estudiante.getCodigo());
-                            codigoLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #666;");
-
-                            Label emailLabel = new Label("Email: " + estudiante.getEmail());
-                            emailLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #2196f3;");
-
-                            Label programaLabel = new Label("Programa: " + estudiante.getPrograma());
-                            programaLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #666;");
-
-                            infoLine.getChildren().addAll(codigoLabel, emailLabel, programaLabel);
-                            vbox.getChildren().addAll(nombreLabel, infoLine);
-
-                            setGraphic(vbox);
-                        }
-                    }
-                };
-            }
-        });
-
-        // 4. Configurar el filtro de autocompletado
-        configurarFiltroAutocompletado();
+        // Tooltip para indicar al usuario que use Enter
+        Tooltip tooltip = new Tooltip("Escriba nombre, email o código y presione ENTER para buscar");
+        estudianteTextField.setTooltip(tooltip);
     }
 
-    private void configurarFiltroAutocompletado() {
-        // Escuchar cambios en el editor
-        estudianteComboBox.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == null || newValue.isEmpty()) {
-                estudianteComboBox.setItems(todosEstudiantes);
-            } else {
-                filtrarEstudiantes(newValue.toLowerCase());
-            }
-        });
+    private void buscarEstudiantesEnServidor(String busqueda) {
+        // Mostrar contenedor de resultados
+        resultadosBusquedaContainer.setVisible(true);
+        resultadosBusquedaContainer.setManaged(true);
 
-        // Mostrar todos los estudiantes al hacer clic
-        estudianteComboBox.setOnShowing(event -> {
-            if (estudianteComboBox.getEditor().getText().isEmpty()) {
-                estudianteComboBox.setItems(todosEstudiantes);
+        // Limpiar resultados anteriores
+        resultadosList.getChildren().clear();
+
+        // Mostrar indicador de carga
+        Label loadingLabel = new Label("Buscando estudiantes...");
+        loadingLabel.setStyle("-fx-text-fill: #7f8c8d; -fx-font-style: italic;");
+        resultadosList.getChildren().add(loadingLabel);
+
+        // Simular llamada asíncrona al servidor
+        new Thread(() -> {
+            try {
+                Thread.sleep(500); // Simular retardo de red
+
+                // Resultados de ejemplo
+                List<EstudianteAutoComplete> resultados = new ArrayList<>();
+
+                if (busqueda.toLowerCase().contains("juan") || busqueda.contains("perez")) {
+                    resultados.add(new EstudianteAutoComplete(
+                            "Juan Carlos Pérez", "201810123", "jcperez@unicauca.edu.co", "Ingeniería de Sistemas"
+                    ));
+                    resultados.add(new EstudianteAutoComplete(
+                            "Juan David Martínez", "201810456", "jdmartinez@unicauca.edu.co", "Ingeniería Electrónica"
+                    ));
+                }
+
+                if (busqueda.toLowerCase().contains("maria")) {
+                    resultados.add(new EstudianteAutoComplete(
+                            "María Fernanda Gómez", "201810789", "mfgomez@unicauca.edu.co", "Automática Industrial"
+                    ));
+                }
+
+                if (busqueda.contains("@")) {
+                    resultados.add(new EstudianteAutoComplete(
+                            "Estudiante por Email", "201810999", busqueda, "Tecnología en Telemática"
+                    ));
+                }
+
+                // Actualizar UI en el hilo de JavaFX
+                Platform.runLater(() -> {
+                    mostrarResultadosBusqueda(resultados, busqueda);
+                });
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                Platform.runLater(() -> {
+                    mostrarErrorBusqueda("Error en la búsqueda: " + e.getMessage());
+                });
             }
-        });
+        }).start();
     }
 
-    private void filtrarEstudiantes(String textoBusqueda) {
-        estudiantesFiltrados.clear();
+    private void mostrarResultadosBusqueda(List<EstudianteAutoComplete> resultados, String busqueda) {
+        // Limpiar resultados
+        resultadosList.getChildren().clear();
 
-        List<EstudianteAutoComplete> filtrados = todosEstudiantes.stream()
-                .filter(estudiante ->
-                        estudiante.getNombreCompleto().toLowerCase().contains(textoBusqueda) ||
-                                estudiante.getEmail().toLowerCase().contains(textoBusqueda) ||
-                                estudiante.getCodigo().toLowerCase().contains(textoBusqueda) ||
-                                estudiante.getPrograma().toLowerCase().contains(textoBusqueda)
-                )
-                .limit(50) // Limitar resultados para mejor rendimiento
-                .collect(java.util.stream.Collectors.toList());
-
-        estudiantesFiltrados.addAll(filtrados);
-        estudianteComboBox.setItems(estudiantesFiltrados);
-
-        // Mostrar dropdown si hay resultados
-        if (!filtrados.isEmpty()) {
-            estudianteComboBox.show();
+        if (resultados.isEmpty()) {
+            Label noResultsLabel = new Label("No se encontraron estudiantes para: \"" + busqueda + "\"");
+            noResultsLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-style: italic;");
+            resultadosList.getChildren().add(noResultsLabel);
+            return;
         }
+
+        // Mostrar cada resultado como un botón seleccionable
+        for (EstudianteAutoComplete estudiante : resultados) {
+            Button resultButton = new Button();
+            resultButton.setMaxWidth(Double.MAX_VALUE);
+            resultButton.setStyle("-fx-background-color: white; -fx-border-color: #ddd; -fx-border-width: 1; " +
+                    "-fx-text-alignment: left; -fx-alignment: CENTER_LEFT; -fx-padding: 10px;");
+
+            // Crear contenido del botón
+            VBox content = new VBox(3);
+
+            Label nombreLabel = new Label("Nombre" + estudiante.getNombreCompleto());
+            nombreLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: black");
+
+            HBox infoRow = new HBox(15);
+            Label codigoLabel = new Label("Código: " + estudiante.getCodigo());
+            codigoLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
+            Label emailLabel = new Label("Email: " + estudiante.getEmail());
+            emailLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #3498db;");
+            Label programaLabel = new Label("Programa: " + estudiante.getPrograma());
+            programaLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
+
+            infoRow.getChildren().addAll(nombreLabel, codigoLabel, emailLabel, programaLabel);
+            content.getChildren().addAll(nombreLabel, infoRow);
+
+            resultButton.setGraphic(content);
+
+            // Acción al hacer clic en el resultado
+            resultButton.setOnAction(e -> {
+                seleccionarEstudiante(estudiante);
+            });
+
+            resultadosList.getChildren().add(resultButton);
+        }
+
+        // Agregar contador de resultados
+        Label countLabel = new Label("Encontrados " + resultados.size() + " estudiantes");
+        countLabel.setStyle("-fx-text-fill: #27ae60; -fx-font-size: 12px; -fx-padding: 5 0 0 0;");
+        resultadosList.getChildren().add(countLabel);
+    }
+
+    private void seleccionarEstudiante(EstudianteAutoComplete estudiante) {
+        this.estudianteSeleccionado = estudiante;
+        estudianteTextField.setText(estudiante.getDisplayText());
+        resultadosBusquedaContainer.setVisible(false);
+        resultadosBusquedaContainer.setManaged(false);
+
+        mostrarMensaje("Estudiante seleccionado: " + estudiante.getNombreCompleto(), Alert.AlertType.INFORMATION);
+    }
+
+    private void mostrarErrorBusqueda(String error) {
+        resultadosList.getChildren().clear();
+        Label errorLabel = new Label(error);
+        errorLabel.setStyle("-fx-text-fill: #e74c3c;");
+        resultadosList.getChildren().add(errorLabel);
     }
 
     private void cargarDatosIniciales() {
-        // Cargar estudiantes de ejemplo (en producción, cargar desde backend)
-        cargarEstudiantesEjemplo();
-
         // Cargar codirectores
-        ObservableList<String> codirectores = FXCollections.observableArrayList(
+        codirectorComboBox.getItems().addAll(
                 "Ninguno",
                 "Dra. María Fernández",
                 "Mg. Luis Martínez",
                 "Dr. Jorge Hernández"
         );
-        codirectorComboBox.setItems(codirectores);
         codirectorComboBox.getSelectionModel().select(0);
-
-        // Programas ya cargados en FXML
-    }
-
-    private void cargarEstudiantesEjemplo() {
-        // Datos de ejemplo - en producción esto vendría del backend
-        todosEstudiantes.addAll(
-                new EstudianteAutoComplete("Carlos López", "123456", "carlos.lopez@unicauca.edu.co", "Ingeniería de Sistemas"),
-                new EstudianteAutoComplete("Ana García", "789012", "ana.garcia@unicauca.edu.co", "Ingeniería Electrónica"),
-                new EstudianteAutoComplete("Pedro Rodríguez", "345678", "pedro.rodriguez@unicauca.edu.co", "Automática Industrial"),
-                new EstudianteAutoComplete("María Fernández", "901234", "maria.fernandez@unicauca.edu.co", "Telemática")
-        );
-
-        estudianteComboBox.setItems(todosEstudiantes);
     }
 
     private void configurarListeners() {
-        // Listener para mostrar/ocultar carta de aceptación según modalidad
+        // Mostrar/ocultar carta de aceptación según modalidad
         modalidadToggleGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal == radioPracticaProfesional) {
                 cartaAceptacionContainer.setVisible(true);
@@ -233,6 +246,14 @@ public class DocenteNuevoFormatoAController implements Initializable {
                 cartaAceptacionContainer.setManaged(false);
                 cartaAceptacionTextField.clear();
                 cartaAceptacionSeleccionada = null;
+            }
+        });
+
+        // Limpiar selección de estudiante si se modifica el texto manualmente
+        estudianteTextField.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (estudianteSeleccionado != null &&
+                    !newVal.equals(estudianteSeleccionado.getDisplayText())) {
+                estudianteSeleccionado = null;
             }
         });
     }
@@ -269,17 +290,26 @@ public class DocenteNuevoFormatoAController implements Initializable {
 
     @FXML
     private void agregarObjetivoEspecifico() {
-        // Implementar lógica para agregar objetivos dinámicamente
+        // Mostrar diálogo para agregar objetivo
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Agregar Objetivo Específico");
+        dialog.setHeaderText("Nuevo objetivo específico");
+        dialog.setContentText("Ingrese el objetivo:");
+
+        Optional<String> resultado = dialog.showAndWait();
+        resultado.ifPresent(objetivo -> {
+            mostrarMensaje("Objetivo agregado: " + objetivo, Alert.AlertType.INFORMATION);
+            // Aquí podrías agregar el objetivo a una lista dinámica
+        });
     }
 
     @FXML
     private void enviarFormatoA() {
-        // Implementar validación y envío
         if (!validarFormulario()) {
             return;
         }
 
-        Alert confirmacion = new Alert(AlertType.CONFIRMATION);
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Confirmar envío");
         confirmacion.setHeaderText("¿Está seguro de enviar el Formato A?");
         confirmacion.setContentText("Una vez enviado, no podrá modificarlo hasta recibir evaluación del coordinador.");
@@ -292,30 +322,35 @@ public class DocenteNuevoFormatoAController implements Initializable {
         boolean exito = procesarEnvioFormatoA();
 
         if (exito) {
-            mostrarAlerta("Éxito", "Formato A enviado correctamente. Se ha notificado al coordinador.", AlertType.INFORMATION);
-            volverAlDashboard();
+            mostrarAlerta("Éxito", "Formato A enviado correctamente. Se ha notificado al coordinador.", Alert.AlertType.INFORMATION);
+            regresarAlDashboard();
         } else {
-            mostrarAlerta("Error", "No se pudo enviar el Formato A. Intente nuevamente.", AlertType.ERROR);
+            mostrarAlerta("Error", "No se pudo enviar el Formato A. Intente nuevamente.", Alert.AlertType.ERROR);
         }
     }
 
     @FXML
     private void cancelar() {
-        Alert confirmacion = new Alert(AlertType.CONFIRMATION);
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Confirmar cancelación");
         confirmacion.setHeaderText("¿Desea cancelar el formulario?");
         confirmacion.setContentText("Se perderán todos los datos no guardados.");
 
         if (confirmacion.showAndWait().orElse(null) == ButtonType.OK) {
-            volverAlDashboard();
+            regresarAlDashboard();
         }
+    }
+
+    @FXML
+    private void regresarAlDashboard() {
+        loadView("/views/professor/dashboard_professor.fxml");
     }
 
     private boolean validarFormulario() {
         StringBuilder errores = new StringBuilder();
 
-        if (estudianteComboBox.getValue() == null) {
-            errores.append("• Debe seleccionar un estudiante\n");
+        if (estudianteSeleccionado == null) {
+            errores.append("• Debe seleccionar un estudiante (busque y seleccione uno de la lista)\n");
         }
 
         if (tituloTextField.getText().trim().isEmpty()) {
@@ -339,7 +374,7 @@ public class DocenteNuevoFormatoAController implements Initializable {
         }
 
         if (errores.length() > 0) {
-            mostrarAlerta("Errores en el formulario", errores.toString(), AlertType.WARNING);
+            mostrarAlerta("Errores en el formulario", errores.toString(), Alert.AlertType.WARNING);
             return false;
         }
 
@@ -351,23 +386,11 @@ public class DocenteNuevoFormatoAController implements Initializable {
         // 1. Crear DTO con datos del formulario
         // 2. Llamar servicio para guardar en BD
         // 3. Subir archivos
-        // 4. Enviar notificación al coordinador (RF 2)
-        return true; // Cambiar por resultado real
+        // 4. Enviar notificación al coordinador
+        return true;
     }
 
-    private void volverAlDashboard() {
-        try {
-            Stage stage = (Stage) tituloTextField.getScene().getWindow();
-            Parent root = FXMLLoader.load(getClass().getResource("/org/example/fronted/views/dashboard-docente.fxml"));
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            mostrarAlerta("Error", "No se pudo regresar al dashboard: " + e.getMessage(), AlertType.ERROR);
-        }
-    }
-
-    private void mostrarAlerta(String titulo, String mensaje, AlertType tipo) {
+    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
         alerta.setHeaderText(null);
@@ -375,7 +398,15 @@ public class DocenteNuevoFormatoAController implements Initializable {
         alerta.showAndWait();
     }
 
-    // ========== CLASE PARA AUTOMATICO DE ESTUDIANTES ==========
+    private void mostrarMensaje(String mensaje, Alert.AlertType tipo) {
+        Alert alert = new Alert(tipo);
+        alert.setTitle("Información");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
+    // ========== CLASE PARA ESTUDIANTES ==========
     public static class EstudianteAutoComplete {
         private String nombreCompleto;
         private String codigo;
@@ -395,14 +426,7 @@ public class DocenteNuevoFormatoAController implements Initializable {
         public String getPrograma() { return programa; }
 
         public String getDisplayText() {
-            return nombreCompleto + " - " + email + " (" + codigo + ")";
-        }
-
-        public boolean matches(String texto) {
-            String textoLower = texto.toLowerCase();
-            return nombreCompleto.toLowerCase().contains(textoLower) ||
-                    email.toLowerCase().contains(textoLower) ||
-                    codigo.toLowerCase().contains(textoLower);
+            return nombreCompleto + " (" + email + ")";
         }
 
         @Override

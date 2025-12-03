@@ -2,6 +2,7 @@ package org.example.fronted.api;
 
 import org.example.fronted.dto.LoginRequestDTO;
 import org.example.fronted.dto.UserResponseDTO;
+import org.example.fronted.models.Rol;
 import org.example.fronted.util.SessionManager;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,7 @@ public class AuthApi extends ApiWebClient {
                     System.out.println("Respuesta: " + response);
 
                     String token = (String) response.get("token");
-                    String rol = (String) response.get("rol");
+                    Rol rol = (Rol) response.get("rol");
                     String userEmail = (String) response.get("email");
 
                     SessionManager.getInstance().setToken(token);

@@ -7,7 +7,7 @@ import org.example.fronted.api.AuthApi;
 import reactor.core.scheduler.Schedulers;
 import javafx.application.Platform;
 
-public class LoginController {
+public class LoginController extends UIBase {
     public Button loginButton;
     @FXML private TextField txtEmail;
     @FXML private PasswordField txtPassword;
@@ -18,15 +18,8 @@ public class LoginController {
     @FXML private Label passwordError;
     private AuthApi authApi;
 
-    private MainController mainController;
     private boolean passwordVisible = false;
 
-    /**
-     * Inyecta el MainController para permitir navegación
-     */
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
-    }
 
     @FXML
     public void initialize() {
@@ -91,14 +84,14 @@ public class LoginController {
                     });
                 });
     }
-    private void showError(String message) {
+    public void showError(String message) {
         lblMessage.setText(message);
         lblMessage.setVisible(true);
     }
     @FXML
     private void handleRegister() {
         if (mainController != null) {
-            mainController.loadRegisterView();
+            loadView("/views/auth/Register.fxml");
         }
     }
 

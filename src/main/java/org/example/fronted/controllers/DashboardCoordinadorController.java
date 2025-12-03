@@ -5,7 +5,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import org.example.fronted.util.SessionManager;
 
-public class DashboardCoordinadorController {
+public class DashboardCoordinadorController extends UIBase{
 
     @FXML private Label pendientesCount;
     @FXML private Label aprobadosCount;

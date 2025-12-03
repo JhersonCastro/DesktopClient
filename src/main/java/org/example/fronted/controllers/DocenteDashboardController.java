@@ -5,7 +5,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import org.example.fronted.util.SessionManager;
 
-public class DocenteDashboardController {
+public class DocenteDashboardController  extends UIBase{
 
     @FXML private Label pendientesCount;
     @FXML private Label aprobadosCount;
@@ -39,7 +39,7 @@ public class DocenteDashboardController {
     private void cargarNotificaciones() {
         // Mostrar notificaciones importantes
         // Si hay notificaciones, mostrar el contenedor
-        notificacionesContainer.setVisible(true);
+        notificacionesContainer.setVisible(false);
     }
 
     // ============ HANDLERS DE BOTONES ============
@@ -65,7 +65,7 @@ public class DocenteDashboardController {
     @FXML
     private void nuevoFormatoA() {
         System.out.println("Navegando a nuevo formato A...");
-        // loadView("/views/docente/formatoA_nuevo.fxml");
+        loadView("/views/professor/formatA_new.fxml");
     }
 
     @FXML
@@ -74,11 +74,6 @@ public class DocenteDashboardController {
         // loadView("/views/docente/mis_proyectos.fxml");
     }
 
-    @FXML
-    private void verHistorial() {
-        System.out.println("Navegando a historial...");
-        // loadView("/views/docente/historial.fxml");
-    }
 
     @FXML
     private void verTodosProyectos() {

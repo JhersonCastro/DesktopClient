@@ -2,7 +2,7 @@ package org.example.fronted.controllers;
 
 import javafx.event.ActionEvent;
 
-public class SubirAnteproyectoController {
+public class SubirAnteproyectoController extends UIBase {
     public void seleccionarArchivoPrincipal(ActionEvent actionEvent) {
     }
 

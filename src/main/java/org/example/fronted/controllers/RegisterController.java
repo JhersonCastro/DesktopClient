@@ -7,10 +7,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
-public class RegisterController implements Initializable {
+public class RegisterController extends UIBase implements Initializable {
 
-    // Referencia al MainController para navegación
-    private MainController mainController;
 
     // Campos del formulario
     @FXML private TextField txtNames;
@@ -367,9 +365,7 @@ public class RegisterController implements Initializable {
      */
     @FXML
     private void handleBackToLogin() {
-        if (mainController != null) {
-            mainController.loadLoginView();
-        }
+        loadView("/views/auth/login.fxml");
     }
 
     /**

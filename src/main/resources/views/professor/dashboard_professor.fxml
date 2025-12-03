@@ -47,7 +47,7 @@
                         <!-- Icono circular -->
                         <StackPane styleClass="card-icon-container icon-pending">
                             <ImageView fitWidth="40" fitHeight="40" preserveRatio="true">
-                                <Image url="@../../images/clock-icon.png"/>
+                                <Image url="@../../images/icons/time.png"/>
                             </ImageView>
                         </StackPane>
 
@@ -73,7 +73,7 @@
                         <!-- Icono circular -->
                         <StackPane styleClass="card-icon-container icon-approved">
                             <ImageView fitWidth="40" fitHeight="40" preserveRatio="true">
-                                <Image url="@../../images/check-docente.png"/>
+                                <Image url="@../../images/icons/check.png"/>
                             </ImageView>
                         </StackPane>
 
@@ -99,7 +99,7 @@
                         <!-- Icono circular -->
                         <StackPane styleClass="card-icon-container icon-evaluaciones">
                             <ImageView fitWidth="40" fitHeight="40" preserveRatio="true">
-                                <Image url="@../../images/review-icon.png"/>
+                                <Image url="@../../images/icons/project-status.png"/>
                             </ImageView>
                         </StackPane>
 
@@ -125,7 +125,7 @@
                     <Button text="Nuevo Formato A" styleClass="action-button" onAction="#nuevoFormatoA">
                         <graphic>
                             <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
-                                <Image url="@../../images/add-docente.png"/>
+                                <Image url="@../../images/icons/add.png"/>
                             </ImageView>
                         </graphic>
                     </Button>
@@ -133,15 +133,7 @@
                     <Button text="Mis Proyectos" styleClass="action-button" onAction="#verMisProyectos">
                         <graphic>
                             <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
-                                <Image url="@../../images/projects-icon.png"/>
-                            </ImageView>
-                        </graphic>
-                    </Button>
-
-                    <Button text="Historial" styleClass="action-button" onAction="#verHistorial">
-                        <graphic>
-                            <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
-                                <Image url="@../../images/history-icon.png"/>
+                                <Image url="@../../images/icons/project-status.png"/>
                             </ImageView>
                         </graphic>
                     </Button>

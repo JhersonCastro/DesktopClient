@@ -7,7 +7,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Circle;
 import org.example.fronted.util.SessionManager;
 
-public class EstudianteDashboardController {
+public class EstudianteDashboardController extends UIBase{
 
     @FXML private Label estadoActualLabel;
     @FXML private Label proyectoTituloLabel;

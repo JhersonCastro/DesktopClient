@@ -3,9 +3,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.collections.FXCollections?>
+<?import java.net.URL?>
 
 <?import java.lang.String?>
-<?import java.net.URL?>
 <ScrollPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.example.fronted.controllers.DocenteNuevoFormatoAController"
@@ -22,6 +22,14 @@
         <!-- Encabezado -->
         <VBox styleClass="formato-a-header" spacing="10">
             <HBox spacing="15" alignment="CENTER_LEFT">
+                <Button onAction="#regresarAlDashboard" styleClass="back-button">
+                    <graphic>
+                        <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
+                            <Image url="@../../images/icons/back.png"/>
+                        </ImageView>
+                    </graphic>
+                </Button>
+
                 <ImageView fitWidth="40" fitHeight="40" preserveRatio="true">
                     <Image url="@../../images/format-a.png"/>
                 </ImageView>
@@ -32,7 +40,6 @@
                 </VBox>
             </HBox>
 
-            <!-- Indicador de paso -->
             <HBox styleClass="formato-a-step-indicator" spacing="10" alignment="CENTER_LEFT">
                 <Label text="Paso 1: Información básica" styleClass="formato-a-step-label"/>
                 <Region HBox.hgrow="ALWAYS"/>
@@ -51,28 +58,42 @@
             <Label text="* Estudiante:" GridPane.rowIndex="0" GridPane.columnIndex="0"
                    styleClass="formato-a-label required-field"/>
             <VBox spacing="10" GridPane.rowIndex="0" GridPane.columnIndex="1">
-                <ComboBox fx:id="estudianteComboBox" promptText="Buscar estudiante por nombre o email..."
-                          styleClass="formato-a-autocomplete" editable="true"/>
+                <TextField fx:id="estudianteTextField"
+                           promptText="Escriba nombre, email o código y presione ENTER..."
+                           styleClass="formato-a-autocomplete"/>
+
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <ImageView fitWidth="16" fitHeight="16">
                         <Image url="@../../images/icons/info.png"/>
                     </ImageView>
-                    <Label text="Si el estudiante no aparece, debe registrarse primero en el sistema"
+                    <Label text="Presione ENTER después de escribir para buscar estudiantes"
                            styleClass="formato-a-hint"/>
                 </HBox>
             </VBox>
 
+            <!-- Contenedor para resultados de búsqueda -->
+            <VBox fx:id="resultadosBusquedaContainer"
+                  styleClass="resultados-busqueda-container"
+                  visible="false" managed="false"
+                  GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                <Label text="Resultados de búsqueda:"
+                       styleClass="resultados-title"/>
+                <VBox fx:id="resultadosList"
+                      styleClass="resultados-list"
+                      spacing="5"/>
+            </VBox>
+
             <!-- 2. Título del Proyecto -->
-            <Label text="* Título del Proyecto:" GridPane.rowIndex="1" GridPane.columnIndex="0"
+            <Label text="* Título del Proyecto:" GridPane.rowIndex="2" GridPane.columnIndex="0"
                    styleClass="formato-a-label required-field"/>
-            <TextField fx:id="tituloTextField" GridPane.rowIndex="1" GridPane.columnIndex="1"
+            <TextField fx:id="tituloTextField" GridPane.rowIndex="2" GridPane.columnIndex="1"
                        promptText="Ej: Sistema de gestión de proyectos de grado para la Universidad del Cauca"
                        styleClass="formato-a-textfield"/>
 
             <!-- 3. Modalidad -->
-            <Label text="* Modalidad:" GridPane.rowIndex="2" GridPane.columnIndex="0"
+            <Label text="* Modalidad:" GridPane.rowIndex="3" GridPane.columnIndex="0"
                    styleClass="formato-a-label required-field"/>
-            <VBox spacing="10" GridPane.rowIndex="2" GridPane.columnIndex="1">
+            <VBox spacing="10" GridPane.rowIndex="3" GridPane.columnIndex="1">
                 <HBox spacing="30">
                     <RadioButton fx:id="radioInvestigacion" text="Investigación"
                                  userData="INVESTIGACION" selected="true"
@@ -92,9 +113,9 @@
             </VBox>
 
             <!-- 4. Director (automático - docente actual) -->
-            <Label text="Director:" GridPane.rowIndex="3" GridPane.columnIndex="0"
+            <Label text="Director:" GridPane.rowIndex="4" GridPane.columnIndex="0"
                    styleClass="formato-a-label"/>
-            <HBox spacing="10" GridPane.rowIndex="3" GridPane.columnIndex="1" alignment="CENTER_LEFT">
+            <HBox spacing="10" GridPane.rowIndex="4" GridPane.columnIndex="1" alignment="CENTER_LEFT">
                 <ImageView fitWidth="20" fitHeight="20">
                     <Image url="@../../images/icons/user.png"/>
                 </ImageView>
@@ -103,15 +124,15 @@
             </HBox>
 
             <!-- 5. Codirector (Opcional) -->
-            <Label text="Codirector (Opcional):" GridPane.rowIndex="4" GridPane.columnIndex="0"
+            <Label text="Codirector (Opcional):" GridPane.rowIndex="5" GridPane.columnIndex="0"
                    styleClass="formato-a-label"/>
-            <ComboBox fx:id="codirectorComboBox" GridPane.rowIndex="4" GridPane.columnIndex="1"
+            <ComboBox fx:id="codirectorComboBox" GridPane.rowIndex="5" GridPane.columnIndex="1"
                       promptText="Seleccione un codirector..." styleClass="formato-a-combobox"/>
 
             <!-- 6. Programa Académico -->
-            <Label text="* Programa:" GridPane.rowIndex="5" GridPane.columnIndex="0"
+            <Label text="* Programa:" GridPane.rowIndex="6" GridPane.columnIndex="0"
                    styleClass="formato-a-label required-field"/>
-            <ComboBox fx:id="programaComboBox" GridPane.rowIndex="5" GridPane.columnIndex="1"
+            <ComboBox fx:id="programaComboBox" GridPane.rowIndex="6" GridPane.columnIndex="1"
                       styleClass="formato-a-combobox">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
@@ -124,16 +145,16 @@
             </ComboBox>
 
             <!-- 7. Objetivo General -->
-            <Label text="* Objetivo General:" GridPane.rowIndex="6" GridPane.columnIndex="0"
+            <Label text="* Objetivo General:" GridPane.rowIndex="7" GridPane.columnIndex="0"
                    styleClass="formato-a-label required-field"/>
-            <TextArea fx:id="objetivoGeneralTextArea" GridPane.rowIndex="6" GridPane.columnIndex="1"
+            <TextArea fx:id="objetivoGeneralTextArea" GridPane.rowIndex="7" GridPane.columnIndex="1"
                       promptText="Describa el objetivo principal del proyecto..."
                       styleClass="formato-a-textarea"/>
 
             <!-- 8. Objetivos Específicos -->
-            <Label text="* Objetivos Específicos:" GridPane.rowIndex="7" GridPane.columnIndex="0"
+            <Label text="* Objetivos Específicos:" GridPane.rowIndex="8" GridPane.columnIndex="0"
                    styleClass="formato-a-label required-field"/>
-            <VBox styleClass="formato-a-objetivos-container" spacing="10" GridPane.rowIndex="7" GridPane.columnIndex="1">
+            <VBox styleClass="formato-a-objetivos-container" spacing="10" GridPane.rowIndex="8" GridPane.columnIndex="1">
                 <TextArea fx:id="objetivoEspecifico1TextArea" promptText="Objetivo específico 1..."
                           styleClass="formato-a-textarea-small"/>
                 <TextArea fx:id="objetivoEspecifico2TextArea" promptText="Objetivo específico 2..."
@@ -145,9 +166,9 @@
             </VBox>
 
             <!-- 9. Archivo del Formato A (PDF) -->
-            <Label text="* Formato A (PDF):" GridPane.rowIndex="8" GridPane.columnIndex="0"
+            <Label text="* Formato A (PDF):" GridPane.rowIndex="9" GridPane.columnIndex="0"
                    styleClass="formato-a-label required-field"/>
-            <VBox spacing="10" GridPane.rowIndex="8" GridPane.columnIndex="1">
+            <VBox spacing="10" GridPane.rowIndex="9" GridPane.columnIndex="1">
                 <HBox spacing="10">
                     <TextField fx:id="archivoPdfTextField" editable="false" HBox.hgrow="ALWAYS"
                                promptText="Seleccione el archivo PDF del Formato A..."
@@ -160,7 +181,7 @@
 
             <!-- 10. Carta de Aceptación (Solo para Práctica Profesional) -->
             <VBox fx:id="cartaAceptacionContainer" visible="false" managed="false"
-                  GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="9"
+                  GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="10"
                   styleClass="formato-a-carta-container">
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="* Carta de Aceptación de Empresa:"
@@ -177,7 +198,6 @@
                 <Label text="Formato: PDF | Debe incluir sello y firma de la empresa"
                        styleClass="formato-a-hint"/>
             </VBox>
-
         </GridPane>
 
         <!-- Sección de Información Importante -->
@@ -221,6 +241,5 @@
             <Label text="3. El estudiante recibirá una notificación cuando el coordinador evalúe el Formato A."
                    styleClass="formato-a-warning-text"/>
         </VBox>
-
     </VBox>
 </ScrollPane>

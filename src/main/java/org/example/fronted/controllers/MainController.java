@@ -25,7 +25,7 @@ public class MainController implements SessionObserver{
 
     public Label userEmail;
     public HBox roleSelectorContainer;
-    public ComboBox<String> roleComboBox;
+    public ComboBox<Rol> roleComboBox;
     @FXML private StackPane contentPane;
     @FXML private HBox userMenu;
     @FXML private Label userName;
@@ -37,11 +37,11 @@ public class MainController implements SessionObserver{
         System.out.println("MainController inicializado");
         // Cargar login por defecto al iniciar
         //loadLoginView();
-        loadView("/views/professor/formatA_new.fxml");
+        //loadView("/views/professor/formatA_new.fxml");
         sessionManager = SessionManager.getInstance();
         sessionManager.registerObserver(this);
 
-        //cargarUsuarioPruebaParaTesting_EliminarEnProduccion();
+        cargarUsuarioPruebaParaTesting_EliminarEnProduccion();
         updateUIFromSession();
 
     }
@@ -84,14 +84,14 @@ public class MainController implements SessionObserver{
 
 
             // Cargar vista inicial según rol
-            cargarVistaPorRolEnum(usuarioPrueba.getRolActual());
+            cargarVistaPorRol(usuarioPrueba.getRolActual());
 
         } catch (Exception e) {
             System.err.println("❌ Error al cargar usuario de prueba: " + e.getMessage());
             e.printStackTrace();
         }
     }
-    private void cargarVistaPorRolEnum(Rol rol) {
+    private void cargarVistaPorRol(Rol rol) {
         switch (rol) {
             case COORDINADOR:
                 loadDashboardCoordinatorView();
@@ -106,7 +106,7 @@ public class MainController implements SessionObserver{
                 loadDashboardJefeView();
                 break;
             default:
-                loadDashboardView();
+                break;
         }
     }
     private void updateUIFromSession() {
@@ -135,33 +135,15 @@ public class MainController implements SessionObserver{
             roleSelectorContainer.setVisible(true);
 
             // Cargar roles en el ComboBox
-            List<String> roles = sessionManager.getRolesDisponibles();
+            List<Rol> roles = sessionManager.getRolesDisponibles();
             roleComboBox.setItems(FXCollections.observableArrayList(roles));
 
             // Seleccionar rol actual
-            String rolActual = sessionManager.getRol();
+            Rol rolActual = sessionManager.getRol();
             roleComboBox.setValue(rolActual);
 
         } else {
             roleSelectorContainer.setVisible(false);
-        }
-    }
-    private void cargarVistaPorRol(String rol) {
-        switch (rol.toUpperCase()) {
-            case "COORDINADOR":
-                loadDashboardCoordinatorView();
-                break;
-            case "DOCENTE":
-                loadDashboardDocenteView();
-                break;
-            case "ESTUDIANTE":
-                loadDashboardEstudianteView();
-                break;
-            case "JEFE_DEPARTAMENTO":
-                loadDashboardJefeView();
-                break;
-            default:
-                loadDashboardView();
         }
     }
     public void loadDashboardCoordinatorView() {
@@ -196,28 +178,27 @@ public class MainController implements SessionObserver{
         updateUIFromSession();
     }
 
-    /**
-     * Carga la vista de login
-     */
-    public void loadLoginView() {
-        loadView("/views/auth/login.fxml");
-        userMenu.setVisible(false); // Ocultar menú de usuario
-        System.out.println("Vista de login cargada");
-    }
-
 
     /**
      * Carga una vista dentro del área de contenido
      */
-    private void loadView(String fxmlPath) {
+    void loadView(String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent view = loader.load();
 
-            // Si es el login, configurar referencia al MainController
-            if (fxmlPath.contains("login.fxml")) {
-                LoginController loginController = loader.getController();
-                loginController.setMainController(this);
+            // Obtener el controlador
+            Object controller = loader.getController();
+
+            // Si el controlador extiende UIBase, inyectar MainController
+            if (controller instanceof UIBase) {
+                ((UIBase) controller).setMainController(this);
+            }
+
+            // Configurar otros controladores específicos si es necesario
+            if (fxmlPath.contains("login.fxml") && controller instanceof LoginController) {
+                LoginController loginController = (LoginController) controller;
+                loginController.setMainController(this); // Si LoginController también extiende UIBase
             }
 
             contentPane.getChildren().clear();
@@ -227,28 +208,6 @@ public class MainController implements SessionObserver{
             System.err.println("Error al cargar vista: " + e.getMessage());
             e.printStackTrace();
             showErrorView("Error al cargar la vista: " + fxmlPath);
-        }
-    }
-    /**
-     * Carga la vista de registro
-     */
-    public void loadRegisterView() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/auth/register.fxml"));
-            Parent registerView = loader.load();
-
-            // Configurar controlador
-            RegisterController registerController = loader.getController();
-            registerController.setMainController(this);
-
-            contentPane.getChildren().clear();
-            contentPane.getChildren().add(registerView);
-
-            System.out.println("Vista de registro cargada");
-
-        } catch (IOException e) {
-            System.err.println("Error al cargar registro: " + e.getMessage());
-            e.printStackTrace();
         }
     }
     /**
@@ -269,11 +228,7 @@ public class MainController implements SessionObserver{
         System.out.println("Cerrando sesión de: " + SessionManager.getInstance().getCurrentUser().getEmail());
         sessionManager.clearSession();
 
-        loadLoginView();
-    }
-    public void loadDashboardView() {
-        loadView("/views/dashboard_coordinador.fxml");
-        System.out.println("Dashboard del coordinador cargado");
+        loadView("/views/auth/login.fxml");
     }
     /**
      * Extrae el nombre de usuario del email
@@ -291,8 +246,8 @@ public class MainController implements SessionObserver{
 
     public void handleRoleChange(ActionEvent actionEvent) {
             System.out.println("Role seleccionado: " + roleComboBox.getValue().toString());
-            String nuevoRol = roleComboBox.getValue();
-            if (nuevoRol != null && !nuevoRol.isEmpty()) {
+            Rol nuevoRol = roleComboBox.getValue();
+            if (nuevoRol != null) {
                 sessionManager.cambiarRol(nuevoRol);
 
                 // Cargar vista correspondiente al nuevo rol

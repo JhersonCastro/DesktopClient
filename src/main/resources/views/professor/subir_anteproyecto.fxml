@@ -22,7 +22,7 @@
         <VBox styleClass="anteproyecto-header" spacing="10">
             <HBox spacing="15" alignment="CENTER_LEFT">
                 <ImageView fitWidth="40" fitHeight="40" preserveRatio="true">
-                    <Image url="@../../images/anteproyecto-icon.png"/>
+                    <Image url="@../../images/icons/anteproyecto.png"/>
                 </ImageView>
                 <VBox spacing="5">
                     <Label text="Subir Anteproyecto" styleClass="anteproyecto-title"/>

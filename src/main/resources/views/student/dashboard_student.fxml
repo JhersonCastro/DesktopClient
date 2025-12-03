@@ -34,7 +34,7 @@
                     <!-- Icono de estado -->
                     <StackPane styleClass="status-icon-container">
                         <ImageView fitWidth="60" fitHeight="60" preserveRatio="true">
-                            <Image url="@../../images/project-status.png"/>
+                            <Image url="@../../images/icons/project-status.png"/>
                         </ImageView>
                     </StackPane>
 
@@ -153,7 +153,7 @@
                             <!-- Documento 1 -->
                             <HBox styleClass="document-item" spacing="10" alignment="CENTER_LEFT">
                                 <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
-                                    <Image url="@../../images/pdf-icon.png"/>
+                                    <Image url="@../../images/icons/pdf.png"/>
                                 </ImageView>
                                 <VBox spacing="2">
                                     <Label text="Formato A - Versión 1" styleClass="document-name"/>
@@ -166,7 +166,7 @@
                             <!-- Documento 2 -->
                             <HBox styleClass="document-item document-pending" spacing="10" alignment="CENTER_LEFT">
                                 <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
-                                    <Image url="@../../images/pdf-icon.png"/>
+                                    <Image url="@../../images/icons/pdf.png"/>
                                 </ImageView>
                                 <VBox spacing="2">
                                     <Label text="Anteproyecto" styleClass="document-name"/>
@@ -217,7 +217,7 @@
                         <HBox styleClass="notification-item" spacing="15" alignment="CENTER_LEFT">
                             <StackPane styleClass="notification-icon-container">
                                 <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
-                                    <Image url="@../../images/notification-info.png"/>
+                                    <Image url="@../../images/icons/notification-info.png"/>
                                 </ImageView>
                             </StackPane>
                             <VBox spacing="3">
@@ -232,7 +232,7 @@
                         <HBox styleClass="notification-item" spacing="15" alignment="CENTER_LEFT">
                             <StackPane styleClass="notification-icon-container">
                                 <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
-                                    <Image url="@../../images/notification-warning.png"/>
+                                    <Image url="@../../images/icons/notification-warning.png"/>
                                 </ImageView>
                             </StackPane>
                             <VBox spacing="3">

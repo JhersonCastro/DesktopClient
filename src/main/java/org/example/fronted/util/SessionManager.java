@@ -16,7 +16,7 @@ public class SessionManager {
     // Campos existentes (para compatibilidad)
     private String token;
     private String email;
-    private String rol;
+    private Rol rol;
 
     // Nuevo campo para User completo
     private User currentUser;
@@ -57,11 +57,11 @@ public class SessionManager {
         return email;
     }
 
-    public void setRol(String rol) {
+    public void setRol(Rol rol) {
         this.rol = rol;
     }
 
-    public String getRol() {
+    public Rol getRol() {
         return rol;
     }
 
@@ -86,14 +86,14 @@ public class SessionManager {
         this.currentUser = user;
         this.token = token;
         this.email = user.getEmail();
-        this.rol = user.getRol() != null ? user.getRol().toString() : null;
+        this.rol = user.getRol() != null ? user.getRol() : null;
         notifyUserLoggedIn(user);
     }
 
     /**
      * Login con datos básicos (mantener compatibilidad)
      */
-    public void login(String email, String rol, String token) {
+    public void login(String email, Rol rol, String token) {
         this.email = email;
         this.rol = rol;
         this.token = token;
@@ -117,7 +117,7 @@ public class SessionManager {
     public void updateUser(User user) {
         this.currentUser = user;
         this.email = user.getEmail();
-        this.rol = user.getRol() != null ? user.getRol().toString() : null;
+        this.rol = user.getRol() != null ? user.getRol() : null;
         notifySessionUpdated(user);
     }
 
@@ -130,27 +130,26 @@ public class SessionManager {
         return email != null ? email.split("@")[0] : "Usuario";
     }
 
-    public boolean hasRole(String role) {
+    public boolean hasRole(Rol role) {
         if (rol == null) return false;
-        return rol.equalsIgnoreCase(role);
+        return rol == role;
     }
-    public List<String> getRolesDisponibles() {
-        List<String> rolesStr = new ArrayList<>();
+
+    public List<Rol> getRolesDisponibles() {
+        List<Rol> rolesStr = new ArrayList<>();
         if (currentUser != null && currentUser.getRolesDisponibles() != null) {
-            for (Rol rol : currentUser.getRolesDisponibles()) {
-                rolesStr.add(rol.toString());
-            }
+            rolesStr.addAll(currentUser.getRolesDisponibles());
         }
         return rolesStr;
     }
     public boolean tieneMultiplesRoles() {
         return currentUser != null && currentUser.tieneMultiplesRoles();
     }
-    public void cambiarRol(String nuevoRol) {
+    public void cambiarRol(Rol nuevoRol) {
         if (currentUser != null) {
             // Buscar el rol en la lista de roles disponibles
             for (Rol rol : currentUser.getRolesDisponibles()) {
-                if (rol.toString().equals(nuevoRol)) {
+                if (rol.equals(nuevoRol)) {
                     currentUser.setRolActual(rol);
                     this.rol = nuevoRol; // Para compatibilidad
                     notifySessionUpdated(currentUser);

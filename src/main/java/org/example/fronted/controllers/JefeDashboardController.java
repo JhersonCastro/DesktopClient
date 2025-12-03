@@ -8,7 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.layout.HBox;
 import org.example.fronted.util.SessionManager;
 
-public class JefeDashboardController {
+public class JefeDashboardController extends UIBase{
 
     @FXML private Label pendientesCount;
     @FXML private Label evaluacionCount;
