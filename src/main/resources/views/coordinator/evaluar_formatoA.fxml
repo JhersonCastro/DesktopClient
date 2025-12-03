@@ -74,8 +74,6 @@
                   prefRowCount="6"
                   wrapText="true"/>
 
-        <Button text="Guardar Observaciones" onAction="#guardarEvaluacion"
-                styleClass="card-button, button-rejected"/>
     </VBox>
 
     <!-- ACCIONES -->

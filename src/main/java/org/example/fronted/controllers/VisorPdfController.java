@@ -6,28 +6,33 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
-import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 public class VisorPdfController implements Initializable {
 
@@ -48,11 +53,13 @@ public class VisorPdfController implements Initializable {
     private PDFRenderer renderer;
     private List<Image> paginas = new ArrayList<>();
     private List<ImageView> imageViews = new ArrayList<>();
+    private List<VBox> paginaBoxes = new ArrayList<>(); // NUEVA: lista para almacenar los VBox de cada página
     private int paginaActual = 0;
     private double zoomLevel = 1.0;
     private final double ZOOM_STEP = 0.1;
     private ExecutorService executorService;
     private long fileSize;
+    private int totalPaginas = 0;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -86,7 +93,7 @@ public class VisorPdfController implements Initializable {
     private void cargarPDF() {
         estadoLabel.setText("Cargando PDF...");
         progressBar.setVisible(true);
-        progressBar.setProgress(-1); // Progresso indeterminado
+        progressBar.setProgress(-1); // Progreso indeterminado
 
         executorService.submit(() -> {
             try {
@@ -106,31 +113,54 @@ public class VisorPdfController implements Initializable {
                 document = PDDocument.load(file);
                 renderer = new PDFRenderer(document);
 
-                int totalPaginas = document.getNumberOfPages();
+                totalPaginas = document.getNumberOfPages();
 
                 Platform.runLater(() -> {
                     infoLabel.setText(String.format("%d páginas | %.1f MB",
                             totalPaginas, fileSize / (1024.0 * 1024.0)));
                 });
 
-                // Renderizar primera página inmediatamente
-                renderizarPagina(0);
+                // Limpiar listas y contenedor antes de cargar
+                Platform.runLater(() -> {
+                    paginas.clear();
+                    imageViews.clear();
+                    paginaBoxes.clear();
+                    imageContainer.getChildren().clear();
+                });
 
-                // Cargar el resto de páginas en segundo plano
-                for (int i = 1; i < totalPaginas; i++) {
+                // Cargar todas las páginas
+                for (int i = 0; i < totalPaginas; i++) {
                     final int paginaIndex = i;
+
+                    // Actualizar estado para cada página
                     Platform.runLater(() -> {
                         estadoLabel.setText(String.format("Cargando página %d de %d...",
                                 paginaIndex + 1, totalPaginas));
                     });
+
+                    // Renderizar página
                     renderizarPagina(paginaIndex);
-                    Thread.sleep(100); // Pequeña pausa para no sobrecargar
+
+                    // Actualizar progreso
+                    final double progreso = (double) (paginaIndex + 1) / totalPaginas;
+                    Platform.runLater(() -> {
+                        progressBar.setProgress(progreso);
+                    });
+
+                    // Pequeña pausa para no sobrecargar
+                    Thread.sleep(100);
                 }
 
                 Platform.runLater(() -> {
                     estadoLabel.setText("PDF cargado completamente");
                     progressBar.setVisible(false);
-                    mostrarPagina(0);
+
+                    // Solo llamar a mostrarPagina si hay páginas cargadas
+                    if (!paginaBoxes.isEmpty()) {
+                        mostrarPagina(0);
+                    } else {
+                        estadoLabel.setText("Error: No se cargaron páginas");
+                    }
                 });
 
             } catch (Exception e) {
@@ -154,7 +184,10 @@ public class VisorPdfController implements Initializable {
             // Crear ImageView para esta página
             ImageView imageView = new ImageView(fxImage);
             imageView.setPreserveRatio(true);
-            imageView.setFitWidth(scrollPane.getWidth() - 40); // Margen
+
+            // Obtener el ancho disponible (usar valor por defecto si aún no está disponible)
+            double availableWidth = scrollPane.getWidth() > 0 ? scrollPane.getWidth() - 40 : 800;
+            imageView.setFitWidth(availableWidth);
 
             // Agregar número de página
             Label numeroLabel = new Label("Página " + (numeroPagina + 1));
@@ -162,46 +195,79 @@ public class VisorPdfController implements Initializable {
 
             VBox paginaBox = new VBox(numeroLabel, imageView);
             paginaBox.setSpacing(5);
-            paginaBox.setStyle("-fx-background-color: white; -fx-padding: 10; -fx-border-color: #ddd; -fx-border-width: 1; -fx-border-radius: 5;");
+            paginaBox.setStyle("-fx-background-color: white; -fx-padding: 10; " +
+                    "-fx-border-color: #ddd; -fx-border-width: 1; -fx-border-radius: 5;");
 
             imageViews.add(imageView);
+            paginaBoxes.add(paginaBox); // Agregar a la lista
             imageContainer.getChildren().add(paginaBox);
-
-            // Actualizar progreso
-            double progreso = (double) (numeroPagina + 1) / document.getNumberOfPages();
-            progressBar.setProgress(progreso);
         });
     }
 
     private void mostrarPagina(int numeroPagina) {
-        if (numeroPagina >= 0 && numeroPagina < paginas.size()) {
+        // Verificar límites usando paginaBoxes en lugar de paginas
+        if (numeroPagina >= 0 && numeroPagina < paginaBoxes.size()) {
             paginaActual = numeroPagina;
-
-            // Desplazar al viewport a esta página
-            VBox paginaBox = (VBox) imageContainer.getChildren().get(numeroPagina);
-            scrollPane.setContent(paginaBox);
 
             // Actualizar etiqueta
             paginaActualLabel.setText(String.format("Página %d de %d",
-                    numeroPagina + 1, paginas.size()));
+                    numeroPagina + 1, paginaBoxes.size()));
 
             // Aplicar zoom actual
             aplicarZoom();
+
+            // Desplazar a la página usando scrollTo
+            Platform.runLater(() -> {
+                try {
+                    // Calcular posición aproximada para desplazar
+                    double targetY = IntStream.range(0, numeroPagina).filter(i -> i < paginaBoxes.size()).mapToObj(i -> paginaBoxes.get(i)).mapToDouble(box -> box.getHeight() + imageContainer.getSpacing()).sum();
+
+                    // Usar scrollTo para desplazar suavemente
+                    scrollPane.setVvalue(0); // Primero ir al inicio
+
+                    // Desplazar después de un pequeño delay para asegurar que se haya renderizado
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(100);
+                            Platform.runLater(() -> {
+                                // Calcular el valor V basado en la posición
+                                double totalHeight = imageContainer.getHeight();
+                                if (totalHeight > 0) {
+                                    double vvalue = targetY / totalHeight;
+                                    scrollPane.setVvalue(vvalue);
+                                }
+                            });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+
+                } catch (Exception e) {
+                    System.err.println("Error al desplazar a la página: " + e.getMessage());
+                }
+            });
+        } else {
+            System.err.println("Índice de página fuera de rango: " + numeroPagina +
+                    ", total páginas: " + paginaBoxes.size());
         }
     }
 
     private void aplicarZoom() {
-        for (int i = 0; i < imageViews.size(); i++) {
-            ImageView imageView = imageViews.get(i);
-            imageView.setFitWidth((scrollPane.getWidth() - 40) * zoomLevel);
-        }
-        zoomLabel.setText(String.format("%d%%", (int)(zoomLevel * 100)));
+        Platform.runLater(() -> {
+            // Aplicar zoom solo si hay imageViews
+            if (!imageViews.isEmpty()) {
+                double baseWidth = scrollPane.getWidth() - 40;
+                if (baseWidth <= 0) baseWidth = 800; // Ancho por defecto
 
-        // Volver a mostrar la página actual después del zoom
-        mostrarPagina(paginaActual);
+                for (ImageView imageView : imageViews) {
+                    imageView.setFitWidth(baseWidth * zoomLevel);
+                }
+                zoomLabel.setText(String.format("%d%%", (int)(zoomLevel * 100)));
+            }
+        });
     }
 
-    // Métodos de navegación
+    // Métodos de navegación CORREGIDOS
     @FXML
     private void primeraPagina() {
         mostrarPagina(0);
@@ -216,17 +282,19 @@ public class VisorPdfController implements Initializable {
 
     @FXML
     private void paginaSiguiente() {
-        if (paginaActual < paginas.size() - 1) {
+        if (paginaActual < paginaBoxes.size() - 1) {
             mostrarPagina(paginaActual + 1);
         }
     }
 
     @FXML
     private void ultimaPagina() {
-        mostrarPagina(paginas.size() - 1);
+        if (!paginaBoxes.isEmpty()) {
+            mostrarPagina(paginaBoxes.size() - 1);
+        }
     }
 
-    // Métodos de zoom
+    // Métodos de zoom CORREGIDOS
     @FXML
     private void zoomIn() {
         if (zoomLevel < 3.0) {
@@ -263,13 +331,13 @@ public class VisorPdfController implements Initializable {
                     downloadDir.mkdirs();
                 }
 
-                File destFile = new File(downloadDir, nombreArchivo);
+                File destFile = new File(downloadDir, nombreArchivo +".pdf");
 
                 // Copiar archivo
                 Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
                 Platform.runLater(() -> {
-                    estadoLabel.setText("Descargado en: " + destFile.getPath());
+                    estadoLabel.setText("Descargado exitosamente");
 
                     // Mostrar confirmación
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -295,20 +363,36 @@ public class VisorPdfController implements Initializable {
 
         try {
             if (document != null) {
-                // Guardar PDF temporalmente para imprimir
-                File tempFile = File.createTempFile("pdf_print_", ".pdf");
+                // Guardar PDF temporalmente
+                File tempFile = File.createTempFile("imprimir_", ".pdf");
                 document.save(tempFile);
 
-                // Abrir diálogo de impresión del sistema
-                if (java.awt.Desktop.isDesktopSupported()) {
-                    java.awt.Desktop.getDesktop().print(tempFile);
-                    estadoLabel.setText("Enviado a impresora");
+                // Abrir con navegador predeterminado
+                boolean exito = abrirConNavegadorPredeterminado(tempFile);
+
+                if (exito) {
+                    estadoLabel.setText("PDF abierto en navegador - Ctrl+P para imprimir");
+
+                    // Mostrar mensaje informativo
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Listo para imprimir");
+                        alert.setHeaderText(null);
+                        alert.setContentText("PDF abierto en su navegador\nPresione Ctrl+P para imprimir");
+                        alert.show();
+                    });
                 } else {
-                    estadoLabel.setText("Impresión no soportada");
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Error al imprimir");
+                        alert.setHeaderText(null);
+                        alert.setContentText("No se pudo imprimir, intenta descargarlo para posteriormente imprimir");
+                        alert.show();
+                    });
                 }
 
-                // Eliminar archivo temporal después de un tiempo
-                tempFile.deleteOnExit();
+                // Eliminar después de 5 minutos
+                programarEliminacion(tempFile);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -316,6 +400,62 @@ public class VisorPdfController implements Initializable {
             mostrarError("Error: " + e.getMessage());
         }
     }
+    private void programarEliminacion(File file) {
+        // Eliminar después de 5 minutos
+        Timer timer = new Timer(true);
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (file.exists()) {
+                    file.delete();
+                }
+            }
+        }, 300000); // 5 minutos = 300,000 ms
+    }
+    private boolean abrirConNavegadorPredeterminado(File pdfFile) {
+        try {
+            // Método 1: Usar Desktop (abre con aplicación predeterminada)
+            if (Desktop.isDesktopSupported()) {
+                Desktop desktop = Desktop.getDesktop();
+                desktop.open(pdfFile);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            // Si Desktop falla, intentar métodos alternativos
+            return abrirConNavegadorAlternativo(pdfFile);
+        }
+    }
+    private boolean abrirConNavegadorAlternativo(File pdfFile) {
+        try {
+            // Método 2: Usar comando start de Windows (abre con aplicación predeterminada)
+            ProcessBuilder pb = new ProcessBuilder(
+                    "cmd", "/c", "start", "", pdfFile.getAbsolutePath()
+            );
+            Process process = pb.start();
+            return process.isAlive() || process.exitValue() == 0;
+        } catch (Exception e1) {
+            try {
+                // Método 3: Usar Runtime.exec
+                Runtime.getRuntime().exec(
+                        "cmd /c start \"\" \"" + pdfFile.getAbsolutePath() + "\""
+                );
+                return true;
+            } catch (Exception e2) {
+                try {
+                    // Método 4: Usar explorer
+                    ProcessBuilder pb = new ProcessBuilder(
+                            "explorer", pdfFile.getAbsolutePath()
+                    );
+                    pb.start();
+                    return true;
+                } catch (Exception e3) {
+                    return false;
+                }
+            }
+        }
+    }
+
 
     @FXML
     private void cerrarVisor() {
@@ -339,11 +479,13 @@ public class VisorPdfController implements Initializable {
     }
 
     private void mostrarError(String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText("Error al cargar PDF");
-        alert.setContentText(mensaje);
-        alert.show();
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Error al cargar PDF");
+            alert.setContentText(mensaje);
+            alert.show();
+        });
     }
 
     // Método para limpiar recursos
@@ -362,5 +504,6 @@ public class VisorPdfController implements Initializable {
 
         paginas.clear();
         imageViews.clear();
+        paginaBoxes.clear();
     }
 }
