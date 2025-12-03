@@ -6,14 +6,15 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
 public abstract class ApiWebClient {
+
     protected final WebClient webClient;
 
-    // Constructor por defecto: sigue apuntando al user-microservice
+    // Por defecto: user-microservice
     protected ApiWebClient() {
         this("http://localhost:8081");
     }
 
-    // Constructor general: permite otros baseUrl (ej. proyectos)
+    // General: para otros microservicios
     protected ApiWebClient(String baseUrl) {
         this.webClient = WebClient.builder()
                 .baseUrl(baseUrl)
@@ -22,10 +23,20 @@ public abstract class ApiWebClient {
                 .build();
     }
 
+    // Para GET/DELETE/etc.
     protected WebClient.RequestHeadersSpec<?> addAuthHeader(WebClient.RequestHeadersSpec<?> request) {
         String token = SessionManager.getInstance().getToken();
         if (token != null && !token.isEmpty()) {
-            return request.header(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+            request.header(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+        }
+        return request;
+    }
+
+    // Para POST/PUT con body (RequestBodySpec)
+    protected WebClient.RequestBodySpec addAuthHeader(WebClient.RequestBodySpec request) {
+        String token = SessionManager.getInstance().getToken();
+        if (token != null && !token.isEmpty()) {
+            request.header(HttpHeaders.AUTHORIZATION, "Bearer " + token);
         }
         return request;
     }
