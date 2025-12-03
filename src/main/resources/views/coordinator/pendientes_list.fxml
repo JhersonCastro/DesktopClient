@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.fronted.controllers.PendientesListaController"
+      stylesheets="@../../css/pendientes-lista.css"
+      spacing="20"
+      styleClass="dashboard-content">
+
+    <padding>
+        <Insets top="40" right="60" bottom="40" left="60"/>
+    </padding>
+
+    <!-- TÍTULO -->
+    <VBox spacing="5" alignment="CENTER_LEFT">
+        <Label text="Proyectos Pendientes" styleClass="section-title"/>
+        <Label text="Seleccione un proyecto para evaluar" styleClass="section-subtitle"/>
+    </VBox>
+
+    <!-- CONTENEDOR DE TARJETAS -->
+    <FlowPane fx:id="proyectosContainer" hgap="20" vgap="20" prefWrapLength="800">
+
+        <!-- TARJETA DE EJEMPLO 1 -->
+        <VBox spacing="10" styleClass="project-card">
+            <Label text="Título: Sistema de Control Académico" styleClass="card-title"/>
+            <Label text="Estudiante: Juan Pérez" styleClass="card-info"/>
+            <Label text="Modalidad: Investigación" styleClass="card-info"/>
+            <Label text="Director: Ing. Luis Martínez" styleClass="card-info"/>
+            <Button text="Evaluar" styleClass="card-button"/>
+        </VBox>
+
+        <!-- TARJETA DE EJEMPLO 2 -->
+        <VBox spacing="10" styleClass="project-card">
+            <Label text="Título: Práctica Profesional en Electrónica" styleClass="card-title"/>
+            <Label text="Estudiante: María Gómez" styleClass="card-info"/>
+            <Label text="Modalidad: Práctica Profesional" styleClass="card-info"/>
+            <Label text="Director: Ing. Ana Fernández" styleClass="card-info"/>
+            <Button text="Evaluar" styleClass="card-button"/>
+        </VBox>
+
+        <!-- TARJETA DE EJEMPLO 3 -->
+        <VBox spacing="10" styleClass="project-card">
+            <Label text="Título: Desarrollo de App Educativa" styleClass="card-title"/>
+            <Label text="Estudiante: Juan David Martínez" styleClass="card-info"/>
+            <Label text="Modalidad: Investigación" styleClass="card-info"/>
+            <Label text="Director: Ing. Jorge Hernández" styleClass="card-info"/>
+            <Button text="Evaluar" styleClass="card-button"/>
+        </VBox>
+
+    </FlowPane>
+
+</VBox>
