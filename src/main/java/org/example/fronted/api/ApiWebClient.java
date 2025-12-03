@@ -1,16 +1,22 @@
 package org.example.fronted.api;
 
+import org.example.fronted.util.SessionManager;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.example.fronted.util.SessionManager;
 
 public abstract class ApiWebClient {
     protected final WebClient webClient;
 
+    // Constructor por defecto: sigue apuntando al user-microservice
     protected ApiWebClient() {
+        this("http://localhost:8081");
+    }
+
+    // Constructor general: permite otros baseUrl (ej. proyectos)
+    protected ApiWebClient(String baseUrl) {
         this.webClient = WebClient.builder()
-                .baseUrl("http://localhost:8081") // Cambiado a user-microservice
+                .baseUrl(baseUrl)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .build();
