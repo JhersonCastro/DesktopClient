@@ -183,4 +183,32 @@ public class ProjectApi extends ApiWebClient {
         return spec.retrieve()
                 .bodyToMono(ProyectoDTO.class);
     }
+
+    /**
+     *  POST /api/v1/proyectos/{idProyecto}/anteproyecto
+     */
+    public Mono<Boolean> subirAnteproyecto(SubirAnteproyectoDTO dto) {
+
+        if (dto.getAnteproyectoPdf() == null) {
+            return Mono.error(new IllegalArgumentException("El PDF del anteproyecto es obligatorio"));
+        }
+
+        MultiValueMap<String, Object> data = new LinkedMultiValueMap<>();
+        data.add("jefeDepartamentoEmail", dto.getJefeDepartamentoEmail());
+        data.add("anteproyectoPdf", new FileSystemResource(dto.getAnteproyectoPdf()));
+
+        WebClient.RequestHeadersSpec<?> spec = addAuthHeader(
+                webClient.post()
+                        // Ajusta la ruta si tu controller usa otra
+                        .uri("/{idProyecto}/anteproyecto", dto.getIdProyecto())
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .body(BodyInserters.fromMultipartData(data))
+        );
+
+        return spec.retrieve()
+                .bodyToMono(Void.class)
+                .map(v -> true)
+                .onErrorResume(err -> Mono.just(false));
+    }
+
 }
