@@ -10,7 +10,11 @@ module org.example.fronted {
     requires spring.core;
     requires reactor.core;
     requires com.fasterxml.jackson.databind;
-    requires static lombok; // <-- AÑADE ESTA LÍNEA
+    requires static lombok;
+    requires javafx.web;
+    requires org.apache.pdfbox;
+    requires java.desktop;
+    requires javafx.swing; // <-- AÑADE ESTA LÍNEA
 
     opens org.example.fronted to javafx.fxml;
     opens org.example.fronted.controllers to javafx.fxml;

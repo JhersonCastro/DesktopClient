@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.fronted.controllers.VisorPdfController"
+      style="-fx-background-color: #f5f5f5;"
+      spacing="0">
+
+    <!-- BARRA DE HERRAMIENTAS SUPERIOR -->
+    <HBox spacing="10" alignment="CENTER_LEFT"
+          style="-fx-background-color: #4a6baf; -fx-padding: 12; -fx-border-color: #3a5a9f; -fx-border-width: 0 0 1 0;">
+        <Button onAction="#cerrarVisor"
+                style="-fx-background-color: transparent; -fx-text-fill: white; -fx-cursor: hand;">
+            <graphic>
+                <ImageView fitWidth="18" fitHeight="18">
+                    <Image url="@../../images/icons/close.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+
+        <Label fx:id="nombreArchivoLabel" text="Documento.pdf"
+               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <!-- CONTROLES DE NAVEGACIÓN -->
+        <Button text="⏮" onAction="#primeraPagina"
+                style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-min-width: 40;">
+        </Button>
+        <Button text="◀" onAction="#paginaAnterior"
+                style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-min-width: 40;">
+        </Button>
+
+        <Label fx:id="paginaActualLabel" text="Página 1"
+               style="-fx-text-fill: white; -fx-padding: 0 10;"/>
+
+        <Button text="▶" onAction="#paginaSiguiente"
+                style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-min-width: 40;">
+        </Button>
+        <Button text="⏭" onAction="#ultimaPagina"
+                style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-min-width: 40;">
+        </Button>
+
+        <!-- CONTROLES DE ZOOM -->
+        <Button text="➖" onAction="#zoomOut"
+                style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-min-width: 40;">
+        </Button>
+        <Label fx:id="zoomLabel" text="100%"
+               style="-fx-text-fill: white; -fx-padding: 0 10;"/>
+        <Button text="➕" onAction="#zoomIn"
+                style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-min-width: 40;">
+        </Button>
+
+        <Separator orientation="VERTICAL" style="-fx-background-color: rgba(255,255,255,0.3);"/>
+
+        <Button text="📥 Descargar" onAction="#descargarPDF"
+                style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-padding: 5 15; -fx-cursor: hand;">
+        </Button>
+
+        <Button text="🖨️ Imprimir" onAction="#imprimirPDF"
+                style="-fx-background-color: #17a2b8; -fx-text-fill: white; -fx-padding: 5 15; -fx-cursor: hand;">
+        </Button>
+    </HBox>
+
+    <!-- ÁREA DE VISUALIZACIÓN -->
+    <ScrollPane fx:id="scrollPane" fitToWidth="true" VBox.vgrow="ALWAYS">
+        <VBox fx:id="imageContainer" spacing="10" alignment="CENTER">
+            <!-- Las imágenes del PDF se añadirán aquí -->
+        </VBox>
+    </ScrollPane>
+
+    <!-- BARRA DE ESTADO INFERIOR -->
+    <HBox spacing="20" alignment="CENTER_LEFT"
+          style="-fx-background-color: white; -fx-padding: 8 15; -fx-border-color: #ddd; -fx-border-width: 1 0 0 0;">
+        <Label fx:id="estadoLabel" text="Listo"
+               style="-fx-text-fill: #666;"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <ProgressBar fx:id="progressBar" visible="false" prefWidth="200"/>
+
+        <Label fx:id="infoLabel" text="0 páginas | 0 KB"
+               style="-fx-text-fill: #666; -fx-font-size: 12px;"/>
+    </HBox>
+
+</VBox>

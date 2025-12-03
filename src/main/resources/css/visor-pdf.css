@@ -1,0 +1,63 @@
+/* Estilos para el visor PDF */
+
+/* Botones de acción */
+.action-button {
+    -fx-background-color: #4a6baf;
+    -fx-text-fill: white;
+    -fx-padding: 8 15;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+}
+
+.action-button:hover {
+    -fx-background-color: #3a5a9f;
+}
+
+/* Botones de navegación */
+.nav-button {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-text-fill: white;
+    -fx-min-width: 40;
+    -fx-min-height: 40;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.nav-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Barra de herramientas */
+.toolbar {
+    -fx-background-color: #4a6baf;
+    -fx-border-color: #3a5a9f;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* Barra de estado */
+.status-bar {
+    -fx-background-color: white;
+    -fx-border-color: #ddd;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* Página del PDF */
+.pdf-page {
+    -fx-background-color: white;
+    -fx-padding: 20;
+    -fx-border-color: #ddd;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);
+}
+
+/* Etiqueta de número de página */
+.page-number {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-text-fill: #555;
+    -fx-padding: 0 0 10 0;
+}

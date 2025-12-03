@@ -14,6 +14,7 @@ import javafx.scene.layout.HBox;
 import org.example.fronted.models.Rol;
 import org.example.fronted.models.User;
 import org.example.fronted.observer.SessionObserver;
+import org.example.fronted.util.PdfViewerUtil;
 import org.example.fronted.util.SessionManager;
 
 import java.io.IOException;
@@ -37,11 +38,12 @@ public class MainController implements SessionObserver{
         System.out.println("MainController inicializado");
         // Cargar login por defecto al iniciar
         //loadLoginView();
-        //loadView("/views/professor/formatA_new.fxml");
+        loadView("/views/coordinator/evaluar_formatoA.fxml");
+        PdfViewerUtil.mostrarPDF("C:\\Users\\Janus\\Downloads\\Entregablestercercorte.pdf","title");
         sessionManager = SessionManager.getInstance();
         sessionManager.registerObserver(this);
 
-        cargarUsuarioPruebaParaTesting_EliminarEnProduccion();
+        //cargarUsuarioPruebaParaTesting_EliminarEnProduccion();
         updateUIFromSession();
 
     }
