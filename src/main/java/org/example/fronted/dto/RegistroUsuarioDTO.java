@@ -9,8 +9,7 @@ public class RegistroUsuarioDTO {
     private String email;
     private String password;
     private String celular;
-    private Rol rolPrincipal; // DOCENTE, ESTUDIANTE, COORDINADOR, JEFE_DEPARTAMENTO
-
+    private Rol rolPrincipal; // DOCENTE, ESTUDIANTE, COORDINADOR, JEFE_DEPARTAMENTO　
     public String getNombres() {
         return nombres;
     }

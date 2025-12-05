@@ -1,11 +1,10 @@
 package org.example.fronted.controllers;
 
+import lombok.Setter;
+
+@Setter
 public abstract class UIBase {
     protected MainController mainController;
-
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
-    }
 
     protected void loadView(String fxmlPath) {
         if (mainController != null) {

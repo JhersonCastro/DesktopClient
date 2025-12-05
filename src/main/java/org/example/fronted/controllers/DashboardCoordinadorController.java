@@ -24,6 +24,7 @@ public class DashboardCoordinadorController extends UIBase{
         // Por ahora, simulamos datos
         pendientesCount.setText("12");
         aprobadosCount.setText("45");
+        sessionManager.getCurrentUser();
         rechazadosCount.setText("8");
     }
 

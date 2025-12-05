@@ -53,7 +53,7 @@ public class PdfViewerUtil {
                 controller.limpiarRecursos();
             });
 
-            stage.showAndWait();
+            stage.show();
 
         } catch (IOException e) {
             e.printStackTrace();

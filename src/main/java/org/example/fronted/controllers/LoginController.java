@@ -73,6 +73,7 @@ public class LoginController extends UIBase {
                     if (success) {
                         System.out.println("Login exitoso!");
                         // Aquí iría navegar al dashboard
+
                         showError("Login exitoso! (Falta navegar)");
                     } else {
                         showError("Credenciales incorrectas");

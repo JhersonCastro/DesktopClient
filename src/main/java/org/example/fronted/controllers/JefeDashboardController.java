@@ -10,9 +10,6 @@ import org.example.fronted.util.SessionManager;
 
 public class JefeDashboardController extends UIBase{
 
-    @FXML private Label pendientesCount;
-    @FXML private Label evaluacionCount;
-    @FXML private Label docentesCount;
     @FXML private TableView<Anteproyecto> anteproyectosTable;
     @FXML private VBox notificacionesContainer;
     @FXML private VBox notificacionesList;
@@ -32,9 +29,7 @@ public class JefeDashboardController extends UIBase{
 
     private void cargarEstadisticas() {
         // Aquí se cargarían las estadísticas reales desde el backend
-        pendientesCount.setText("5");
-        evaluacionCount.setText("3");
-        docentesCount.setText("12");
+
     }
 
     private void cargarAnteproyectosRecientes() {

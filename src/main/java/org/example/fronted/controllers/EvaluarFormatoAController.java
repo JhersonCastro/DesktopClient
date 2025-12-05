@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import org.example.fronted.util.PdfViewerUtil;
 
 public class EvaluarFormatoAController extends UIBase {
 
@@ -47,7 +48,8 @@ public class EvaluarFormatoAController extends UIBase {
 
     @FXML
     private void verPDF() {
-        showAlert("PDF", "Simulando apertura de PDF del Formato A...");
+        PdfViewerUtil.mostrarPDF("C:\\Users\\Janus\\Downloads\\HolaSistema.pdf", "Hola");
+
     }
 
     // ========================== ALERTA =============================
