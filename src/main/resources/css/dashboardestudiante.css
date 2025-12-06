@@ -75,7 +75,7 @@
 }
 
 .status-icon-container {
-    -fx-background-color: linear-gradient(135deg, #c4b5fd 0%, #8b5cf6 100%);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #c4b5fd 0%, #8b5cf6 100%);
     -fx-background-radius: 15px;
     -fx-padding: 20px;
     -fx-min-width: 100px;
@@ -148,15 +148,15 @@
 }
 
 .circle-active {
-    -fx-background-color: linear-gradient(135deg, #86efac 0%, #22c55e 100%);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #86efac 0%, #22c55e 100%);
 }
 
 .circle-current {
-    -fx-background-color: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #fbbf24 0%, #f59e0b 100%);
 }
 
 .circle-pending {
-    -fx-background-color: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #e2e8f0 0%, #cbd5e1 100%);
 }
 
 .circle-label {
