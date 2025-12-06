@@ -1,5 +1,6 @@
 package org.example.fronted.controllers;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -38,19 +39,19 @@ public class PendientesListaController extends UIBase implements Initializable {
         card.setSpacing(8);
 
         Label title = new Label(proyecto.titulo);
-        title.getStyleClass().add("project-title");
+        title.getStyleClass().add("card-title");
 
         Label estudiante = new Label("Estudiante: " + proyecto.estudiante);
-        estudiante.getStyleClass().add("project-info");
+        estudiante.getStyleClass().add("card-info");
 
         Label modalidad = new Label("Modalidad: " + proyecto.modalidad);
-        modalidad.getStyleClass().add("project-info");
+        modalidad.getStyleClass().add("card-info");
 
         Label director = new Label("Director: " + proyecto.director);
-        director.getStyleClass().add("project-info");
+        director.getStyleClass().add("card-info");
 
         Button evaluarBtn = new Button("Evaluar");
-        evaluarBtn.getStyleClass().add("action-button");
+        evaluarBtn.getStyleClass().add("card-button");
         evaluarBtn.setOnAction(e -> abrirEvaluacion(proyecto));
 
         card.getChildren().addAll(title, estudiante, modalidad, director, evaluarBtn);
@@ -64,6 +65,10 @@ public class PendientesListaController extends UIBase implements Initializable {
 
         // Ejemplo: pasar datos a EvaluarFormatoAController
         // EvaluarFormatoAController.setProyectoActual(proyecto);
+    }
+
+    public void regresar() {
+        loadView("/views/coordinator/dashboard_coordinator.fxml");
     }
 
     public static class ProyectoPendiente {

@@ -5,7 +5,7 @@
 
 /* Fondo principal celeste */
 .dashboard-content {
-    -fx-background-color: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
     -fx-padding: 40px 60px;
 }
 
@@ -90,17 +90,17 @@
 
 /* Fondo de iconos con gradientes suaves */
 .icon-pending {
-    -fx-background-color: linear-gradient(135deg, #fff3cd 0%, #ffc107 100%);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #fff3cd 0%, #ffc107 100%);
     -fx-effect: dropshadow(gaussian, rgba(255, 193, 7, 0.3), 15, 0, 0, 5);
 }
 
 .icon-approved {
-    -fx-background-color: linear-gradient(135deg, #d4edda 0%, #28a745 100%);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #d4edda 0%, #28a745 100%);
     -fx-effect: dropshadow(gaussian, rgba(40, 167, 69, 0.3), 15, 0, 0, 5);
 }
 
 .icon-rejected {
-    -fx-background-color: linear-gradient(135deg, #f8d7da 0%, #dc3545 100%);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #f8d7da 0%, #dc3545 100%);
     -fx-effect: dropshadow(gaussian, rgba(220, 53, 69, 0.3), 15, 0, 0, 5);
 }
 

@@ -3,9 +3,15 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/17"
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.fronted.controllers.PendientesListaController"
+            styleClass="cnp-scroll">
+    <VBox xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.example.fronted.controllers.PendientesListaController"
       stylesheets="@../../css/pendientes-lista.css"
       spacing="20"
       styleClass="dashboard-content">
@@ -13,6 +19,19 @@
     <padding>
         <Insets top="40" right="60" bottom="40" left="60"/>
     </padding>
+
+    <VBox spacing="10" styleClass="cnp-header">
+
+        <HBox alignment="CENTER_LEFT" spacing="15">
+            <Button onAction="#regresar" styleClass="cnp-back-button">
+                <graphic>
+                    <ImageView fitHeight="24" fitWidth="24" preserveRatio="true">
+                        <Image url="@../../images/icons/back.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </HBox>
+    </VBox>
 
     <!-- TÍTULO -->
     <VBox spacing="5" alignment="CENTER_LEFT">
@@ -53,3 +72,4 @@
     </FlowPane>
 
 </VBox>
+</ScrollPane>
