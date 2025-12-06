@@ -32,8 +32,10 @@ public class DashboardCoordinadorController extends UIBase{
 
     @FXML
     private void verProyectosPendientes() {
-        showAlert("Navegación", "Mostrando proyectos pendientes...");
+        //showAlert("Navegación", "Mostrando proyectos pendientes...");
+        System.out.println("Mostrando proyectos pendientes...");
         // Aquí iría la navegación a la vista detallada de proyectos pendientes
+        loadView("/views/coordinator/pendientes_list.fxml");
     }
 
     @FXML
