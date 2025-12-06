@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+
+<ScrollPane fx:id="scrollPane"
+            fitToWidth="true" hbarPolicy="NEVER"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.fronted.controllers.EvaluatorAssignmentController"
+            styleClass="ev-scroll"
+            stylesheets="@../../css/evaluators_Assignment.css">
+
+    <VBox spacing="25" styleClass="ev-container">
+
+        <!-- ENCABEZADO -->
+        <VBox spacing="10" styleClass="ev-header">
+
+            <HBox alignment="CENTER_LEFT" spacing="15">
+
+                <Button onAction="#regresarAlDashboard" styleClass="back-button">
+                    <graphic>
+                        <ImageView fitHeight="22" fitWidth="22" preserveRatio="true">
+                            <Image url="@../../images/icons/back.png"/>
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <ImageView fitHeight="38" fitWidth="38" preserveRatio="true">
+                    <Image url="@../../images/icons/teacher.png"/>
+                </ImageView>
+
+                <VBox>
+                    <Label text="Asignación de Evaluadores" styleClass="ev-title"/>
+                    <Label text="Seleccione el anteproyecto y exactamente dos evaluadores" styleClass="ev-subtitle"/>
+                </VBox>
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="ev-step-indicator">
+                <Label text="Paso 1: Selección inicial" styleClass="ev-step-label"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="* Campos obligatorios" styleClass="ev-label-required"/>
+            </HBox>
+
+        </VBox>
+
+
+        <!-- GRID FORMULARIO -->
+        <GridPane hgap="25" vgap="20" styleClass="ev-grid">
+            <columnConstraints>
+                <ColumnConstraints halignment="RIGHT" prefWidth="200"/>
+                <ColumnConstraints hgrow="ALWAYS" prefWidth="450"/>
+            </columnConstraints>
+
+            <!-- ANTEPROYECTO -->
+            <Label text="* Anteproyecto:"
+                   GridPane.rowIndex="0" GridPane.columnIndex="0"
+                   styleClass="ev-label-required"/>
+
+            <VBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <TextField
+                        fx:id="anteproyectoTexField"
+                        promptText="Escriba nombre del anteproyecto y presione ENTER..."
+                        styleClass="form-autocomplete" />
+
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <ImageView fitHeight="16" fitWidth="16">
+                        <Image url="@../../images/icons/info.png" />
+                    </ImageView>
+                    <Label
+                            styleClass="formato-a-hint"
+                            text="Presione ENTER después de escribir para buscar anteproyectos" />
+                </HBox>
+            </VBox>
+
+            <!--<ComboBox fx:id="anteproyectoComboBox"
+                      promptText="Seleccione el anteproyecto..."
+                      GridPane.rowIndex="0" GridPane.columnIndex="1"
+                      styleClass="ev-combobox"/>-->
+
+            <!-- EVALUADOR 1 -->
+            <Label text="* Evaluador 1:"
+                   GridPane.rowIndex="1" GridPane.columnIndex="0"
+                   styleClass="ev-label-required"/>
+
+            <VBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <TextField
+                        fx:id="evaluador1TextField"
+                        promptText="Escriba nombre del docente y presione ENTER..."
+                        styleClass="form-autocomplete" />
+
+            </VBox>
+
+            <!--<ComboBox fx:id="evaluador1ComboBox"
+                      promptText="Seleccione el primer evaluador..."
+                      GridPane.rowIndex="1" GridPane.columnIndex="1"
+                      styleClass="ev-combobox"/>-->
+
+            <!-- EVALUADOR 2 -->
+            <Label text="* Evaluador 2:"
+                   GridPane.rowIndex="2" GridPane.columnIndex="0"
+                   styleClass="ev-label-required"/>
+
+            <VBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <TextField
+                        fx:id="evaluador2TextField"
+                        promptText="Escriba nombre del docente y presione ENTER..."
+                        styleClass="form-autocomplete" />
+
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <ImageView fitHeight="16" fitWidth="16">
+                        <Image url="@../../images/icons/info.png" />
+                    </ImageView>
+                    <Label
+                            styleClass="formato-a-hint"
+                            text="Presione ENTER después de escribir para buscar docentes" />
+                </HBox>
+            </VBox>
+
+            <!--<ComboBox fx:id="evaluador2ComboBox"
+                      promptText="Seleccione el segundo evaluador..."
+                      GridPane.rowIndex="2" GridPane.columnIndex="1"
+                      styleClass="ev-combobox"/>-->
+
+            <!-- HINT -->
+            <HBox spacing="10" alignment="CENTER_LEFT"
+                  GridPane.rowIndex="3" GridPane.columnIndex="1">
+
+                <ImageView fitHeight="18" fitWidth="18">
+                    <Image url="@../../images/icons/info.png" />
+                </ImageView>
+
+                <Label text="Seleccione dos evaluadores diferentes."
+                       styleClass="ev-hint"/>
+            </HBox>
+
+            <!-- BOTÓN CONFIRMAR SELECCIÓN -->
+            <HBox spacing="20" alignment="CENTER_RIGHT"
+                  GridPane.rowIndex="4" GridPane.columnIndex="1">
+
+                <Button text="Confirmar Selección"
+                        onAction="#confirmarSeleccion"
+                        styleClass="ev-secondary-button"/>
+            </HBox>
+
+        </GridPane>
+
+
+        <!-- SECCIÓN INFORMATIVA -->
+        <VBox spacing="10" styleClass="ev-info-container">
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <ImageView fitHeight="24" fitWidth="24">
+                    <Image url="@../../images/icons/notification.png"/>
+                </ImageView>
+                <Label text="Validación del sistema" styleClass="ev-info-title"/>
+            </HBox>
+
+            <Label text="El sistema verificará conflictos de interés y habilitación de cada evaluador."
+                   styleClass="ev-info-text"/>
+
+        </VBox>
+
+
+        <!-- ACCIONES -->
+        <HBox spacing="20" alignment="CENTER_RIGHT" styleClass="ev-actions">
+            <Button text="Cancelar" onAction="#cancelar" styleClass="ev-secondary-button"/>
+            <Button text="Asignar Evaluadores" onAction="#asignarEvaluadores"
+                    styleClass="ev-primary-button"/>
+        </HBox>
+
+
+        <!-- PIE DE PÁGINA -->
+        <VBox spacing="5" styleClass="ev-footer">
+            <Separator styleClass="ev-separator"/>
+            <Label text="1. Revise cuidadosamente la selección antes de confirmar." styleClass="ev-warning-text"/>
+            <Label text="2. No podrá modificar la asignación sin autorización." styleClass="ev-warning-text"/>
+            <Label text="3. Los evaluadores recibirán notificación automática." styleClass="ev-warning-text"/>
+        </VBox>
+
+    </VBox>
+
+</ScrollPane>
