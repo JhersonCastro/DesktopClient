@@ -1,0 +1,117 @@
+.cnp-scroll {
+    -fx-background: #fafafa;
+}
+
+/* Contenedor principal */
+.cnp-container {
+    -fx-padding: 30;
+}
+
+/* Encabezado */
+.cnp-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0d47a1;
+}
+
+.cnp-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #37474f;
+}
+
+.cnp-back-button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+
+.cnp-step-indicator {
+    -fx-padding: 10 0 0 0;
+}
+
+.cnp-step-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #0d47a1;
+}
+
+.cnp-required-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #b71c1c;
+}
+
+/* Etiquetas */
+.cnp-label {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0d47a1;
+}
+
+/* Campos */
+.cnp-textfield,
+.cnp-autocomplete,
+.cnp-textarea,
+.cnp-textarea-small,
+.cnp-combobox {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #0d47a1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 8;
+    -fx-font-size: 14px;
+}
+
+.cnp-textarea {
+    -fx-pref-height: 120;
+}
+
+.cnp-textarea-small {
+    -fx-pref-height: 80;
+}
+
+/* Listas de autocompletado */
+.cnp-resultados {
+    -fx-border-color: #0d47a1;
+    -fx-background-color: #e3f2fd;
+    -fx-padding: 10;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+}
+
+/* Tags para estudiantes */
+.cnp-tag-container * {
+    -fx-background-color: #0d47a1;
+    -fx-text-fill: white;
+    -fx-padding: 5 10;
+    -fx-background-radius: 10;
+    -fx-font-size: 12px;
+}
+
+/* Botones */
+.cnp-primary-button {
+    -fx-background-color: #0d47a1;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.cnp-secondary-button {
+    -fx-background-color: #b0bec5;
+    -fx-text-fill: #0d47a1;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.cnp-link-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #0d47a1;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+/* RadioButtons */
+.cnp-radio {
+    -fx-text-fill: #0d47a1;
+}

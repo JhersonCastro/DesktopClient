@@ -54,6 +54,7 @@ public class DashboardCoordinadorController extends UIBase{
     private void nuevoProyecto() {
         showAlert("Nuevo Proyecto", "Creando nuevo proyecto...");
         // Aquí iría la lógica para crear un nuevo proyecto
+        loadView("/views/coordinator/project_new.fxml");
     }
 
     @FXML
