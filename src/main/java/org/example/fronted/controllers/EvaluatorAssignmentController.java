@@ -5,7 +5,7 @@ import javafx.scene.control.*;
 
 import java.util.Optional;
 
-public class EvaluatorAssignmentController {
+public class EvaluatorAssignmentController extends UIBase{
 
     @FXML
     private ScrollPane scrollPane;
@@ -53,7 +53,9 @@ public class EvaluatorAssignmentController {
 
     @FXML
     private void regresarAlDashboard() {
-        mostrarAlertaInfo("Volviendo al dashboard...");
+        //mostrarAlertaInfo("Volviendo al dashboard...");
+        System.out.println("Volviendo al dashboard...");
+        loadView("/views/DepartmentHead/dashboard_DepartmentHead.fxml");
     }
 
 
