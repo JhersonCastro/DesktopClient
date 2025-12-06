@@ -175,6 +175,7 @@ public class JefeDashboardController extends UIBase{
     private void asignarEvaluadoresAnteproyecto(Anteproyecto anteproyecto) {
         System.out.println("Asignando evaluadores para: " + anteproyecto.getTitulo());
         // Aquí se abriría un diálogo para asignar evaluadores
+        loadView("/views/DepartmentHead/evaluators_Assignment.fxml");
     }
 
     private void verDetalleAnteproyecto(Anteproyecto anteproyecto) {
