@@ -47,8 +47,9 @@ public class DashboardCoordinadorController extends UIBase{
 
     @FXML
     private void verProyectosRechazados() {
-        showAlert("Navegación", "Mostrando proyectos rechazados...");
+        //showAlert("Navegación", "Mostrando proyectos rechazados...");
         // Aquí iría la navegación a la vista detallada de proyectos rechazados
+        loadView("/views/coordinator/rechazados_list.fxml");
     }
 
     @FXML
