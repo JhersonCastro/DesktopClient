@@ -9,7 +9,7 @@
             xmlns="http://javafx.com/javafx/17.0.12"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.example.fronted.controllers.RechazadosCoordinadorController"
-            stylesheets="@../../css/pendientes-lista.css"
+            stylesheets="@../../css/coordinator-lista.css"
             styleClass="cnp-scroll">
     <VBox spacing="20"
           styleClass="dashboard-content">

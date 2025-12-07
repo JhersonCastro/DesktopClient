@@ -53,7 +53,7 @@ public class DocenteDashboardController  extends UIBase{
     @FXML
     private void subirAnteproyecto() {
         System.out.println("Navegando a subir anteproyecto...");
-        // loadView("/views/docente/subir_anteproyecto.fxml");
+        loadView("/views/professor/aprobados_list.fxml");
     }
 
     @FXML
