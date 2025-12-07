@@ -71,7 +71,7 @@ public class DocenteDashboardController  extends UIBase{
     @FXML
     private void verMisProyectos() {
         System.out.println("Navegando a mis proyectos...");
-        // loadView("/views/docente/mis_proyectos.fxml");
+        loadView("/views/professor/proyectos_list.fxml");
     }
 
 
