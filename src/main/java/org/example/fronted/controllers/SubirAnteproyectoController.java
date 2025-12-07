@@ -17,4 +17,8 @@ public class SubirAnteproyectoController extends UIBase {
 
     public void enviarAnteproyecto(ActionEvent actionEvent) {
     }
+
+    public void regresarAlDashboard(ActionEvent actionEvent) {
+        loadView("/views/professor/dashboard_professor.fxml");
+    }
 }
