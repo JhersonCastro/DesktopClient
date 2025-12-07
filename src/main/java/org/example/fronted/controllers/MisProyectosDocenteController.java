@@ -35,7 +35,7 @@ public class MisProyectosDocenteController extends UIBase implements ListControl
 
     @Override
     public void btnAction(ProjectCardDTO proyecto) {
-        subirAnteproyecto(proyecto);
+        abrirProyecto(proyecto);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class MisProyectosDocenteController extends UIBase implements ListControl
         loadView("/views/professor/dashboard_professor.fxml");
     }
 
-    private void subirAnteproyecto(ProjectCardDTO proyecto) {
+    private void abrirProyecto(ProjectCardDTO proyecto) {
         // Aquí cargamos EvaluarFormatoA.fxml y le pasamos datos simulados
         System.out.println("Abriendo Proyecto: " + proyecto.titulo);
 

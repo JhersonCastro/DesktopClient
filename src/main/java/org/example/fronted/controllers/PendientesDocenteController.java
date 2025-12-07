@@ -35,7 +35,7 @@ public class PendientesDocenteController extends UIBase implements ListControlle
 
     @Override
     public void btnAction(ProjectCardDTO proyecto) {
-        subirAnteproyecto(proyecto);
+        verFormatoA(proyecto);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class PendientesDocenteController extends UIBase implements ListControlle
         loadView("/views/professor/dashboard_professor.fxml");
     }
 
-    private void subirAnteproyecto(ProjectCardDTO proyecto) {
+    private void verFormatoA(ProjectCardDTO proyecto) {
         // Aquí cargamos EvaluarFormatoA.fxml y le pasamos datos simulados
         System.out.println("Abriendo Formato A: " + proyecto.titulo);
 
