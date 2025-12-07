@@ -59,7 +59,7 @@ public class DocenteDashboardController  extends UIBase{
     @FXML
     private void verEvaluacionesAsignadas() {
         System.out.println("Navegando a evaluaciones asignadas...");
-        // loadView("/views/docente/evaluaciones_asignadas.fxml");
+        loadView("/views/professor/evaluaciones_list.fxml");
     }
 
     @FXML
