@@ -40,8 +40,9 @@ public class DashboardCoordinadorController extends UIBase{
 
     @FXML
     private void verProyectosAprobados() {
-        showAlert("Navegación", "Mostrando proyectos aprobados...");
+        //showAlert("Navegación", "Mostrando proyectos aprobados...");
         // Aquí iría la navegación a la vista detallada de proyectos aprobados
+        loadView("/views/coordinator/aprobados_list.fxml");
     }
 
     @FXML
