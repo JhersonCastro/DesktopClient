@@ -47,7 +47,7 @@ public class DocenteDashboardController  extends UIBase{
     @FXML
     private void verProyectosPendientes() {
         System.out.println("Navegando a proyectos pendientes...");
-        // loadView("/views/docente/proyectos_pendientes.fxml");
+        loadView("/views/professor/pendientes_list.fxml");
     }
 
     @FXML
