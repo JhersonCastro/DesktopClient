@@ -8,10 +8,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
+import org.example.fronted.api.ProyectoApi;
 import org.example.fronted.dto.ProjectCardDTO;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -20,18 +20,33 @@ public class AprobadosDocenteController extends UIBase implements ListController
     @FXML
     private FlowPane proyectosContainer;
 
+    ProyectoApi proyectoApi = new ProyectoApi();
+
+    //SECCIÓN DE CARGA DE TARJETAS
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Datos simulados
-        List<ProjectCardDTO> proyectos = new ArrayList<>();
-        proyectos.add(new ProjectCardDTO("Sistema de Inventarios", "Juan Pérez", "Investigación", "Dr. Gómez"));
-        proyectos.add(new ProjectCardDTO("App Móvil Educativa", "María Gómez", "Práctica Profesional", "Mg. Martínez"));
-        proyectos.add(new ProjectCardDTO("Control de Asistencias", "Carlos Ramírez", "Investigación", "Dra. Fernández"));
-        proyectos.add(new ProjectCardDTO("Página Web de la Empresa", "Ana Torres", "Práctica Profesional", "Dr. Hernández"));
-
-        // Agregar cada proyecto como tarjeta
-        Platform.runLater(() -> proyectos.forEach(this::agregarTarjetaProyecto));
+        cargarProyectosDocente();
     }
+
+    private void cargarProyectosDocente() {
+        String emailDocente = obtenerCorreoActual();
+
+        proyectoApi.obtenerProyectosPorDocente(emailDocente, "FORMATOA_APROBADO")
+                .subscribe(this::pintarProyectos, this::manejarError);
+    }
+
+    private void pintarProyectos(List<ProjectCardDTO> proyectos) {
+        Platform.runLater(() ->
+                proyectos.forEach(this::agregarTarjetaProyecto)
+        );
+    }
+
+    private void manejarError(Throwable e) {
+        e.printStackTrace();
+    }
+
+    // FUNCIONES ESPECÍFICAS DE LAS TARJETAS
 
     @Override
     public void btnAction(ProjectCardDTO proyecto) {
@@ -48,6 +63,8 @@ public class AprobadosDocenteController extends UIBase implements ListController
     public Button getButton() {
         return new Button("Subir Anteproyecto");
     }
+
+    // FUNCIONES DE LA VISTA
 
     public void regresar(ActionEvent actionEvent) {
         loadView("/views/professor/dashboard_professor.fxml");

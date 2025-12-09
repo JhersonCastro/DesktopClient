@@ -1,5 +1,6 @@
 package org.example.fronted.api;
 
+import org.example.fronted.dto.ProjectCardDTO;
 import org.example.fronted.dto.ProyectoRequest;
 import org.example.fronted.models.Estado;
 import org.example.fronted.models.ProyectoGrado;
@@ -135,6 +136,34 @@ public class ProyectoApi extends ApiWebClient {
                 .bodyToFlux(ProyectoGrado.class)
                 .collectList();
     }
+    // ===========================
+    // OBTENER PROYECTOS DOCENTE
+    // ===========================
+    public Mono<List<ProjectCardDTO>> obtenerProyectosPorDocente(
+            String emailDocente,
+            String estado
+    ) {
+        WebClient.RequestHeadersSpec<?> req = webClient.get()
+                .uri("/api/v1/proyectos/docente/{emailDocente}", emailDocente);
+
+        return addAuthHeader(req)
+                .retrieve()
+                .bodyToFlux(ProyectoGrado.class)
+
+                // FILTRO POR ESTADO
+                .filter(p -> estado == null || estado.equals(p.getEstadoActual()))
+
+                // MAPEO A TU DTO
+                .map(p -> new ProjectCardDTO(
+                        p.getTitulo(),
+                        p.getEstudiante1Email(),   // o estudiante2 si quieres combinar
+                        p.getModalidad(),
+                        p.getDirectorEmail()
+                ))
+
+                .collectList();
+    }
+
 
     // =========================
     // SUBIR ANTEPROYECTO

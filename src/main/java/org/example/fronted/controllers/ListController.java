@@ -1,12 +1,11 @@
 package org.example.fronted.controllers;
 
-import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import org.example.fronted.dto.ProjectCardDTO;
+import org.example.fronted.util.SessionManager;
 
 
 public interface ListController {
@@ -34,6 +33,10 @@ public interface ListController {
         evaluarBtn.setOnAction(e -> btnAction(proyecto));
 
         addCard(card, title, estudiante, modalidad, director, evaluarBtn);
+    }
+
+    public default String obtenerCorreoActual(){
+        return SessionManager.getInstance().getCurrentUser().getEmail();
     }
 
     public abstract void btnAction(ProjectCardDTO proyecto);
