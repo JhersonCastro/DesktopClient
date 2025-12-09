@@ -3,44 +3,62 @@ package org.example.fronted.api;
 import org.example.fronted.dto.LoginRequestDTO;
 import org.example.fronted.dto.UserResponseDTO;
 import org.example.fronted.models.Rol;
+import org.example.fronted.models.User;
 import org.example.fronted.util.SessionManager;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import reactor.core.publisher.Mono;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AuthApi extends ApiWebClient {
 
     public Mono<Boolean> login(String email, String password) {
-        LoginRequestDTO request = new LoginRequestDTO(email, password);
-
-        System.out.println("Login: " + email);
-
+        Map<String, String> body = new HashMap<>();
+        body.put("email", email);
+        body.put("password", password);
         return webClient.post()
                 .uri("/api/auth/login")
-                .bodyValue(request)
+                .bodyValue(body)
                 .retrieve()
                 .onStatus(status -> status == HttpStatus.UNAUTHORIZED,
-                        response -> {
-                            System.out.println("Credenciales incorrectas");
-                            return Mono.error(new RuntimeException("Usuario o contraseña incorrectos"));
-                        })
+                        response -> Mono.error(new RuntimeException("Usuario o contraseña incorrectos")))
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .map(response -> {
-                    System.out.println("Respuesta: " + response);
 
                     String token = (String) response.get("token");
-                    Rol rol = (Rol) response.get("rol");
                     String userEmail = (String) response.get("email");
+                    String nombres = (String) response.get("nombres");
+                    String apellidos = (String) response.get("apellidos");
 
-                    SessionManager.getInstance().setToken(token);
-                    SessionManager.getInstance().setEmail(userEmail);
-                    SessionManager.getInstance().setRol(rol);
+                    List<String> rolesStr = (List<String>) response.get("roles");
+
+                    List<Rol> roles = new ArrayList<>();
+                    if (rolesStr != null) {
+                        for (String r : rolesStr) {
+                            roles.add(Rol.valueOf(r));
+                        }
+                    }
+
+                    // Crear usuario completo
+                    User user = new User();
+                    user.setEmail(userEmail);
+                    user.setNombres(nombres);
+                    user.setApellidos(apellidos);
+                    user.setRolesDisponibles(roles);
+                    if (!roles.isEmpty()) {
+                        user.setRolActual(roles.get(0));
+                    }
+
+                    // ✅ Guardar sesión correctamente
+                    SessionManager.getInstance().login(user, token);
 
                     System.out.println("Login exitoso!");
-                    System.out.println("Email: " + userEmail);
-                    System.out.println("Rol: " + rol);
-                    System.out.println("Token: " + token.substring(0, Math.min(20, token.length())) + "...");
+                    System.out.println("Usuario: " + user.getNombreCompleto());
+                    System.out.println("Roles: " + roles);
 
                     return true;
                 })
@@ -49,6 +67,7 @@ public class AuthApi extends ApiWebClient {
                     return Mono.just(false);
                 });
     }
+
 
     public Mono<UserResponseDTO> getCurrentUser() {
         if (!SessionManager.getInstance().isLoggedIn()) {

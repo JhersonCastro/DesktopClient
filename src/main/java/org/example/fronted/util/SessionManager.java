@@ -1,5 +1,8 @@
 package org.example.fronted.util;
 
+import javafx.application.Platform;
+import lombok.Getter;
+import lombok.Setter;
 import org.example.fronted.models.Rol;
 import org.example.fronted.models.User;
 import org.example.fronted.observer.SessionObserver;
@@ -12,15 +15,17 @@ import java.util.List;
  */
 public class SessionManager {
     private static SessionManager instance;
-
-    // Campos existentes (para compatibilidad)
-    private String token;
-    private String email;
-    private Rol rol;
-
+    /**
+     * -- GETTER --
+     *  Obtener usuario completo
+     */
     // Nuevo campo para User completo
+    @Getter
+    @Setter
     private User currentUser;
-
+    @Getter
+    @Setter
+    private String token;
     // Lista de observadores
     private final List<SessionObserver> observers;
 
@@ -39,31 +44,7 @@ public class SessionManager {
         return instance;
     }
 
-    // ============ MÉTODOS EXISTENTES (MANTENER COMPATIBILIDAD) ============
 
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setRol(Rol rol) {
-        this.rol = rol;
-    }
-
-    public Rol getRol() {
-        return rol;
-    }
 
     public boolean isLoggedIn() {
         return token != null && !token.isEmpty();
@@ -71,8 +52,6 @@ public class SessionManager {
 
     public void clearSession() {
         this.token = null;
-        this.email = null;
-        this.rol = null;
         this.currentUser = null;
         notifyUserLoggedOut();
     }
@@ -85,30 +64,7 @@ public class SessionManager {
     public void login(User user, String token) {
         this.currentUser = user;
         this.token = token;
-        this.email = user.getEmail();
-        this.rol = user.getRol() != null ? user.getRol() : null;
         notifyUserLoggedIn(user);
-    }
-
-    /**
-     * Login con datos básicos (mantener compatibilidad)
-     */
-    public void login(String email, Rol rol, String token) {
-        this.email = email;
-        this.rol = rol;
-        this.token = token;
-        // Crear User básico
-        this.currentUser = new User();
-        this.currentUser.setEmail(email);
-        this.currentUser.setNombres(email.split("@")[0]); // Nombre temporal
-        notifyUserLoggedIn(this.currentUser);
-    }
-
-    /**
-     * Obtener usuario completo
-     */
-    public User getCurrentUser() {
-        return currentUser;
     }
 
     /**
@@ -116,8 +72,6 @@ public class SessionManager {
      */
     public void updateUser(User user) {
         this.currentUser = user;
-        this.email = user.getEmail();
-        this.rol = user.getRol() != null ? user.getRol() : null;
         notifySessionUpdated(user);
     }
 
@@ -127,13 +81,9 @@ public class SessionManager {
         if (currentUser != null && currentUser.getNombreCompleto() != null) {
             return currentUser.getNombreCompleto();
         }
-        return email != null ? email.split("@")[0] : "Usuario";
+        return currentUser != null ? currentUser.getEmail().split("@")[0] : "Usuario";
     }
 
-    public boolean hasRole(Rol role) {
-        if (rol == null) return false;
-        return rol == role;
-    }
 
     public List<Rol> getRolesDisponibles() {
         List<Rol> rolesStr = new ArrayList<>();
@@ -151,7 +101,6 @@ public class SessionManager {
             for (Rol rol : currentUser.getRolesDisponibles()) {
                 if (rol.equals(nuevoRol)) {
                     currentUser.setRolActual(rol);
-                    this.rol = nuevoRol; // Para compatibilidad
                     notifySessionUpdated(currentUser);
                     break;
                 }
@@ -171,23 +120,28 @@ public class SessionManager {
     }
 
     private void notifyUserLoggedIn(User user) {
-        for (SessionObserver observer : observers) {
-            observer.onUserLoggedIn(user);
-        }
+        Platform.runLater(() -> {
+            for (SessionObserver observer : observers) {
+                observer.onUserLoggedIn(user);
+            }
+        });
     }
 
     private void notifyUserLoggedOut() {
-        for (SessionObserver observer : observers) {
-            observer.onUserLoggedOut();
-        }
+        Platform.runLater(() -> {
+            for (SessionObserver observer : observers) {
+                observer.onUserLoggedOut();
+            }
+        });
     }
 
     private void notifySessionUpdated(User user) {
-        for (SessionObserver observer : observers) {
-            observer.onSessionUpdated(user);
-        }
+        Platform.runLater(() -> {
+            for (SessionObserver observer : observers) {
+                observer.onSessionUpdated(user);
+            }
+        });
     }
-
     // ============ PARA TESTING ============
 
     public static void clearInstance() {
