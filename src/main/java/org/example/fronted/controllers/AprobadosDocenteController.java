@@ -1,14 +1,13 @@
 package org.example.fronted.controllers;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.Label;
-import javafx.geometry.Insets;
-import javafx.application.Platform;
 import org.example.fronted.dto.ProjectCardDTO;
 
 import java.net.URL;
@@ -16,9 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class PendientesListaController extends UIBase implements Initializable, ListController {
+public class AprobadosDocenteController extends UIBase implements ListController, Initializable {
 
-    @FXML private FlowPane proyectosContainer;
+    @FXML
+    private FlowPane proyectosContainer;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -33,24 +33,9 @@ public class PendientesListaController extends UIBase implements Initializable, 
         Platform.runLater(() -> proyectos.forEach(this::agregarTarjetaProyecto));
     }
 
-
-
-    private void abrirEvaluacion(ProjectCardDTO proyecto) {
-        // Aquí cargamos EvaluarFormatoA.fxml y le pasamos datos simulados
-        System.out.println("Evaluando proyecto: " + proyecto.titulo);
-        // UIBase.loadView("/views/coordinator/evaluar_formato_a.fxml");
-
-        // Ejemplo: pasar datos a EvaluarFormatoAController
-        // EvaluarFormatoAController.setProyectoActual(proyecto);
-    }
-
-    public void regresar() {
-        loadView("/views/coordinator/dashboard_coordinator.fxml");
-    }
-
     @Override
     public void btnAction(ProjectCardDTO proyecto) {
-        abrirEvaluacion(proyecto);
+        subirAnteproyecto(proyecto);
     }
 
     @Override
@@ -61,6 +46,20 @@ public class PendientesListaController extends UIBase implements Initializable, 
 
     @Override
     public Button getButton() {
-        return new Button("Evaluar");
+        return new Button("Subir Anteproyecto");
+    }
+
+    public void regresar(ActionEvent actionEvent) {
+        loadView("/views/professor/dashboard_professor.fxml");
+    }
+
+    private void subirAnteproyecto(ProjectCardDTO proyecto) {
+        // Aquí cargamos EvaluarFormatoA.fxml y le pasamos datos simulados
+        System.out.println("Subiendo Anteproyecto: " + proyecto.titulo);
+        loadView("/views/professor/subir_anteproyecto.fxml");
+
+        // Ejemplo: pasar datos a EvaluarFormatoAController
+        // EvaluarFormatoAController.setProyectoActual(proyecto);
     }
 }
+

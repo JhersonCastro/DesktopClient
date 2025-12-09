@@ -124,15 +124,15 @@
 
 /* Fondo de iconos */
 .icon-pending {
-    -fx-background-color: linear-gradient(135deg, #fecaca 0%, #dc2626 100%);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #fecaca 0%, #dc2626 100%);
 }
 
 .icon-evaluacion {
-    -fx-background-color: linear-gradient(135deg, #fef3c7 0%, #f59e0b 100%);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #fef3c7 0%, #f59e0b 100%);
 }
 
 .icon-docentes {
-    -fx-background-color: linear-gradient(135deg, #dbeafe 0%, #2563eb 100%);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #dbeafe 0%, #2563eb 100%);
 }
 
 /* Texto de tarjetas */
@@ -333,10 +333,10 @@
 }
 
 /* Estilo específico para botón Ver */
-.table-button:nth-child(2) {
+.table-button-ver {
     -fx-background-color: #2563eb;
 }
 
-.table-button:nth-child(2):hover {
+.table-button-ver:hover {
     -fx-background-color: #1d4ed8;
 }

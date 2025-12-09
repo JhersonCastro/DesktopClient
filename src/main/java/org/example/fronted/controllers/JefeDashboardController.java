@@ -81,7 +81,7 @@ public class JefeDashboardController extends UIBase{
 
             {
                 btnAsignar.getStyleClass().add("table-button");
-                btnVer.getStyleClass().add("table-button");
+                btnVer.getStyleClass().add("table-button-ver");
 
                 btnAsignar.setOnAction(event -> {
                     Anteproyecto anteproyecto = getTableView().getItems().get(getIndex());
