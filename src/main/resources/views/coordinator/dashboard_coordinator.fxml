@@ -120,22 +120,6 @@
                     </ImageView>
                 </graphic>
             </Button>
-
-            <Button text="Reportes" styleClass="action-button" onAction="#generarReportes">
-                <graphic>
-                    <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
-                        <Image url="@../../images/icons/report.png"/>
-                    </ImageView>
-                </graphic>
-            </Button>
-
-            <Button text="Configuración" styleClass="action-button" onAction="#abrirConfiguracion">
-                <graphic>
-                    <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
-                        <Image url="@../../images/icons/settings.png"/>
-                    </ImageView>
-                </graphic>
-            </Button>
         </HBox>
     </VBox>
 </VBox>

@@ -40,33 +40,6 @@
         <!-- CONTENEDOR DE TARJETAS -->
         <FlowPane fx:id="proyectosContainer" hgap="20" vgap="20" prefWrapLength="800">
 
-            <!-- TARJETA DE EJEMPLO 1 -->
-            <VBox spacing="10" styleClass="project-card">
-                <Label text="Título: Sistema de Control Académico" styleClass="card-title"/>
-                <Label text="Estudiante: Juan Pérez" styleClass="card-info"/>
-                <Label text="Modalidad: Investigación" styleClass="card-info"/>
-                <Label text="Director: Ing. Luis Martínez" styleClass="card-info"/>
-                <Button text="Evaluar" styleClass="card-button"/>
-            </VBox>
-
-            <!-- TARJETA DE EJEMPLO 2 -->
-            <VBox spacing="10" styleClass="project-card">
-                <Label text="Título: Práctica Profesional en Electrónica" styleClass="card-title"/>
-                <Label text="Estudiante: María Gómez" styleClass="card-info"/>
-                <Label text="Modalidad: Práctica Profesional" styleClass="card-info"/>
-                <Label text="Director: Ing. Ana Fernández" styleClass="card-info"/>
-                <Button text="Evaluar" styleClass="card-button"/>
-            </VBox>
-
-            <!-- TARJETA DE EJEMPLO 3 -->
-            <VBox spacing="10" styleClass="project-card">
-                <Label text="Título: Desarrollo de App Educativa" styleClass="card-title"/>
-                <Label text="Estudiante: Juan David Martínez" styleClass="card-info"/>
-                <Label text="Modalidad: Investigación" styleClass="card-info"/>
-                <Label text="Director: Ing. Jorge Hernández" styleClass="card-info"/>
-                <Button text="Evaluar" styleClass="card-button"/>
-            </VBox>
-
         </FlowPane>
 
     </VBox>

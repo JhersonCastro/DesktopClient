@@ -24,10 +24,7 @@ public class AprobadosDocenteController extends UIBase implements ListController
     public void initialize(URL location, ResourceBundle resources) {
         // Datos simulados
         List<ProjectCardDTO> proyectos = new ArrayList<>();
-        proyectos.add(new ProjectCardDTO("Sistema de Inventarios", "Juan Pérez", "Investigación", "Dr. Gómez"));
-        proyectos.add(new ProjectCardDTO("App Móvil Educativa", "María Gómez", "Práctica Profesional", "Mg. Martínez"));
-        proyectos.add(new ProjectCardDTO("Control de Asistencias", "Carlos Ramírez", "Investigación", "Dra. Fernández"));
-        proyectos.add(new ProjectCardDTO("Página Web de la Empresa", "Ana Torres", "Práctica Profesional", "Dr. Hernández"));
+
 
         // Agregar cada proyecto como tarjeta
         Platform.runLater(() -> proyectos.forEach(this::agregarTarjetaProyecto));

@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +63,6 @@ public class ProyectoApi extends ApiWebClient {
                     p.setEstudiante2Email((String) response.get("estudiante2Email"));
                     p.setEvaluador1Email((String) response.get("evaluador1Email"));
                     p.setEvaluador2Email((String) response.get("evaluador2Email"));
-
                     // objetivos
                     p.setObjetivoGeneral((String) response.get("objetivoGeneral"));
                     p.setObjetivosEspecificos((String) response.get("objetivosEspecificos"));
@@ -199,4 +199,126 @@ public class ProyectoApi extends ApiWebClient {
                 .retrieve()
                 .bodyToMono(Void.class);
     }
+    public Mono<List<ProyectoGrado>> obtenerProyectosPendientes() {
+        WebClient.RequestHeadersSpec<?> req = webClient.get()
+                .uri(uri -> uri.path("/api/v1/proyectos/formatoA/pendientes").build());
+
+        return addAuthHeader(req)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
+                .map(lista -> {
+                    List<ProyectoGrado> proyectos = new ArrayList<>();
+
+                    for (Map<String, Object> data : lista) {
+                        ProyectoGrado p = new ProyectoGrado();
+
+                        p.setId(Long.parseLong(data.get("id").toString()));
+                        p.setTitulo((String) data.get("titulo"));
+                        p.setModalidad((String) data.get("modalidad"));
+                        p.setDirectorEmail((String) data.get("directorEmail"));
+                        p.setCodirectorEmail((String) data.get("codirectorEmail"));
+                        p.setEstudiante1Email((String) data.get("estudiante1Email"));
+                        p.setEstudiante2Email((String) data.get("estudiante2Email"));
+
+                        p.setEstadoActual((String) data.get("estadoActual"));
+                        p.setObservacionesEvaluacion((String) data.get("observacionesEvaluacion"));
+
+                        // Estado anidado
+                        if (data.get("estado") instanceof Map) {
+                            Map<String, Object> estadoMap = (Map<String, Object>) data.get("estado");
+                            if (estadoMap.get("nombreEstado") != null) {
+                                Estado estado = new Estado();
+                                estado.setNombreEstado((String) estadoMap.get("nombreEstado"));
+                                p.setEstado(estado);
+                            }
+                        }
+
+                        proyectos.add(p);
+                    }
+
+                    return proyectos;
+                });
+    }
+    public Mono<List<ProyectoGrado>> obtenerProyectosRechazados() {
+        WebClient.RequestHeadersSpec<?> req = webClient.get()
+                .uri(uri -> uri.path("/api/v1/proyectos/formatoA/rechazados").build());
+
+        return addAuthHeader(req)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
+                .map(lista -> {
+                    List<ProyectoGrado> proyectos = new ArrayList<>();
+
+                    for (Map<String, Object> data : lista) {
+                        ProyectoGrado p = new ProyectoGrado();
+
+                        p.setId(Long.parseLong(data.get("id").toString()));
+                        p.setTitulo((String) data.get("titulo"));
+                        p.setModalidad((String) data.get("modalidad"));
+                        p.setDirectorEmail((String) data.get("directorEmail"));
+                        p.setCodirectorEmail((String) data.get("codirectorEmail"));
+                        p.setEstudiante1Email((String) data.get("estudiante1Email"));
+                        p.setEstudiante2Email((String) data.get("estudiante2Email"));
+
+                        p.setEstadoActual((String) data.get("estadoActual"));
+                        p.setObservacionesEvaluacion((String) data.get("observacionesEvaluacion"));
+
+                        // Estado anidado
+                        if (data.get("estado") instanceof Map) {
+                            Map<String, Object> estadoMap = (Map<String, Object>) data.get("estado");
+                            if (estadoMap.get("nombreEstado") != null) {
+                                Estado estado = new Estado();
+                                estado.setNombreEstado((String) estadoMap.get("nombreEstado"));
+                                p.setEstado(estado);
+                            }
+                        }
+
+                        proyectos.add(p);
+                    }
+
+                    return proyectos;
+                });
+    }
+    public Mono<List<ProyectoGrado>> obtenerProyectosAprobados() {
+        WebClient.RequestHeadersSpec<?> req = webClient.get()
+                .uri(uri -> uri.path("/api/v1/proyectos/formatoA/aprobados").build());
+
+        return addAuthHeader(req)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
+                .map(lista -> {
+                    List<ProyectoGrado> proyectos = new ArrayList<>();
+
+                    for (Map<String, Object> data : lista) {
+                        ProyectoGrado p = new ProyectoGrado();
+
+                        p.setId(Long.parseLong(data.get("id").toString()));
+                        p.setTitulo((String) data.get("titulo"));
+                        p.setModalidad((String) data.get("modalidad"));
+                        p.setDirectorEmail((String) data.get("directorEmail"));
+                        p.setCodirectorEmail((String) data.get("codirectorEmail"));
+                        p.setEstudiante1Email((String) data.get("estudiante1Email"));
+                        p.setEstudiante2Email((String) data.get("estudiante2Email"));
+
+                        p.setEstadoActual((String) data.get("estadoActual"));
+                        p.setObservacionesEvaluacion((String) data.get("observacionesEvaluacion"));
+
+                        // Estado anidado
+                        if (data.get("estado") instanceof Map) {
+                            Map<String, Object> estadoMap = (Map<String, Object>) data.get("estado");
+                            if (estadoMap.get("nombreEstado") != null) {
+                                Estado estado = new Estado();
+                                estado.setNombreEstado((String) estadoMap.get("nombreEstado"));
+                                p.setEstado(estado);
+                            }
+                        }
+
+                        proyectos.add(p);
+                    }
+
+                    return proyectos;
+                });
+    }
+
+
 }

@@ -88,7 +88,6 @@ public class LoginController extends UIBase {
                         System.out.println("Principal: " + authInfo.get("principal"));
                         System.out.println("Authorities: " + authInfo.get("authorities"));
 
-                        loadView("/views/coordinator/evaluar_formatoA.fxml", 28);
 
                     } else {
                         showError("Credenciales incorrectas");

@@ -9,7 +9,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
 import javafx.geometry.Insets;
 import javafx.application.Platform;
+import org.example.fronted.api.ProyectoApi;
 import org.example.fronted.dto.ProjectCardDTO;
+import org.example.fronted.models.ProyectoGrado;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -19,27 +21,54 @@ import java.util.ResourceBundle;
 public class PendientesListaController extends UIBase implements Initializable, ListController {
 
     @FXML private FlowPane proyectosContainer;
-
+    private ProyectoApi proyectoApi = new ProyectoApi();
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Datos simulados
-        List<ProjectCardDTO> proyectos = new ArrayList<>();
-        proyectos.add(new ProjectCardDTO("Sistema de Inventarios", "Juan Pérez", "Investigación", "Dr. Gómez"));
-        proyectos.add(new ProjectCardDTO("App Móvil Educativa", "María Gómez", "Práctica Profesional", "Mg. Martínez"));
-        proyectos.add(new ProjectCardDTO("Control de Asistencias", "Carlos Ramírez", "Investigación", "Dra. Fernández"));
-        proyectos.add(new ProjectCardDTO("Página Web de la Empresa", "Ana Torres", "Práctica Profesional", "Dr. Hernández"));
 
-        // Agregar cada proyecto como tarjeta
-        Platform.runLater(() -> proyectos.forEach(this::agregarTarjetaProyecto));
+        proyectoApi.obtenerProyectosPendientes()
+                .subscribe(
+                        lista -> {
+                            Platform.runLater(() -> {
+                                for (ProyectoGrado p : lista) {
+                                    Long id = p.getId();
+
+                                    String titulo = p.getTitulo();
+                                    String estudiante = p.getEstudiante1Email(); // o nombre si lo tienes
+                                    String modalidad = p.getModalidad();
+                                    String director = p.getDirectorEmail();
+
+                                    ProjectCardDTO dto = new ProjectCardDTO(
+                                            id,
+                                            titulo != null ? titulo : "Sin título",
+                                            estudiante != null ? estudiante : "Sin estudiante",
+                                            modalidad != null ? modalidad : "Sin modalidad",
+                                            director != null ? director : "Sin director"
+                                    );
+
+                                    agregarTarjetaProyecto(dto);
+                                }
+                            });
+                        },
+                        error -> {
+                            error.printStackTrace();
+                            Platform.runLater(() ->
+                                    System.out.println("Error al cargar proyectos: " + error.getMessage())
+                            );
+                        }
+                );
     }
+
 
 
 
     private void abrirEvaluacion(ProjectCardDTO proyecto) {
         // Aquí cargamos EvaluarFormatoA.fxml y le pasamos datos simulados
+
         System.out.println("Evaluando proyecto: " + proyecto.titulo);
         // UIBase.loadView("/views/coordinator/evaluar_formato_a.fxml");
+        showError("Mira el id " + proyecto.id);
 
+        loadView("/views/coordinator/evaluar_formatoA.fxml", proyecto.id);
         // Ejemplo: pasar datos a EvaluarFormatoAController
         // EvaluarFormatoAController.setProyectoActual(proyecto);
     }
@@ -51,6 +80,7 @@ public class PendientesListaController extends UIBase implements Initializable, 
     @Override
     public void btnAction(ProjectCardDTO proyecto) {
         abrirEvaluacion(proyecto);
+
     }
 
     @Override

@@ -1,8 +1,12 @@
 package org.example.fronted.controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import org.example.fronted.api.ProyectoApi;
+import org.example.fronted.dto.ProjectCardDTO;
+import org.example.fronted.models.ProyectoGrado;
 import org.example.fronted.util.SessionManager;
 
 public class DashboardCoordinadorController extends UIBase{
@@ -10,7 +14,7 @@ public class DashboardCoordinadorController extends UIBase{
     @FXML private Label pendientesCount;
     @FXML private Label aprobadosCount;
     @FXML private Label rechazadosCount;
-
+    ProyectoApi proyectoApi = new ProyectoApi();
     private SessionManager sessionManager;
 
     @FXML
@@ -20,13 +24,47 @@ public class DashboardCoordinadorController extends UIBase{
     }
 
     private void loadStatistics() {
-        // Aquí iría la lógica para cargar las estadísticas reales desde el backend
-        // Por ahora, simulamos datos
-        pendientesCount.setText("12");
-        aprobadosCount.setText("45");
-        sessionManager.getCurrentUser();
-        rechazadosCount.setText("8");
+
+        proyectoApi.obtenerProyectosPendientes()
+                .subscribe(
+                        lista -> Platform.runLater(() -> {
+                            pendientesCount.setText("" + lista.size());
+                        }),
+                        error -> {
+                            error.printStackTrace();
+                            Platform.runLater(() ->
+                                    System.out.println("Error al cargar proyectos pendientes: " + error.getMessage())
+                            );
+                        }
+                );
+
+        proyectoApi.obtenerProyectosAprobados()
+                .subscribe(
+                        lista -> Platform.runLater(() -> {
+                            aprobadosCount.setText("" + lista.size());
+                        }),
+                        error -> {
+                            error.printStackTrace();
+                            Platform.runLater(() ->
+                                    System.out.println("Error al cargar proyectos aprobados: " + error.getMessage())
+                            );
+                        }
+                );
+
+        proyectoApi.obtenerProyectosRechazados()
+                .subscribe(
+                        lista -> Platform.runLater(() -> {
+                            rechazadosCount.setText("" + lista.size());
+                        }),
+                        error -> {
+                            error.printStackTrace();
+                            Platform.runLater(() ->
+                                    System.out.println("Error al cargar proyectos rechazados: " + error.getMessage())
+                            );
+                        }
+                );
     }
+
 
     // ============ HANDLERS DE BOTONES ============
 

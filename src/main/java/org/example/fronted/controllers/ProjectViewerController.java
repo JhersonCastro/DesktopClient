@@ -1,63 +1,51 @@
 package org.example.fronted.controllers;
 
-import javafx.event.ActionEvent;
-import org.example.fronted.api.DocumentoApi;
-import org.example.fronted.api.FormatoAApi;
-import org.example.fronted.api.ProyectoApi;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import org.example.fronted.models.Documento;
+import org.example.fronted.api.DocumentoApi;
+import org.example.fronted.api.FormatoAApi;
+import org.example.fronted.api.ProyectoApi;
 import org.example.fronted.util.PdfViewerUtil;
-import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-public class EvaluarFormatoAController extends UIBase{
-
+public class ProjectViewerController extends UIBase{
     @FXML
     private Label tituloProyectoLabel;
-
     @FXML
     private Label modalidadLabel;
-
     @FXML
     private Label estudianteLabel;
-
     @FXML
     private Label directorLabel;
-
     @FXML
     private Button verPDFButton;
-
-    @FXML
-    private Button aprobarButton;
-
-    @FXML
-    private Button rechazarButton;
-
     @FXML
     private TextArea observacionesTextArea;
 
-    private Long formatoAId; // ID del documento Formato A
+    private String path;
+    private Long formatoAId;
     private ProyectoApi proyectoApi = new ProyectoApi();
     private FormatoAApi formatoAApi = new FormatoAApi();
     private DocumentoApi documentoApi = new DocumentoApi();
-
     @Override
     public void setArgs(Object[] args) {
         super.setArgs(args);
         this.formatoAId = (Long)args[0];
+        this.path = (String)args[1];
 
         cargarDatosFormatoA();
         cargarDocumentosProyecto();
     }
 
+    public void regresar(ActionEvent actionEvent) {
+        loadView(path);
+    }
     private void cargarDatosFormatoA() {
         if (formatoAId == null) return;
 
@@ -81,13 +69,7 @@ public class EvaluarFormatoAController extends UIBase{
                                     director += "\nCodirector: " + proyecto.getCodirectorEmail();
                                 }
                                 directorLabel.setText(director);
-
-                                // Deshabilitar botones si ya fue evaluado
-                                if ("APROBADO".equals(proyecto.getEstadoActual()) || "RECHAZADO".equals(proyecto.getEstadoActual())) {
-                                    aprobarButton.setDisable(true);
-                                    rechazarButton.setDisable(true);
-                                    observacionesTextArea.setDisable(true);
-                                }
+                                observacionesTextArea.setText(proyecto.getObservacionesEvaluacion());
                             });
                         },
                         error -> {
@@ -167,85 +149,6 @@ public class EvaluarFormatoAController extends UIBase{
                         }
                 );
     }
-
-    @FXML
-    private void aprobarFormatoA() {
-        String observaciones = observacionesTextArea.getText();
-
-        if (observaciones.isEmpty()) {
-            showAlert("Error", "Falta indicar las observaciones");
-            return;
-        }
-
-        if (formatoAId == null) {
-            showAlert("Error", "No se ha seleccionado un proyecto");
-            return;
-        }
-
-        aprobarButton.setDisable(true);
-        rechazarButton.setDisable(true);
-
-        formatoAApi.evaluarFormatoA(formatoAId, true, observaciones)
-                .subscribe(
-                        response -> {
-                            Platform.runLater(() -> {
-                                showAlert("Formato A Aprobado",
-                                        "El Formato A ha sido aprobado exitosamente.\n" +
-                                                "Estado: " + response.get("estadoActual") + "\n" +
-                                                "Intento: " + response.get("numeroIntento"));
-
-                            });
-                        },
-                        error -> {
-                            Platform.runLater(() -> {
-                                aprobarButton.setDisable(false);
-                                rechazarButton.setDisable(false);
-                                showAlert("Error",
-                                        "No se pudo aprobar el Formato A: " + error.getMessage());
-                            });
-                        }
-                );
-    }
-
-    @FXML
-    private void rechazarFormatoA() {
-        String observaciones = observacionesTextArea.getText();
-
-        if (observaciones.isEmpty()) {
-            showAlert("Error", "Falta indicar las observaciones");
-            return;
-        }
-
-        if (formatoAId == null) {
-            showAlert("Error", "No se ha seleccionado un proyecto");
-            return;
-        }
-
-        aprobarButton.setDisable(true);
-        rechazarButton.setDisable(true);
-
-        formatoAApi.evaluarFormatoA(formatoAId, false, observaciones)
-                .subscribe(
-                        response -> {
-                            Platform.runLater(() -> {
-                                showAlert("Formato A Rechazado",
-                                        "El Formato A ha sido rechazado.\n" +
-                                                "Observaciones: " + observaciones + "\n" +
-                                                "El docente puede reintentar el proyecto.");
-
-                            });
-                        },
-                        error -> {
-                            Platform.runLater(() -> {
-                                aprobarButton.setDisable(false);
-                                rechazarButton.setDisable(false);
-                                showAlert("Error",
-                                        "No se pudo rechazar el Formato A: " + error.getMessage());
-                            });
-                        }
-                );
-    }
-
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -254,7 +157,4 @@ public class EvaluarFormatoAController extends UIBase{
         alert.showAndWait();
     }
 
-    public void regresar(ActionEvent actionEvent) {
-        loadView("/views/coordinator/pendientes_list.fxml");
-    }
 }
