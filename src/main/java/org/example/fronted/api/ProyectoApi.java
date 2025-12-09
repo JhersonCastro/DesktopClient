@@ -1,14 +1,18 @@
 package org.example.fronted.api;
 
 import org.example.fronted.dto.ProyectoRequest;
+import org.example.fronted.models.Estado;
 import org.example.fronted.models.ProyectoGrado;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ProyectoApi extends ApiWebClient {
 
@@ -31,45 +35,80 @@ public class ProyectoApi extends ApiWebClient {
     }
 
     // =========================
-    // SUBIR FORMATO A
-    // =========================
-    public Mono<Void> subirFormatoA(
-            String titulo,
-            String modalidad,
-            String directorEmail,
-            String codirectorEmail,
-            String estudiante1Email,
-            ByteArrayResource pdf,
-            ByteArrayResource carta
-    ) {
-        WebClient.RequestHeadersSpec<?> req = webClient.post()
-                .uri("/api/v1/proyectos/formatoA")
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromMultipartData("titulo", titulo)
-                        .with("modalidad", modalidad)
-                        .with("directorEmail", directorEmail)
-                        .with("codirectorEmail", codirectorEmail)
-                        .with("estudiante1Email", estudiante1Email)
-                        .with("pdf", pdf)
-                        .with("carta", carta)
-                );
-
-        return addAuthHeader(req)
-                .retrieve()
-                .bodyToMono(Void.class);
-    }
-
-    // =========================
     // OBTENER PROYECTO POR ID
     // =========================
     public Mono<ProyectoGrado> obtenerPorId(Long id) {
+        Map<String, Object> empty = new HashMap<>();
+
         WebClient.RequestHeadersSpec<?> req = webClient.get()
                 .uri("/api/v1/proyectos/{id}", id);
 
         return addAuthHeader(req)
                 .retrieve()
-                .bodyToMono(ProyectoGrado.class);
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .map(response -> {
+
+                    ProyectoGrado p = new ProyectoGrado();
+
+                    // básicos
+                    p.setId(((Number) response.get("id")).longValue());
+                    p.setTitulo((String) response.get("titulo"));
+                    p.setModalidad((String) response.get("modalidad"));
+
+                    // correos
+                    p.setDirectorEmail((String) response.get("directorEmail"));
+                    p.setCodirectorEmail((String) response.get("codirectorEmail"));
+                    p.setEstudiante1Email((String) response.get("estudiante1Email"));
+                    p.setEstudiante2Email((String) response.get("estudiante2Email"));
+                    p.setEvaluador1Email((String) response.get("evaluador1Email"));
+                    p.setEvaluador2Email((String) response.get("evaluador2Email"));
+
+                    // objetivos
+                    p.setObjetivoGeneral((String) response.get("objetivoGeneral"));
+                    p.setObjetivosEspecificos((String) response.get("objetivosEspecificos"));
+
+                    // estados
+                    p.setNumeroIntento(
+                            response.get("numeroIntento") != null
+                                    ? ((Number) response.get("numeroIntento")).intValue()
+                                    : null
+                    );
+                    p.setEstadoActual((String) response.get("estadoActual"));
+
+                    // estado anidado
+                    if (response.get("estado") != null) {
+                        Map<String, Object> estadoMap =
+                                (Map<String, Object>) response.get("estado");
+
+                        Estado estado = new Estado();
+                        estado.setNombreEstado((String) estadoMap.get("nombreEstado"));
+                        p.setEstado(estado);
+                    }
+
+                    // observaciones
+                    p.setObservacionesEvaluacion((String) response.get("observacionesEvaluacion"));
+
+                    // fechas
+                    p.setFechaFormatoA((String) response.get("fechaFormatoA"));
+                    p.setFechaAnteproyecto((String) response.get("fechaAnteproyecto"));
+
+                    // tokens
+                    p.setFormatoAToken((String) response.get("formatoAToken"));
+                    p.setCartaToken((String) response.get("cartaToken"));
+                    p.setAnteproyectoToken((String) response.get("anteproyectoToken"));
+
+                    // intentos
+                    p.setIntentos(
+                            response.get("intentos") != null
+                                    ? ((Number) response.get("intentos")).intValue()
+                                    : null
+                    );
+
+                    return p;
+                });
     }
+
+
 
     // =========================
     // OBTENER PROYECTOS POR ESTUDIANTE
@@ -85,14 +124,28 @@ public class ProyectoApi extends ApiWebClient {
     }
 
     // =========================
-    // EVALUAR PROYECTO
+    // OBTENER ANTEPROYECTOS POR JEFE
     // =========================
-    public Mono<Void> evaluarProyecto(Long id, boolean aprobado, String observaciones) {
+    public Mono<List<ProyectoGrado>> obtenerAnteproyectosPorJefe(String emailJefe) {
+        WebClient.RequestHeadersSpec<?> req = webClient.get()
+                .uri("/api/v1/proyectos/anteproyectos/jefe/{emailJefe}", emailJefe);
+
+        return addAuthHeader(req)
+                .retrieve()
+                .bodyToFlux(ProyectoGrado.class)
+                .collectList();
+    }
+
+    // =========================
+    // SUBIR ANTEPROYECTO
+    // =========================
+    public Mono<Void> subirAnteproyecto(Long idProyecto, String jefeDepartamentoEmail, ByteArrayResource anteproyectoPdf) {
         WebClient.RequestHeadersSpec<?> req = webClient.post()
-                .uri(uri -> uri.path("/api/v1/proyectos/{id}/evaluar")
-                        .queryParam("aprobado", aprobado)
-                        .queryParam("observaciones", observaciones)
-                        .build(id));
+                .uri("/api/v1/proyectos/{idProyecto}/anteproyecto", idProyecto)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData("jefeDepartamentoEmail", jefeDepartamentoEmail)
+                        .with("pdf", anteproyectoPdf)
+                );
 
         return addAuthHeader(req)
                 .retrieve()
@@ -100,11 +153,14 @@ public class ProyectoApi extends ApiWebClient {
     }
 
     // =========================
-    // REINTENTAR PROYECTO
+    // EVALUAR PROYECTO (evaluación general, no solo Formato A)
     // =========================
-    public Mono<Void> reintentarProyecto(Long id) {
+    public Mono<Void> evaluarProyecto(Long id, boolean aprobado, String observaciones) {
         WebClient.RequestHeadersSpec<?> req = webClient.post()
-                .uri("/api/v1/proyectos/{id}/reintentar", id);
+                .uri(uri -> uri.path("/api/v1/proyectos/{id}/evaluar")
+                        .queryParam("aprobado", aprobado)
+                        .queryParam("observaciones", observaciones)
+                        .build(id));
 
         return addAuthHeader(req)
                 .retrieve()

@@ -15,6 +15,8 @@ module org.example.fronted {
     requires java.desktop;
     requires javafx.swing;
     requires com.fasterxml.jackson.annotation;
+    requires spring.context;
+    opens org.example.fronted.config to spring.core;
 
 
     opens org.example.fronted to javafx.fxml;

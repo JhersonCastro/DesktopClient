@@ -52,7 +52,7 @@
                    GridPane.rowIndex="3" GridPane.columnIndex="1"/>
         </GridPane>
 
-        <Button text="Ver PDF" onAction="#verPDF" styleClass="action-button">
+        <Button fx:id="verPDFButton" text="Ver PDF" onAction="#verPDF" styleClass="action-button">
             <graphic>
                 <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
                     <Image url="@../../images/icons/folder.png"/>
@@ -78,7 +78,7 @@
 
     <!-- ACCIONES -->
     <HBox spacing="20" alignment="CENTER">
-        <Button text="Aprobar" onAction="#aprobarFormatoA" styleClass="action-button">
+        <Button fx:id="aprobarButton" text="Aprobar" onAction="#aprobarFormatoA" styleClass="action-button">
             <graphic>
                 <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
                     <Image url="@../../images/icons/check.png"/>
@@ -86,7 +86,7 @@
             </graphic>
         </Button>
 
-        <Button text="Rechazar" onAction="#rechazarFormatoA" styleClass="action-button">
+        <Button fx:id="rechazarButton" text="Rechazar" onAction="#rechazarFormatoA" styleClass="action-button">
             <graphic>
                 <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
                     <Image url="@../../images/icons/x.png"/>

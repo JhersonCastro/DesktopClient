@@ -4,9 +4,12 @@ package org.example.fronted.controllers;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.example.fronted.api.AuthApi;
+import org.example.fronted.api.DebugApi;
 import org.example.fronted.util.SessionManager;
 import reactor.core.scheduler.Schedulers;
 import javafx.application.Platform;
+
+import java.util.Map;
 
 public class LoginController extends UIBase {
     public Button loginButton;
@@ -75,6 +78,18 @@ public class LoginController extends UIBase {
                         System.out.println("Login exitoso!");
                         // Aquí iría navegar al dashboard
                         mainController.onUserLoggedIn(SessionManager.getInstance().getCurrentUser());
+
+                        System.out.println("Login exitoso!");
+                        System.out.println("Token" + SessionManager.getInstance().getToken());
+                        DebugApi debugApi = new DebugApi();
+
+                        Map<String, Object> authInfo = debugApi.obtenerAuthInfo().block();
+
+                        System.out.println("Principal: " + authInfo.get("principal"));
+                        System.out.println("Authorities: " + authInfo.get("authorities"));
+
+                        loadView("/views/coordinator/evaluar_formatoA.fxml", 28);
+
                     } else {
                         showError("Credenciales incorrectas");
                     }

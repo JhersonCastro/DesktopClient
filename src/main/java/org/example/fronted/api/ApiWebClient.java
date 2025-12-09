@@ -3,6 +3,7 @@ package org.example.fronted.api;
 import org.example.fronted.util.SessionManager;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
 public abstract class ApiWebClient {
@@ -15,10 +16,18 @@ public abstract class ApiWebClient {
 
     // Constructor general: permite otros baseUrl (ej. proyectos)
     protected ApiWebClient(String baseUrl) {
+        ExchangeStrategies strategies = ExchangeStrategies.builder()
+                .codecs(cfg -> cfg
+                        .defaultCodecs()
+                        .maxInMemorySize(10 * 1024 * 1024) // 10MB
+                )
+                .build();
+
         this.webClient = WebClient.builder()
                 .baseUrl(baseUrl)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .exchangeStrategies(strategies)
                 .build();
     }
 

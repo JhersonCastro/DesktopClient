@@ -37,8 +37,7 @@ public class MainController implements SessionObserver{
     public void initialize() {
         System.out.println("MainController inicializado");
         // Cargar login por defecto al iniciar
-        //loadView("/views/auth/Login.fxml");
-        loadView("/views/professor/formatA_new.fxml");
+        loadView("/views/auth/Login.fxml");
         sessionManager = SessionManager.getInstance();
         sessionManager.registerObserver(this);
     }
@@ -142,7 +141,7 @@ public class MainController implements SessionObserver{
     /**
      * Carga una vista dentro del área de contenido
      */
-    void loadView(String fxmlPath) {
+    void loadView(String fxmlPath, Object... args) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent view = loader.load();
@@ -153,11 +152,11 @@ public class MainController implements SessionObserver{
             // Si el controlador extiende UIBase, inyectar MainController
             if (controller instanceof UIBase) {
                 ((UIBase) controller).setMainController(this);
+                ((UIBase) controller).setArgs(args);
             }
 
             // Configurar otros controladores específicos si es necesario
-            if (fxmlPath.contains("login.fxml") && controller instanceof LoginController) {
-                LoginController loginController = (LoginController) controller;
+            if (fxmlPath.contains("login.fxml") && controller instanceof LoginController loginController) {
                 loginController.setMainController(this); // Si LoginController también extiende UIBase
             }
 
