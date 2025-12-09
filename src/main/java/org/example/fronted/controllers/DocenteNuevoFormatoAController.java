@@ -382,7 +382,13 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
 
             // Director: el docente logueado
             // Ajusta el getter según tu SessionManager (getEmail/getUserEmail)
-            dto.setDirectorEmail(sessionManager.getEmail());
+            if (sessionManager.getCurrentUser() != null && sessionManager.getCurrentUser().getEmail() != null) {
+                dto.setDirectorEmail(sessionManager.getCurrentUser().getEmail());
+            } else {
+                // Manejo de error o valor por defecto
+                mostrarAlerta("Error", "No se pudo obtener el email del docente", Alert.AlertType.ERROR);
+                return false;
+            }
 
             // Codirector: por ahora mandamos null si es "Ninguno"
             String codirectorSeleccionado = codirectorComboBox.getValue();
