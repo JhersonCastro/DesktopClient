@@ -27,13 +27,13 @@ public class EvaluacionesDocenteController extends UIBase implements ListControl
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        cargarProyectosDocente();
+        cargarEvaluacionesDocente();
     }
 
-    private void cargarProyectosDocente() {
+    private void cargarEvaluacionesDocente() {
         String emailDocente = obtenerCorreoActual();
 
-        proyectoApi.obtenerProyectosPorDocente(emailDocente, null)
+        proyectoApi.obtenerProyectosParaEvaluar(emailDocente)
                 .subscribe(this::pintarProyectos, this::manejarError);
     }
 
