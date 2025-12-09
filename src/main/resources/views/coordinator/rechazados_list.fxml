@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.fronted.controllers.RechazadosCoordinadorController"
+            stylesheets="@../../css/coordinator-lista.css"
+            styleClass="cnp-scroll">
+    <VBox spacing="20"
+          styleClass="dashboard-content">
+
+        <padding>
+            <Insets top="40" right="60" bottom="40" left="60"/>
+        </padding>
+
+        <VBox spacing="10" styleClass="cnp-header">
+
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Button onAction="#regresar" styleClass="cnp-back-button">
+                    <graphic>
+                        <ImageView fitHeight="24" fitWidth="24" preserveRatio="true">
+                            <Image url="@../../images/icons/back.png"/>
+                        </ImageView>
+                    </graphic>
+                </Button>
+            </HBox>
+        </VBox>
+
+        <!-- TÍTULO -->
+        <VBox spacing="5" alignment="CENTER_LEFT">
+            <Label text="Proyectos Rechazados" styleClass="section-title"/>
+            <Label text="Seleccione un proyecto para ver" styleClass="section-subtitle"/>
+        </VBox>
+
+        <!-- CONTENEDOR DE TARJETAS -->
+        <FlowPane fx:id="proyectosContainer" hgap="20" vgap="20" prefWrapLength="800">
+
+
+
+        </FlowPane>
+
+    </VBox>
+</ScrollPane>

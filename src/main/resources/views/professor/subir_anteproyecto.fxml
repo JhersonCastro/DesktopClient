@@ -21,6 +21,13 @@
         <!-- Encabezado -->
         <VBox styleClass="anteproyecto-header" spacing="10">
             <HBox spacing="15" alignment="CENTER_LEFT">
+                <Button onAction="#regresarAlDashboard" styleClass="back-button">
+                    <graphic>
+                        <ImageView fitHeight="24" fitWidth="24" preserveRatio="true">
+                            <Image url="@../../images/icons/back.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
                 <ImageView fitWidth="40" fitHeight="40" preserveRatio="true">
                     <Image url="@../../images/icons/anteproyecto.png"/>
                 </ImageView>

@@ -10,6 +10,7 @@ import org.example.fronted.controllers.VisorPdfController;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 public class PdfViewerUtil {
 
@@ -29,9 +30,10 @@ public class PdfViewerUtil {
             }
 
             // Cargar FXML
-            FXMLLoader loader = new FXMLLoader(
-                    PdfViewerUtil.class.getClassLoader().getResource("/views/utils/visor-pdf.fxml")
-            );
+
+            URL fxmlUrl = PdfViewerUtil.class.getResource("/views/utils/visor-pdf.fxml");
+
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
 
             Parent root = loader.load();
             VisorPdfController controller = loader.getController();
@@ -51,7 +53,7 @@ public class PdfViewerUtil {
                 controller.limpiarRecursos();
             });
 
-            stage.showAndWait();
+            stage.show();
 
         } catch (IOException e) {
             e.printStackTrace();

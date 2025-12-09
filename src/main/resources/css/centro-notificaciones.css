@@ -1,0 +1,316 @@
+/* =============================================
+   CSS PARA CENTRO DE NOTIFICACIONES
+   ============================================= */
+
+@import "global.css";
+
+/* Estilos principales del dashboard */
+.dashboard-content {
+    -fx-background-color: -unicauca-light;
+    -fx-spacing: 30px;
+}
+
+/* Títulos de sección */
+.section-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -unicauca-primary;
+    -fx-font-family: -font-primary;
+}
+
+.section-subtitle {
+    -fx-font-size: 16px;
+    -fx-text-fill: -unicauca-secondary;
+    -fx-font-family: -font-secondary;
+}
+
+/* Grid de tarjetas */
+.cards-grid {
+    -fx-hgap: 40px;
+    -fx-vgap: 30px;
+}
+
+/* Tarjetas de estado */
+.status-card {
+    -fx-background-color: white;
+    -fx-background-radius: -border-radius-lg;
+    -fx-border-radius: -border-radius-lg;
+    -fx-effect: -shadow-md;
+    -fx-padding: 30px 20px;
+}
+
+.card-sent {
+    -fx-border-color: #17a2b8;
+    -fx-border-width: 0 0 0 4px;
+}
+
+.card-delivered {
+    -fx-border-color: #28a745;
+    -fx-border-width: 0 0 0 4px;
+}
+
+.card-failed {
+    -fx-border-color: #dc3545;
+    -fx-border-width: 0 0 0 4px;
+}
+
+.card-pending {
+    -fx-border-color: #ffc107;
+    -fx-border-width: 0 0 0 4px;
+}
+
+.card-default {
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 0 0 0 1px;
+}
+
+.card-config {
+    -fx-border-color: #6f42c1;
+    -fx-border-width: 0 0 0 4px;
+}
+
+/* Contenedores de iconos */
+.card-icon-container {
+    -fx-background-radius: 50%;
+    -fx-padding: 15px;
+    -fx-effect: -shadow-sm;
+}
+
+.icon-sent {
+    -fx-background-color: #17a2b8;
+}
+
+.icon-delivered {
+    -fx-background-color: #28a745;
+}
+
+.icon-failed {
+    -fx-background-color: #dc3545;
+}
+
+.icon-pending {
+    -fx-background-color: #ffc107;
+}
+
+/* Títulos de tarjetas */
+.card-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -unicauca-dark;
+}
+
+.card-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: -unicauca-secondary;
+}
+
+/* Contadores */
+.card-count {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -unicauca-dark;
+}
+
+/* Etiquetas de campos */
+.field-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -unicauca-dark;
+}
+
+/* ComboBoxes */
+.combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: -border-radius-md;
+    -fx-background-radius: -border-radius-md;
+    -fx-padding: 8px;
+    -fx-font-size: 14px;
+}
+
+.combo-box:hover {
+    -fx-border-color: -unicauca-primary;
+}
+
+.combo-box:focused {
+    -fx-border-color: -unicauca-primary;
+    -fx-border-width: 2px;
+}
+
+/* DatePicker */
+.date-picker {
+    -fx-background-color: white;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: -border-radius-md;
+    -fx-background-radius: -border-radius-md;
+}
+
+/* Tabla */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: -border-radius-md;
+    -fx-background-radius: -border-radius-md;
+}
+
+.table-view .column-header {
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 0 1px 1px 0;
+}
+
+.table-view .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: -unicauca-dark;
+}
+
+.table-view .table-row-cell {
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+/* Botones */
+.filter-button {
+    -fx-background-color: -color-info;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: -border-radius-md;
+    -fx-border-radius: -border-radius-md;
+    -fx-cursor: hand;
+}
+
+.filter-button:hover {
+    -fx-background-color: derive(-color-info, -10%);
+    -fx-effect: -shadow-sm;
+}
+
+.send-button {
+    -fx-background-color: -unicauca-primary;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: -border-radius-md;
+    -fx-border-radius: -border-radius-md;
+    -fx-cursor: hand;
+}
+
+.send-button:hover {
+    -fx-background-color: derive(-unicauca-primary, -10%);
+    -fx-effect: -shadow-sm;
+}
+
+.edit-button {
+    -fx-background-color: #ffc107;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: -border-radius-sm;
+    -fx-border-radius: -border-radius-sm;
+    -fx-cursor: hand;
+}
+
+.edit-button:hover {
+    -fx-background-color: #e0a800;
+    -fx-effect: -shadow-sm;
+}
+
+.save-button {
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 24px;
+    -fx-background-radius: -border-radius-md;
+    -fx-border-radius: -border-radius-md;
+    -fx-cursor: hand;
+}
+
+.save-button:hover {
+    -fx-background-color: #218838;
+    -fx-effect: -shadow-sm;
+}
+
+.test-button {
+    -fx-background-color: #6f42c1;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 24px;
+    -fx-background-radius: -border-radius-md;
+    -fx-border-radius: -border-radius-md;
+    -fx-cursor: hand;
+}
+
+.test-button:hover {
+    -fx-background-color: #59359a;
+    -fx-effect: -shadow-sm;
+}
+
+/* Paginación */
+.pagination-button {
+    -fx-background-color: white;
+    -fx-border-color: #dee2e6;
+    -fx-text-fill: -unicauca-primary;
+    -fx-padding: 8px 12px;
+    -fx-background-radius: -border-radius-sm;
+    -fx-border-radius: -border-radius-sm;
+    -fx-cursor: hand;
+}
+
+.pagination-button:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+.pagination-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: -unicauca-dark;
+}
+
+/* Configuración */
+.config-section-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -unicauca-primary;
+    -fx-margin-bottom: 15px;
+}
+
+/* TextFields */
+.text-field {
+    -fx-background-color: white;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: -border-radius-md;
+    -fx-background-radius: -border-radius-md;
+    -fx-padding: 8px;
+    -fx-font-size: 14px;
+}
+
+.text-field:focused {
+    -fx-border-color: -unicauca-primary;
+    -fx-border-width: 2px;
+}
+
+/* CheckBoxes */
+.check-box {
+    -fx-font-size: 14px;
+    -fx-text-fill: -unicauca-dark;
+}
+
+/* GridPane */
+.grid-pane {
+    -fx-hgap: 30px;
+    -fx-vgap: 20px;
+}
+
+/* HBox */
+.hbox {
+    -fx-spacing: 20px;
+    -fx-alignment: center-left;
+}

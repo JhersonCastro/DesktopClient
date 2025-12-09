@@ -24,6 +24,7 @@ public class DashboardCoordinadorController extends UIBase{
         // Por ahora, simulamos datos
         pendientesCount.setText("12");
         aprobadosCount.setText("45");
+        sessionManager.getCurrentUser();
         rechazadosCount.setText("8");
     }
 
@@ -31,26 +32,31 @@ public class DashboardCoordinadorController extends UIBase{
 
     @FXML
     private void verProyectosPendientes() {
-        showAlert("Navegación", "Mostrando proyectos pendientes...");
+        //showAlert("Navegación", "Mostrando proyectos pendientes...");
+        System.out.println("Mostrando proyectos pendientes...");
         // Aquí iría la navegación a la vista detallada de proyectos pendientes
+        loadView("/views/coordinator/pendientes_list.fxml");
     }
 
     @FXML
     private void verProyectosAprobados() {
-        showAlert("Navegación", "Mostrando proyectos aprobados...");
+        //showAlert("Navegación", "Mostrando proyectos aprobados...");
         // Aquí iría la navegación a la vista detallada de proyectos aprobados
+        loadView("/views/coordinator/aprobados_list.fxml");
     }
 
     @FXML
     private void verProyectosRechazados() {
-        showAlert("Navegación", "Mostrando proyectos rechazados...");
+        //showAlert("Navegación", "Mostrando proyectos rechazados...");
         // Aquí iría la navegación a la vista detallada de proyectos rechazados
+        loadView("/views/coordinator/rechazados_list.fxml");
     }
 
     @FXML
     private void nuevoProyecto() {
         showAlert("Nuevo Proyecto", "Creando nuevo proyecto...");
         // Aquí iría la lógica para crear un nuevo proyecto
+        loadView("/views/coordinator/project_new.fxml");
     }
 
     @FXML

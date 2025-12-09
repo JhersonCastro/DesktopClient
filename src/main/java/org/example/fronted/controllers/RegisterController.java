@@ -10,7 +10,10 @@ import org.example.fronted.models.Rol;
 import reactor.core.scheduler.Schedulers;
 
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class RegisterController extends UIBase implements Initializable {
@@ -349,8 +352,8 @@ public class RegisterController extends UIBase implements Initializable {
         }
 
         // Resolver rol principal según los checkboxes
-        Rol rol = resolverRolPrincipal();
-        if (rol == null) {
+        Set<Rol> roles = obtenerTodosLosRoles();
+        if (roles.isEmpty()) {
             showMessage("Debe seleccionar al menos un rol", "error");
             return;
         }
@@ -362,14 +365,16 @@ public class RegisterController extends UIBase implements Initializable {
         dto.setEmail(txtEmail.getText().trim());
         dto.setPassword(txtPassword.getText());
         dto.setCelular(txtPhone.getText().trim());
-        dto.setRolPrincipal(rol);
+        dto.setRoles(roles);
 
         System.out.println("=== DATOS VALIDADOS PARA REGISTRO ===");
         System.out.println("Nombres: " + dto.getNombres());
         System.out.println("Apellidos: " + dto.getApellidos());
         System.out.println("Email: " + dto.getEmail());
         System.out.println("Teléfono: " + dto.getCelular());
-        System.out.println("Rol principal: " + dto.getRolPrincipal());
+        for (int i = 0; i<dto.getRoles().toArray().length; i++){
+            System.out.println("Tiene el rol de " + dto.getRoles().toArray()[i]);
+        }
         System.out.println("======================================");
 
         // Llamar al microservicio
@@ -383,7 +388,7 @@ public class RegisterController extends UIBase implements Initializable {
                             if (success) {
                                 showMessage("✓ Registro exitoso. Ahora puede iniciar sesión.", "success");
                                 // Aquí puedes navegar a login si ya tienes el mecanismo:
-                                // loadView("/views/auth/login.fxml");
+                                loadView("views/auth/Login.fxml");
                             } else {
                                 showMessage("No se pudo completar el registro. Intente nuevamente.", "error");
                             }
@@ -483,21 +488,32 @@ public class RegisterController extends UIBase implements Initializable {
     }
 
     /**
-     * Decide qué rol principal se envía al microservicio según las selecciones
+     * Obtiene todos los roles que han sido seleccionados
      */
-    private Rol resolverRolPrincipal() {
-        if (chkEstudiante.isSelected()) {
-            return Rol.ESTUDIANTE;
-        } else if (chkCoordinador.isSelected()) {
-            return Rol.COORDINADOR;
-        } else if (chkJefeDepartamento.isSelected()) {
-            return Rol.JEFE_DEPARTAMENTO;
-        } else if (chkDirector.isSelected() || chkJurado.isSelected()) {
-            // Director y Jurado se registran como DOCENTE en el backend
-            return Rol.DOCENTE;
+    private Set<Rol> obtenerTodosLosRoles() {
+        Map<CheckBox, Rol> mapaRoles = Map.of(
+                chkEstudiante, Rol.ESTUDIANTE,
+                chkCoordinador, Rol.COORDINADOR,
+                chkJefeDepartamento, Rol.JEFE_DEPARTAMENTO
+        );
+
+        Set<Rol> roles = new HashSet<>();
+
+        // Roles directos
+        mapaRoles.forEach((check, rol) -> {
+            if (check.isSelected()) {
+                roles.add(rol);
+            }
+        });
+
+        // Casos especiales (Director / Jurado → DOCENTE)
+        if (chkDirector.isSelected() || chkJurado.isSelected()) {
+            roles.add(Rol.DOCENTE);
         }
-        return null;
+
+        return roles;
     }
+
 
     /**
      * Muestra un error en un campo específico

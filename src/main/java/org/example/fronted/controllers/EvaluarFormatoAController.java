@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import org.example.fronted.util.PdfViewerUtil;
 
 public class EvaluarFormatoAController extends UIBase {
 
@@ -28,29 +29,27 @@ public class EvaluarFormatoAController extends UIBase {
 
     // ========================== ACCIONES =============================
 
-    @FXML
-    private void guardarEvaluacion() {
-        String obs = observacionesTextArea.getText();
-
-        showAlert("Observaciones guardadas",
-                obs.isEmpty()
-                        ? "No se escribieron observaciones."
-                        : "Observaciones:\n" + obs);
-    }
 
     @FXML
     private void aprobarFormatoA() {
+        if(observacionesTextArea.getText().isEmpty()){
+            showAlert("Error", "Falta indicar las observaciones");
+        }
         showAlert("Formato A Aprobado", "El Formato A ha sido aprobado exitosamente.");
     }
 
     @FXML
     private void rechazarFormatoA() {
+        if(observacionesTextArea.getText().isEmpty()){
+            showAlert("Error", "Falta indicar las observaciones");
+        }
         showAlert("Formato A Rechazado", "El Formato A ha sido rechazado.");
     }
 
     @FXML
     private void verPDF() {
-        showAlert("PDF", "Simulando apertura de PDF del Formato A...");
+        PdfViewerUtil.mostrarPDF("C:\\Users\\Janus\\Downloads\\HolaSistema.pdf", "Hola");
+
     }
 
     // ========================== ALERTA =============================

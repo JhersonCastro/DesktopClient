@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.collections.*?>
+
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.fronted.controllers.NewProjectController"
+            styleClass="cnp-scroll">
+
+    <stylesheets>
+        <URL value="@../../css/project_new.css"/>
+    </stylesheets>
+
+    <VBox spacing="25" styleClass="cnp-container">
+
+        <!-- Encabezado -->
+        <VBox spacing="10" styleClass="cnp-header">
+
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Button onAction="#regresar" styleClass="cnp-back-button">
+                    <graphic>
+                        <ImageView fitHeight="24" fitWidth="24" preserveRatio="true">
+                            <Image url="@../../images/icons/back.png"/>
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <VBox spacing="5">
+                    <Label styleClass="cnp-title" text="Crear Nuevo Proyecto"/>
+                    <Label styleClass="cnp-subtitle"
+                           text="Complete el formulario para registrar un nuevo proyecto de grado"/>
+                </VBox>
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="cnp-step-indicator">
+                <Label styleClass="cnp-step-label" text="Información del Proyecto"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label styleClass="cnp-required-label" text="* Campos obligatorios"/>
+            </HBox>
+        </VBox>
+
+        <GridPane hgap="25" vgap="20" styleClass="cnp-grid">
+            <columnConstraints>
+                <ColumnConstraints halignment="RIGHT" prefWidth="200"/>
+                <ColumnConstraints hgrow="ALWAYS" prefWidth="450"/>
+            </columnConstraints>
+
+            <!-- Título -->
+            <Label text="* Título:" styleClass="cnp-label"
+                   GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <TextField fx:id="tituloField" promptText="Escriba el título del proyecto..."
+                       styleClass="cnp-textfield"
+                       GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+            <!-- Estudiantes -->
+            <Label text="* Estudiantes:" styleClass="cnp-label"
+                   GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <VBox spacing="10" GridPane.rowIndex="1" GridPane.columnIndex="1">
+                <TextField fx:id="estudianteField"
+                           promptText="Escriba nombre, email o código... ENTER para buscar"
+                           styleClass="cnp-autocomplete"/>
+                <Label text="Puede agregar hasta 2 estudiantes" styleClass="cnp-hint"/>
+
+                <VBox fx:id="estudiantesSeleccionados" spacing="5" styleClass="cnp-tag-container"/>
+                <VBox fx:id="resultadosEstudiantes" spacing="5"
+                      styleClass="cnp-resultados" managed="false" visible="false"/>
+            </VBox>
+
+            <!-- Director -->
+            <Label text="* Director:" styleClass="cnp-label"
+                   GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <VBox spacing="10" GridPane.rowIndex="2" GridPane.columnIndex="1">
+                <TextField fx:id="directorField"
+                           promptText="Escriba para buscar el director..."
+                           styleClass="cnp-autocomplete"/>
+                <VBox fx:id="resultadosDirectores" spacing="5"
+                      styleClass="cnp-resultados" managed="false" visible="false"/>
+            </VBox>
+
+            <!-- Codirector -->
+            <Label text="Codirector:" styleClass="cnp-label"
+                   GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <VBox spacing="10" GridPane.rowIndex="3" GridPane.columnIndex="1">
+                <TextField fx:id="codirectorField"
+                           promptText="Escriba para buscar un codirector..."
+                           styleClass="cnp-autocomplete"/>
+                <VBox fx:id="resultadosCodirectores" spacing="5"
+                      styleClass="cnp-resultados" managed="false" visible="false"/>
+            </VBox>
+
+            <!-- Modalidad -->
+            <Label text="* Modalidad:" styleClass="cnp-label"
+                   GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+            <HBox spacing="30" GridPane.rowIndex="4" GridPane.columnIndex="1">
+                <RadioButton fx:id="radioInvestigacion" selected="true"
+                             text="Investigación" userData="INVESTIGACION"
+                             styleClass="cnp-radio"/>
+                <RadioButton fx:id="radioPractica" text="Práctica Profesional"
+                             userData="PRACTICA_PROFESIONAL"
+                             styleClass="cnp-radio"/>
+            </HBox>
+
+            <!-- Programa -->
+            <Label text="* Programa:" styleClass="cnp-label"
+                   GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+            <ComboBox fx:id="programaCombo" styleClass="cnp-combobox"
+                      promptText="Seleccione un programa..."
+                      GridPane.rowIndex="5" GridPane.columnIndex="1">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Ingeniería de Sistemas"/>
+                        <String fx:value="Ingeniería Electrónica y Telecomunicaciones"/>
+                        <String fx:value="Automática Industrial"/>
+                        <String fx:value="Tecnología en Telemática"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+
+            <!-- Objetivo General -->
+            <Label text="* Objetivo General:" styleClass="cnp-label"
+                   GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+            <TextArea fx:id="objetivoGeneralArea"
+                      promptText="Describa el objetivo principal..."
+                      styleClass="cnp-textarea"
+                      GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+            <!-- Objetivos Específicos -->
+            <Label text="* Objetivos Específicos:" styleClass="cnp-label"
+                   GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+            <VBox spacing="10" GridPane.rowIndex="7" GridPane.columnIndex="1">
+                <VBox fx:id="objetivosEspecificosContainer" spacing="10">
+                    <TextArea promptText="Objetivo específico 1..."
+                              styleClass="cnp-textarea-small"/>
+                    <TextArea promptText="Objetivo específico 2..."
+                              styleClass="cnp-textarea-small"/>
+                </VBox>
+                <Button text="+ Agregar otro objetivo" onAction="#agregarObjetivo"
+                        styleClass="cnp-link-button"/>
+            </VBox>
+
+        </GridPane>
+
+        <!-- Acciones -->
+        <HBox alignment="CENTER_RIGHT" spacing="20" styleClass="cnp-actions">
+            <Button text="Cancelar" styleClass="cnp-secondary-button" onAction="#cancelar"/>
+            <Button text="Crear Proyecto" styleClass="cnp-primary-button" onAction="#crearProyecto"/>
+        </HBox>
+
+    </VBox>
+</ScrollPane>
+

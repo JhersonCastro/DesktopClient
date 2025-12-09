@@ -140,24 +140,6 @@
                 </HBox>
             </VBox>
 
-            <!-- Sección: Proyectos Recientes -->
-            <VBox styleClass="recent-projects-section" spacing="15">
-                <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label text="Proyectos Recientes" styleClass="section-subtitle"/>
-                    <Region HBox.hgrow="ALWAYS"/>
-                    <Button text="Ver Todos" styleClass="small-link-button" onAction="#verTodosProyectos"/>
-                </HBox>
-
-                <TableView fx:id="proyectosTable" styleClass="projects-table">
-                    <columns>
-                        <TableColumn text="Título" styleClass="table-column"/>
-                        <TableColumn text="Estado" styleClass="table-column"/>
-                        <TableColumn text="Fecha" styleClass="table-column"/>
-                        <TableColumn text="Acciones" styleClass="table-column-actions"/>
-                    </columns>
-                </TableView>
-            </VBox>
-
             <!-- Notificaciones Importantes -->
             <VBox fx:id="notificacionesContainer" styleClass="notifications-section" spacing="15" visible="false">
                 <Label text="📢 Notificaciones Importantes" styleClass="notifications-title"/>

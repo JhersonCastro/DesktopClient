@@ -1,9 +1,15 @@
 package org.example.fronted.models;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 import java.util.ArrayList;
 
+@Setter
+@Getter
 public class User {
+    // Getters y Setters
     private String email;
     private String nombres;
     private String apellidos;
@@ -17,15 +23,6 @@ public class User {
         this.rolesDisponibles = new ArrayList<>();
     }
 
-    // Constructor con un solo rol (para compatibilidad)
-    public User(String email, String nombres, String apellidos, Rol rol) {
-        this.email = email;
-        this.nombres = nombres;
-        this.apellidos = apellidos;
-        this.rolActual = rol;
-        this.rolesDisponibles = new ArrayList<>();
-        this.rolesDisponibles.add(rol);
-    }
 
     // Constructor con múltiples roles
     public User(String email, String nombres, String apellidos, List<Rol> roles) {
@@ -37,30 +34,6 @@ public class User {
             this.rolActual = roles.get(0); // Por defecto, primer rol
         }
     }
-
-    // Getters y Setters
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getNombres() { return nombres; }
-    public void setNombres(String nombres) { this.nombres = nombres; }
-
-    public String getApellidos() { return apellidos; }
-    public void setApellidos(String apellidos) { this.apellidos = apellidos; }
-
-    public Rol getRolActual() { return rolActual; }
-    public void setRolActual(Rol rolActual) { this.rolActual = rolActual; }
-
-    public List<Rol> getRolesDisponibles() { return rolesDisponibles; }
-    public void setRolesDisponibles(List<Rol> rolesDisponibles) {
-        this.rolesDisponibles = rolesDisponibles;
-    }
-
-    public String getPrograma() { return programa; }
-    public void setPrograma(String programa) { this.programa = programa; }
-
-    public String getCelular() { return celular; }
-    public void setCelular(String celular) { this.celular = celular; }
 
     // Métodos de conveniencia
     public void agregarRol(Rol rol) {

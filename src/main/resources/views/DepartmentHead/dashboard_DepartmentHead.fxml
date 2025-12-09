@@ -24,95 +24,8 @@
                     <Label text="Gestiona anteproyectos y asignación de evaluadores" styleClass="section-subtitle"/>
                 </VBox>
 
-                <!-- Tarjetas de estado -->
-                <GridPane styleClass="cards-grid" hgap="40" vgap="30">
-                    <columnConstraints>
-                        <ColumnConstraints hgrow="ALWAYS" minWidth="280"/>
-                        <ColumnConstraints hgrow="ALWAYS" minWidth="280"/>
-                        <ColumnConstraints hgrow="ALWAYS" minWidth="280"/>
-                    </columnConstraints>
-
-                    <!-- Tarjeta: Anteproyectos Pendientes -->
-                    <VBox styleClass="status-card card-pending" GridPane.columnIndex="0">
-                        <padding>
-                            <Insets top="30" right="25" bottom="30" left="25"/>
-                        </padding>
-                        <VBox alignment="CENTER" spacing="20">
-                            <!-- Icono circular -->
-                            <StackPane styleClass="card-icon-container icon-pending">
-                                <ImageView fitWidth="40" fitHeight="40" preserveRatio="true">
-                                    <Image url="@../../images/icons/document.png"/>
-                                </ImageView>
-                            </StackPane>
-
-                            <!-- Contenido de la tarjeta -->
-                            <VBox alignment="CENTER" spacing="10">
-                                <Label text="Pendientes" styleClass="card-title"/>
-                                <Label fx:id="pendientesCount" text="0" styleClass="card-count"/>
-                                <Label text="Anteproyectos por asignar" styleClass="card-subtitle"/>
-                            </VBox>
-
-                            <!-- Botón de acción -->
-                            <Button text="Ver Lista" styleClass="card-button button-pending"
-                                    onAction="#verAnteproyectosPendientes"/>
-                        </VBox>
-                    </VBox>
-
-                    <!-- Tarjeta: En Evaluación -->
-                    <VBox styleClass="status-card card-evaluacion" GridPane.columnIndex="1">
-                        <padding>
-                            <Insets top="30" right="25" bottom="30" left="25"/>
-                        </padding>
-                        <VBox alignment="CENTER" spacing="20">
-                            <!-- Icono circular -->
-                            <StackPane styleClass="card-icon-container icon-evaluacion">
-                                <ImageView fitWidth="40" fitHeight="40" preserveRatio="true">
-                                    <Image url="@../../images/icons/evaluation.png"/>
-                                </ImageView>
-                            </StackPane>
-
-                            <!-- Contenido de la tarjeta -->
-                            <VBox alignment="CENTER" spacing="10">
-                                <Label text="En Evaluación" styleClass="card-title"/>
-                                <Label fx:id="evaluacionCount" text="0" styleClass="card-count"/>
-                                <Label text="Anteproyectos evaluándose" styleClass="card-subtitle"/>
-                            </VBox>
-
-                            <!-- Botón de acción -->
-                            <Button text="Seguimiento" styleClass="card-button button-evaluacion"
-                                    onAction="#verEvaluacionesEnCurso"/>
-                        </VBox>
-                    </VBox>
-
-                    <!-- Tarjeta: Docentes Disponibles -->
-                    <VBox styleClass="status-card card-docentes" GridPane.columnIndex="2">
-                        <padding>
-                            <Insets top="30" right="25" bottom="30" left="25"/>
-                        </padding>
-                        <VBox alignment="CENTER" spacing="20">
-                            <!-- Icono circular -->
-                            <StackPane styleClass="card-icon-container icon-docentes">
-                                <ImageView fitWidth="40" fitHeight="40" preserveRatio="true">
-                                    <Image url="@../../images/icons/teacher.png"/>
-                                </ImageView>
-                            </StackPane>
-
-                            <!-- Contenido de la tarjeta -->
-                            <VBox alignment="CENTER" spacing="10">
-                                <Label text="Docentes" styleClass="card-title"/>
-                                <Label fx:id="docentesCount" text="0" styleClass="card-count"/>
-                                <Label text="Evaluadores disponibles" styleClass="card-subtitle"/>
-                            </VBox>
-
-                            <!-- Botón de acción -->
-                            <Button text="Gestionar" styleClass="card-button button-docentes"
-                                    onAction="#verDocentesDisponibles"/>
-                        </VBox>
-                    </VBox>
-                </GridPane>
-
                 <!-- Sección: Anteproyectos Recientes -->
-                <VBox styleClass="recent-section" spacing="15">
+                <VBox styleClass="recent-section" spacing="5">
                     <HBox alignment="CENTER_LEFT" spacing="10">
                         <Label text="Anteproyectos Recientes" styleClass="section-subtitle"/>
                         <Region HBox.hgrow="ALWAYS"/>
@@ -128,37 +41,6 @@
                             <TableColumn text="Acciones" styleClass="table-column-actions"/>
                         </columns>
                     </TableView>
-                </VBox>
-
-                <!-- Sección: Acciones Rápidas -->
-                <VBox styleClass="quick-actions-section" spacing="20">
-                    <Label text="Acciones Rápidas" styleClass="actions-title"/>
-
-                    <HBox styleClass="actions-container" spacing="20">
-                        <Button text="Asignar Evaluadores" styleClass="action-button" onAction="#asignarEvaluadores">
-                            <graphic>
-                                <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
-                                    <Image url="@../../images/icons/assign.png"/>
-                                </ImageView>
-                            </graphic>
-                        </Button>
-
-                        <Button text="Reportes" styleClass="action-button" onAction="#generarReportes">
-                            <graphic>
-                                <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
-                                    <Image url="@../../images/icons/report.png"/>
-                                </ImageView>
-                            </graphic>
-                        </Button>
-
-                        <Button text="Configuración" styleClass="action-button" onAction="#abrirConfiguracion">
-                            <graphic>
-                                <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
-                                    <Image url="@../../images/icons/settings.png"/>
-                                </ImageView>
-                            </graphic>
-                        </Button>
-                    </HBox>
                 </VBox>
 
                 <!-- Sección: Notificaciones -->

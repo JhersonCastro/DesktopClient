@@ -47,19 +47,19 @@ public class DocenteDashboardController  extends UIBase{
     @FXML
     private void verProyectosPendientes() {
         System.out.println("Navegando a proyectos pendientes...");
-        // loadView("/views/docente/proyectos_pendientes.fxml");
+        loadView("/views/professor/pendientes_list.fxml");
     }
 
     @FXML
     private void subirAnteproyecto() {
         System.out.println("Navegando a subir anteproyecto...");
-        // loadView("/views/docente/subir_anteproyecto.fxml");
+        loadView("/views/professor/aprobados_list.fxml");
     }
 
     @FXML
     private void verEvaluacionesAsignadas() {
         System.out.println("Navegando a evaluaciones asignadas...");
-        // loadView("/views/docente/evaluaciones_asignadas.fxml");
+        loadView("/views/professor/evaluaciones_list.fxml");
     }
 
     @FXML
@@ -71,7 +71,7 @@ public class DocenteDashboardController  extends UIBase{
     @FXML
     private void verMisProyectos() {
         System.out.println("Navegando a mis proyectos...");
-        // loadView("/views/docente/mis_proyectos.fxml");
+        loadView("/views/professor/proyectos_list.fxml");
     }
 
 

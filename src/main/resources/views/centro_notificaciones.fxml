@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.fronted.controllers.CentroNotificacionesController"
+      stylesheets="@../css/centro-notificaciones.css"
+      styleClass="dashboard-content"
+      spacing="30">
+
+    <padding>
+        <Insets top="40" right="60" bottom="40" left="60"/>
+    </padding>
+
+    <!-- TÍTULO -->
+    <VBox spacing="5" alignment="CENTER_LEFT">
+        <Label text="Centro de Notificaciones" styleClass="section-title"/>
+        <Label text="Gestiona y monitorea las notificaciones del sistema" styleClass="section-subtitle"/>
+    </VBox>
+
+    <!-- ESTADÍSTICAS DE NOTIFICACIONES -->
+    <GridPane styleClass="cards-grid" hgap="40" vgap="30">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
+            <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
+            <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
+            <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
+        </columnConstraints>
+
+        <!-- Tarjeta: Total Enviadas -->
+        <VBox styleClass="status-card card-sent" GridPane.columnIndex="0">
+            <padding>
+                <Insets top="30" right="20" bottom="30" left="20"/>
+            </padding>
+            <VBox alignment="CENTER" spacing="15">
+                <StackPane styleClass="card-icon-container icon-sent">
+                    <ImageView fitWidth="32" fitHeight="32" preserveRatio="true">
+                        <Image url="@../../images/icons/send.png"/>
+                    </ImageView>
+                </StackPane>
+
+                <VBox alignment="CENTER" spacing="8">
+                    <Label text="Enviadas" styleClass="card-title"/>
+                    <Label fx:id="enviadasCount" text="0" styleClass="card-count"/>
+                    <Label text="Notificaciones enviadas" styleClass="card-subtitle"/>
+                </VBox>
+            </VBox>
+        </VBox>
+
+        <!-- Tarjeta: Entregadas -->
+        <VBox styleClass="status-card card-delivered" GridPane.columnIndex="1">
+            <padding>
+                <Insets top="30" right="20" bottom="30" left="20"/>
+            </padding>
+            <VBox alignment="CENTER" spacing="15">
+                <StackPane styleClass="card-icon-container icon-delivered">
+                    <ImageView fitWidth="32" fitHeight="32" preserveRatio="true">
+                        <Image url="@../../images/icons/check.png"/>
+                    </ImageView>
+                </StackPane>
+
+                <VBox alignment="CENTER" spacing="8">
+                    <Label text="Entregadas" styleClass="card-title"/>
+                    <Label fx:id="entregadasCount" text="0" styleClass="card-count"/>
+                    <Label text="Notificaciones entregadas" styleClass="card-subtitle"/>
+                </VBox>
+            </VBox>
+        </VBox>
+
+        <!-- Tarjeta: Fallidas -->
+        <VBox styleClass="status-card card-failed" GridPane.columnIndex="2">
+            <padding>
+                <Insets top="30" right="20" bottom="30" left="20"/>
+            </padding>
+            <VBox alignment="CENTER" spacing="15">
+                <StackPane styleClass="card-icon-container icon-failed">
+                    <ImageView fitWidth="32" fitHeight="32" preserveRatio="true">
+                        <Image url="@../../images/icons/x.png"/>
+                    </ImageView>
+                </StackPane>
+
+                <VBox alignment="CENTER" spacing="8">
+                    <Label text="Fallidas" styleClass="card-title"/>
+                    <Label fx:id="fallidasCount" text="0" styleClass="card-count"/>
+                    <Label text="Notificaciones fallidas" styleClass="card-subtitle"/>
+                </VBox>
+            </VBox>
+        </VBox>
+
+        <!-- Tarjeta: Pendientes -->
+        <VBox styleClass="status-card card-pending" GridPane.columnIndex="3">
+            <padding>
+                <Insets top="30" right="20" bottom="30" left="20"/>
+            </padding>
+            <VBox alignment="CENTER" spacing="15">
+                <StackPane styleClass="card-icon-container icon-pending">
+                    <ImageView fitWidth="32" fitHeight="32" preserveRatio="true">
+                        <Image url="@../../images/icons/clock.png"/>
+                    </ImageView>
+                </StackPane>
+
+                <VBox alignment="CENTER" spacing="8">
+                    <Label text="Pendientes" styleClass="card-title"/>
+                    <Label fx:id="pendientesCount" text="0" styleClass="card-count"/>
+                    <Label text="Notificaciones pendientes" styleClass="card-subtitle"/>
+                </VBox>
+            </VBox>
+        </VBox>
+    </GridPane>
+
+    <!-- FILTROS Y BÚSQUEDA -->
+    <VBox spacing="20" styleClass="status-card, card-default">
+        <padding>
+            <Insets top="30" right="30" bottom="30" left="30"/>
+        </padding>
+
+        <Label text="Filtrar Notificaciones" styleClass="card-title"/>
+
+        <HBox spacing="20" alignment="CENTER_LEFT">
+            <VBox spacing="10">
+                <Label text="Tipo de notificación:" styleClass="field-label"/>
+                <ComboBox fx:id="tipoNotificacionCombo" styleClass="combo-box">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Todas"/>
+                            <String fx:value="Email"/>
+                            <String fx:value="Sistema"/>
+                            <String fx:value="SMS"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+            </VBox>
+
+            <VBox spacing="10">
+                <Label text="Estado:" styleClass="field-label"/>
+                <ComboBox fx:id="estadoNotificacionCombo" styleClass="combo-box">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Todas"/>
+                            <String fx:value="Enviada"/>
+                            <String fx:value="Entregada"/>
+                            <String fx:value="Fallida"/>
+                            <String fx:value="Pendiente"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+            </VBox>
+
+            <VBox spacing="10">
+                <Label text="Fecha desde:" styleClass="field-label"/>
+                <DatePicker fx:id="fechaDesdePicker" styleClass="date-picker"/>
+            </VBox>
+
+            <VBox spacing="10">
+                <Label text="Fecha hasta:" styleClass="field-label"/>
+                <DatePicker fx:id="fechaHastaPicker" styleClass="date-picker"/>
+            </VBox>
+
+            <Button text="Aplicar Filtros" onAction="#aplicarFiltros" styleClass="filter-button">
+                <graphic>
+                    <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                        <Image url="@../../images/icons/filter.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </HBox>
+    </VBox>
+
+    <!-- TABLA DE NOTIFICACIONES -->
+    <VBox spacing="20" styleClass="status-card, card-default">
+        <padding>
+            <Insets top="30" right="30" bottom="30" left="30"/>
+        </padding>
+
+        <HBox spacing="20" alignment="CENTER_LEFT">
+            <Label text="Historial de Notificaciones" styleClass="card-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Enviar Notificación" onAction="#enviarNotificacion" styleClass="send-button">
+                <graphic>
+                    <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                        <Image url="@../../images/icons/plus.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </HBox>
+
+        <TableView fx:id="notificacionesTable" styleClass="table-view">
+            <columns>
+                <TableColumn text="ID" fx:id="colId" prefWidth="80"/>
+                <TableColumn text="Destinatario" fx:id="colDestinatario" prefWidth="200"/>
+                <TableColumn text="Tipo" fx:id="colTipo" prefWidth="100"/>
+                <TableColumn text="Asunto" fx:id="colAsunto" prefWidth="250"/>
+                <TableColumn text="Fecha Envío" fx:id="colFechaEnvio" prefWidth="120"/>
+                <TableColumn text="Estado" fx:id="colEstado" prefWidth="100"/>
+                <TableColumn text="Acciones" fx:id="colAcciones" prefWidth="100"/>
+            </columns>
+        </TableView>
+
+        <!-- Paginación -->
+        <HBox spacing="10" alignment="CENTER">
+            <Button text="Anterior" onAction="#paginaAnterior" styleClass="pagination-button"/>
+            <Label fx:id="paginaActualLabel" text="Página 1 de 10" styleClass="pagination-label"/>
+            <Button text="Siguiente" onAction="#paginaSiguiente" styleClass="pagination-button"/>
+        </HBox>
+    </VBox>
+
+    <!-- CONFIGURACIÓN DE NOTIFICACIONES -->
+    <VBox spacing="20" styleClass="status-card, card-config">
+        <padding>
+            <Insets top="30" right="30" bottom="30" left="30"/>
+        </padding>
+
+        <Label text="Configuración de Notificaciones" styleClass="card-title"/>
+
+        <GridPane hgap="30" vgap="20">
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+            </columnConstraints>
+
+            <!-- Configuración de Email -->
+            <VBox spacing="15" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <Label text="Servidor SMTP" styleClass="config-section-title"/>
+                
+                <VBox spacing="10">
+                    <VBox spacing="5">
+                        <Label text="Host:" styleClass="field-label"/>
+                        <TextField fx:id="smtpHostField" text="smtp.gmail.com" styleClass="text-field"/>
+                    </VBox>
+                    
+                    <VBox spacing="5">
+                        <Label text="Puerto:" styleClass="field-label"/>
+                        <TextField fx:id="smtpPortField" text="587" styleClass="text-field"/>
+                    </VBox>
+                    
+                    <VBox spacing="5">
+                        <Label text="Usuario:" styleClass="field-label"/>
+                        <TextField fx:id="smtpUserField" text="notificaciones@unicauca.edu.co" styleClass="text-field"/>
+                    </VBox>
+                    
+                    <CheckBox fx:id="smtpAuthCheck" text="Requiere autenticación" selected="true" styleClass="check-box"/>
+                    <CheckBox fx:id="smtpTlsCheck" text="Usar TLS" selected="true" styleClass="check-box"/>
+                </VBox>
+            </VBox>
+
+            <!-- Configuración de Plantillas -->
+            <VBox spacing="15" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <Label text="Plantillas de Email" styleClass="config-section-title"/>
+                
+                <VBox spacing="10">
+                    <VBox spacing="5">
+                        <Label text="Plantilla de asignación:" styleClass="field-label"/>
+                        <ComboBox fx:id="plantillaAsignacionCombo" styleClass="combo-box">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Asignación de evaluadores"/>
+                                    <String fx:value="Recordatorio de evaluación"/>
+                                    <String fx:value="Cambio de estado"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
+                    
+                    <VBox spacing="5">
+                        <Label text="Plantilla de notificación:" styleClass="field-label"/>
+                        <ComboBox fx:id="plantillaNotificacionCombo" styleClass="combo-box">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Formato A aprobado"/>
+                                    <String fx:value="Formato A rechazado"/>
+                                    <String fx:value="Nueva versión requerida"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
+                    
+                    <Button text="Editar Plantilla" onAction="#editarPlantilla" styleClass="edit-button">
+                        <graphic>
+                            <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                                <Image url="@../../images/icons/edit.png"/>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                </VBox>
+            </VBox>
+        </GridPane>
+
+        <HBox spacing="20" alignment="CENTER">
+            <Button text="Guardar Configuración" onAction="#guardarConfiguracion" styleClass="save-button">
+                <graphic>
+                    <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                        <Image url="@../../images/icons/save.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+            
+            <Button text="Probar Conexión" onAction="#probarConexion" styleClass="test-button">
+                <graphic>
+                    <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                        <Image url="@../../images/icons/test.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </HBox>
+    </VBox>
+
+</VBox>

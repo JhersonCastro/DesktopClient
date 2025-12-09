@@ -4,6 +4,7 @@ package org.example.fronted.controllers;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.example.fronted.api.AuthApi;
+import org.example.fronted.util.SessionManager;
 import reactor.core.scheduler.Schedulers;
 import javafx.application.Platform;
 
@@ -73,7 +74,7 @@ public class LoginController extends UIBase {
                     if (success) {
                         System.out.println("Login exitoso!");
                         // Aquí iría navegar al dashboard
-                        showError("Login exitoso! (Falta navegar)");
+                        mainController.onUserLoggedIn(SessionManager.getInstance().getCurrentUser());
                     } else {
                         showError("Credenciales incorrectas");
                     }

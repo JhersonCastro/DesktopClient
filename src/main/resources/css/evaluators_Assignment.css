@@ -1,0 +1,213 @@
+/* ======================= */
+/* CONTENEDOR GENERAL */
+/* ======================= */
+
+.ev-scroll {
+    -fx-background-color: transparent;
+}
+
+.ev-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.ev-container {
+    -fx-padding: 30 40 40 40;
+    -fx-background-color: #ffffff;
+}
+
+/* ======================= */
+/* ENCABEZADO */
+/* ======================= */
+
+.ev-header {
+}
+
+.ev-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #7f1d1d;
+}
+
+.ev-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #555;
+}
+
+.ev-step-indicator {
+    -fx-padding: 10 0 0 0;
+}
+
+.ev-step-label {
+    -fx-text-fill: #a23030;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.ev-label-required {
+    -fx-text-fill: #d32f2f;
+    -fx-font-size: 12px;
+}
+
+/* ======================= */
+/* GRID */
+/* ======================= */
+
+.ev-grid {
+    -fx-padding: 10 0 0 0;
+}
+
+/* ======================= */
+/* ETIQUETAS */
+/* ======================= */
+
+.ev-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #444;
+}
+
+.required {
+    -fx-text-fill: #d32f2f;
+}
+
+/* ======================= */
+/* COMBOBOX */
+/* ======================= */
+
+.ev-combobox {
+    -fx-pref-height: 40px;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2c6c6;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1px;
+    -fx-padding: 0 10px;
+    -fx-font-size: 14px;
+}
+
+.ev-combobox:focused {
+    -fx-border-color: #7f1d1d;
+    -fx-border-width: 2px;
+}
+
+/* ======================= */
+/* HINT */
+/* ======================= */
+
+.ev-hint {
+    -fx-text-fill: #777;
+    -fx-font-size: 12px;
+    -fx-font-style: italic;
+}
+
+/* ======================= */
+/* BOTONES */
+/* ======================= */
+
+.ev-primary-button {
+    -fx-background-color: linear-gradient(to bottom, #a62b2b, #7f1d1d);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-pref-height: 45px;
+    -fx-pref-width: 180px;
+    -fx-background-radius: 8px;
+    -fx-border-color: #5a0f0f;
+    -fx-border-width: 1px;
+    -fx-cursor: hand;
+}
+
+.ev-primary-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #b94a4a, #a62b2b);
+}
+
+.ev-primary-button:pressed {
+    -fx-background-color: #5a0f0f;
+}
+
+.ev-secondary-button {
+    -fx-background-color: #f7f7f7;
+    -fx-border-color: #dddddd;
+    -fx-border-width: 1px;
+    -fx-background-radius: 6px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #555;
+    -fx-font-size: 14px;
+    -fx-padding: 8 18;
+    -fx-cursor: hand;
+}
+
+.ev-secondary-button:hover {
+    -fx-background-color: #f1e3e3;
+    -fx-border-color: #b88a8a;
+    -fx-text-fill: #7f1d1d;
+}
+
+/* ======================================== */
+/* Contenedor de acciones (botones finales) */
+/* ======================================== */
+
+.ev-actions {
+    -fx-padding: 15 0 0 0;
+    -fx-alignment: CENTER_RIGHT;
+    -fx-spacing: 20;
+}
+
+
+/* ======================= */
+/* INFO SECTION */
+/* ======================= */
+
+.ev-info-container {
+    -fx-background-color: #f5e8e8;
+    -fx-border-color: #d4b3b3;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-padding: 20px;
+}
+
+.ev-info-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #7f1d1d;
+}
+
+.ev-info-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #444;
+}
+
+/* ============================= */
+/* Autocompletado de formularios */
+/* ============================= */
+
+.form-autocomplete {
+    -fx-pref-width: 400px;
+    -fx-pref-height: 40px;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #c8e6c9;
+    -fx-border-width: 1px;
+    -fx-border-radius: 6px;
+    -fx-padding: 0 10px;
+    -fx-font-size: 14px;
+    -fx-focus-color: #4caf50;
+    -fx-faint-focus-color: transparent;
+}
+
+/* ======================= */
+/* FOOTER */
+/* ======================= */
+
+.ev-footer {
+    -fx-padding: 20 0 0 0;
+}
+
+.ev-warning-text {
+    -fx-text-fill: #555;
+    -fx-font-size: 13px;
+}
+
+/* Separador */
+.ev-separator .line {
+    -fx-border-color: #e1d4d4;
+    -fx-border-width: 1px;
+}

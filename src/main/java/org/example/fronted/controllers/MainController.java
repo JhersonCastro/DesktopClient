@@ -37,62 +37,11 @@ public class MainController implements SessionObserver{
     public void initialize() {
         System.out.println("MainController inicializado");
         // Cargar login por defecto al iniciar
-        //loadLoginView();
-        loadView("/views/coordinator/evaluar_formatoA.fxml");
-        PdfViewerUtil.mostrarPDF("C:\\Users\\Janus\\Downloads\\Entregablestercercorte.pdf","title");
+        loadView("/views/auth/Login.fxml");
         sessionManager = SessionManager.getInstance();
         sessionManager.registerObserver(this);
-
-        //cargarUsuarioPruebaParaTesting_EliminarEnProduccion();
-        updateUIFromSession();
-
     }
-    public void cargarUsuarioPruebaParaTesting_EliminarEnProduccion() {
-        System.out.println("🚀 INICIANDO MODO TESTING - USUARIO DE PRUEBA");
-        System.out.println("⚠️  ADVERTENCIA: Este método debe eliminarse en producción");
 
-        try {
-            // Crear usuario de prueba con configuración completa
-            User usuarioPrueba = new User();
-            usuarioPrueba.setEmail("coordinador.prueba@unicauca.edu.co");
-            usuarioPrueba.setNombres("Juan Carlos");
-            usuarioPrueba.setApellidos("García Mendoza");
-            usuarioPrueba.setPrograma("Ingeniería de Sistemas");
-            usuarioPrueba.setCelular("312-123-4567");
-
-            // Asignar múltiples roles para probar selector
-            List<Rol> rolesUsuario =  Arrays.asList(Rol.COORDINADOR,
-                    Rol.DOCENTE,
-                    Rol.JEFE_DEPARTAMENTO,
-                    Rol.ESTUDIANTE);
-            usuarioPrueba.setRolesDisponibles(rolesUsuario);
-            usuarioPrueba.setRolActual(Rol.COORDINADOR);
-
-            // Token de autenticación simulado
-            String tokenSimulado = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb29yZGluYWRvci5wcnVlYmEiLCJyb2wiOiJDT09SRElOQURPUiIsImlhdCI6MTYxNjIzOTAyMn0";
-
-            // Iniciar sesión
-            SessionManager.getInstance().login(usuarioPrueba, tokenSimulado);
-
-            // Mostrar información en consola
-            System.out.println("✅ Usuario de prueba cargado:");
-            System.out.println("   📧 Email: " + usuarioPrueba.getEmail());
-            System.out.println("   👤 Nombre: " + usuarioPrueba.getNombreCompleto());
-            System.out.println("   🏫 Programa: " + usuarioPrueba.getPrograma());
-            System.out.println("   📱 Celular: " + usuarioPrueba.getCelular());
-            System.out.println("   🎭 Roles disponibles: " + rolesUsuario.size());
-            System.out.println("   🎯 Rol actual: " + usuarioPrueba.getRolActual());
-            System.out.println("   🔑 Token: " + tokenSimulado.substring(0, 30) + "...");
-
-
-            // Cargar vista inicial según rol
-            cargarVistaPorRol(usuarioPrueba.getRolActual());
-
-        } catch (Exception e) {
-            System.err.println("❌ Error al cargar usuario de prueba: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
     private void cargarVistaPorRol(Rol rol) {
         switch (rol) {
             case COORDINADOR:
@@ -122,32 +71,40 @@ public class MainController implements SessionObserver{
                 userEmail.setText(user.getEmail());
             } else {
                 userName.setText(sessionManager.getUserFullName());
-                userEmail.setText(sessionManager.getEmail());
+                userEmail.setText(sessionManager.getCurrentUser().getEmail());
             }
 
             // Configurar selector de roles si tiene múltiples
             configurarSelectorRoles();
 
+            // Cargar vista según rol actual
+            cargarVistaPorRol(sessionManager.getCurrentUser().getRolActual());
+
+
         } else {
             userMenu.setVisible(false);
         }
     }
+    private boolean actualizandoRoles = false;
+
     private void configurarSelectorRoles() {
         if (sessionManager.tieneMultiplesRoles()) {
             roleSelectorContainer.setVisible(true);
 
-            // Cargar roles en el ComboBox
             List<Rol> roles = sessionManager.getRolesDisponibles();
+
+            actualizandoRoles = true;
             roleComboBox.setItems(FXCollections.observableArrayList(roles));
 
-            // Seleccionar rol actual
-            Rol rolActual = sessionManager.getRol();
+            Rol rolActual = sessionManager.getCurrentUser().getRolActual();
             roleComboBox.setValue(rolActual);
-
+            actualizandoRoles = false;
         } else {
             roleSelectorContainer.setVisible(false);
         }
     }
+
+
     public void loadDashboardCoordinatorView() {
         loadView("/views/coordinator/dashboard_coordinator.fxml");
     }
@@ -247,13 +204,19 @@ public class MainController implements SessionObserver{
     }
 
     public void handleRoleChange(ActionEvent actionEvent) {
-            System.out.println("Role seleccionado: " + roleComboBox.getValue().toString());
-            Rol nuevoRol = roleComboBox.getValue();
-            if (nuevoRol != null) {
-                sessionManager.cambiarRol(nuevoRol);
+        if (actualizandoRoles) return;
 
-                // Cargar vista correspondiente al nuevo rol
-                cargarVistaPorRol(nuevoRol);
-            }
+        Rol nuevoRol = roleComboBox.getValue();
+        if (nuevoRol == null) {
+            System.out.println("No hay rol seleccionado (null)");
+            return;
+        }
+
+        System.out.println("Rol seleccionado: " + nuevoRol);
+
+        sessionManager.cambiarRol(nuevoRol);
+        cargarVistaPorRol(nuevoRol);
     }
+
+
 }
