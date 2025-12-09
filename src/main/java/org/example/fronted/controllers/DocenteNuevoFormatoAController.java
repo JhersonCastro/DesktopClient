@@ -9,11 +9,14 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.scene.layout.HBox;
 import org.example.fronted.util.SessionManager;
+import org.example.fronted.api.UserApi; // Importar la API
+import reactor.core.publisher.Mono; // Importar Mono
 
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -47,10 +50,12 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
     private File cartaAceptacionSeleccionada;
     private SessionManager sessionManager;
     private EstudianteAutoComplete estudianteSeleccionado;
+    private UserApi userApi; // Instancia de la API
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         sessionManager = SessionManager.getInstance();
+        userApi = new UserApi(); // Inicializar la API
 
         // 1. Inicializar ToggleGroup
         inicializarToggleGroup();
@@ -114,47 +119,55 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
         loadingLabel.setStyle("-fx-text-fill: #7f8c8d; -fx-font-style: italic;");
         resultadosList.getChildren().add(loadingLabel);
 
-        // Simular llamada asíncrona al servidor
-        new Thread(() -> {
-            try {
-                Thread.sleep(500); // Simular retardo de red
-
-                // Resultados de ejemplo
-                List<EstudianteAutoComplete> resultados = new ArrayList<>();
-
-                if (busqueda.toLowerCase().contains("juan") || busqueda.contains("perez")) {
-                    resultados.add(new EstudianteAutoComplete(
-                            "Juan Carlos Pérez", "201810123", "jcperez@unicauca.edu.co", "Ingeniería de Sistemas"
-                    ));
-                    resultados.add(new EstudianteAutoComplete(
-                            "Juan David Martínez", "201810456", "jdmartinez@unicauca.edu.co", "Ingeniería Electrónica"
-                    ));
-                }
-
-                if (busqueda.toLowerCase().contains("maria")) {
-                    resultados.add(new EstudianteAutoComplete(
-                            "María Fernanda Gómez", "201810789", "mfgomez@unicauca.edu.co", "Automática Industrial"
-                    ));
-                }
-
-                if (busqueda.contains("@")) {
-                    resultados.add(new EstudianteAutoComplete(
-                            "Estudiante por Email", "201810999", busqueda, "Tecnología en Telemática"
-                    ));
-                }
-
-                // Actualizar UI en el hilo de JavaFX
-                Platform.runLater(() -> {
-                    mostrarResultadosBusqueda(resultados, busqueda);
+        // Usar el método real de la API
+        userApi.buscarUsuarios(busqueda)
+                .subscribe(usuarios -> {
+                    Platform.runLater(() -> {
+                        mostrarResultadosBusqueda(convertirUsuariosAEstudiantes(usuarios), busqueda);
+                    });
+                }, error -> {
+                    Platform.runLater(() -> {
+                        mostrarErrorBusqueda("Error en la búsqueda: " + error.getMessage());
+                    });
                 });
+    }
 
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                Platform.runLater(() -> {
-                    mostrarErrorBusqueda("Error en la búsqueda: " + e.getMessage());
-                });
+    private List<EstudianteAutoComplete> convertirUsuariosAEstudiantes(List<Map<String, Object>> usuarios) {
+        List<EstudianteAutoComplete> estudiantes = new ArrayList<>();
+
+        if (usuarios != null) {
+            for (Map<String, Object> usuario : usuarios) {
+                try {
+                    // Extraer datos del mapa según la estructura esperada del backend
+                    String nombreCompleto = (String) usuario.get("nombreCompleto");
+                    String codigo = (String) usuario.get("codigo");
+                    String email = (String) usuario.get("email");
+
+                    // El campo "programa" podría venir de diferentes formas
+                    String programa = "";
+                    if (usuario.get("programa") != null) {
+                        programa = (String) usuario.get("programa");
+                    } else if (usuario.get("programaAcademico") != null) {
+                        programa = (String) usuario.get("programaAcademico");
+                    }
+
+                    // Filtrar solo estudiantes (opcional, si la API no filtra por rol)
+                    String rol = (String) usuario.get("rol");
+                    if (rol == null || "ESTUDIANTE".equalsIgnoreCase(rol) || "estudiante".equalsIgnoreCase(rol)) {
+                        estudiantes.add(new EstudianteAutoComplete(
+                                nombreCompleto != null ? nombreCompleto : "Nombre no disponible",
+                                codigo != null ? codigo : "N/A",
+                                email != null ? email : "N/A",
+                                programa != null ? programa : "Programa no especificado"
+                        ));
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error procesando usuario: " + e.getMessage());
+                }
             }
-        }).start();
+        }
+
+        return estudiantes;
     }
 
     private void mostrarResultadosBusqueda(List<EstudianteAutoComplete> resultados, String busqueda) {
@@ -178,7 +191,7 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
             // Crear contenido del botón
             VBox content = new VBox(3);
 
-            Label nombreLabel = new Label("Nombre" + estudiante.getNombreCompleto());
+            Label nombreLabel = new Label(estudiante.getNombreCompleto()); // CORREGIDO: Quité "Nombre" extra
             nombreLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: black");
 
             HBox infoRow = new HBox(15);
@@ -189,7 +202,7 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
             Label programaLabel = new Label("Programa: " + estudiante.getPrograma());
             programaLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
 
-            infoRow.getChildren().addAll(nombreLabel, codigoLabel, emailLabel, programaLabel);
+            infoRow.getChildren().addAll(codigoLabel, emailLabel, programaLabel);
             content.getChildren().addAll(nombreLabel, infoRow);
 
             resultButton.setGraphic(content);
@@ -214,7 +227,13 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
         resultadosBusquedaContainer.setVisible(false);
         resultadosBusquedaContainer.setManaged(false);
 
+        // Mostrar mensaje de confirmación
         mostrarMensaje("Estudiante seleccionado: " + estudiante.getNombreCompleto(), Alert.AlertType.INFORMATION);
+
+        // Opcional: Automáticamente cargar el programa del estudiante en el ComboBox
+        if (estudiante.getPrograma() != null && !estudiante.getPrograma().isEmpty()) {
+            programaComboBox.setValue(estudiante.getPrograma());
+        }
     }
 
     private void mostrarErrorBusqueda(String error) {
@@ -233,6 +252,16 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
                 "Dr. Jorge Hernández"
         );
         codirectorComboBox.getSelectionModel().select(0);
+
+        // Cargar programas académicos (puedes cargarlos desde la API si es necesario)
+        programaComboBox.getItems().addAll(
+                "Ingeniería de Sistemas",
+                "Ingeniería Electrónica",
+                "Automática Industrial",
+                "Tecnología en Telemática",
+                "Ingeniería Civil",
+                "Ingeniería Ambiental"
+        );
     }
 
     private void configurarListeners() {
@@ -387,6 +416,13 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
         // 2. Llamar servicio para guardar en BD
         // 3. Subir archivos
         // 4. Enviar notificación al coordinador
+
+        // Ejemplo de cómo podrías usar los datos:
+        System.out.println("Estudiante seleccionado: " + estudianteSeleccionado.getNombreCompleto());
+        System.out.println("Código estudiante: " + estudianteSeleccionado.getCodigo());
+        System.out.println("Título: " + tituloTextField.getText());
+        System.out.println("Modalidad: " + (radioInvestigacion.isSelected() ? "Investigación" : "Práctica Profesional"));
+
         return true;
     }
 

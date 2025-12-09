@@ -37,8 +37,8 @@ public class MainController implements SessionObserver{
     public void initialize() {
         System.out.println("MainController inicializado");
         // Cargar login por defecto al iniciar
-        loadView("/views/auth/Login.fxml");
-        PdfViewerUtil.mostrarPDF("C:\\Users\\Janus\\Downloads\\Entregablestercercorte.pdf","hola");
+        //loadView("/views/auth/Login.fxml");
+        loadView("/views/professor/formatA_new.fxml");
         sessionManager = SessionManager.getInstance();
         sessionManager.registerObserver(this);
     }

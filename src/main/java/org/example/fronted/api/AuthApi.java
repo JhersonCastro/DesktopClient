@@ -65,22 +65,4 @@ public class AuthApi extends ApiWebClient {
                     return Mono.just(false);
                 });
     }
-
-
-    public Mono<Boolean> logout() {
-        return addAuthHeader(webClient.post()
-                .uri("/api/auth/logout"))
-                .retrieve()
-                .bodyToMono(Void.class)
-                .map(response -> {
-                    SessionManager.getInstance().clearSession();
-                    System.out.println("Logout exitoso");
-                    return true;
-                })
-                .onErrorResume(error -> {
-                    SessionManager.getInstance().clearSession();
-                    System.err.println("Error en logout: " + error.getMessage());
-                    return Mono.just(true);
-                });
-    }
 }
