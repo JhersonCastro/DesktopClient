@@ -4,16 +4,16 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import org.example.fronted.api.AuthApi;
 import org.example.fronted.api.UserApi;
 import org.example.fronted.dto.RegistroUsuarioDTO;
 import org.example.fronted.models.Rol;
+import org.example.fronted.models.User;
+import org.example.fronted.util.SessionManager;
 import reactor.core.scheduler.Schedulers;
 
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class RegisterController extends UIBase implements Initializable {
@@ -60,6 +60,7 @@ public class RegisterController extends UIBase implements Initializable {
 
     // Fachada hacia el microservicio de usuarios
     private final UserApi userApi = new UserApi();
+    private final AuthApi authApi = new AuthApi();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -388,7 +389,19 @@ public class RegisterController extends UIBase implements Initializable {
                             if (success) {
                                 showMessage("✓ Registro exitoso. Ahora puede iniciar sesión.", "success");
                                 // Aquí puedes navegar a login si ya tienes el mecanismo:
-                                loadView("views/auth/Login.fxml");
+                                authApi.login(dto.getEmail(), dto.getPassword())
+                                        .publishOn(Schedulers.fromExecutor(Platform::runLater))
+                                        .subscribe(success1 -> {
+                                            if (success1) {
+                                                mainController.onUserLoggedIn(SessionManager.getInstance().getCurrentUser());
+                                            } else {
+                                                showError("Algo ocurrio al ingresar de manera automatica, intentalo de manera manual");
+                                            }
+                                        }, error -> {
+                                            Platform.runLater(() -> {
+                                                showError("Error: " + error.getMessage());
+                                            });
+                                        });
                             } else {
                                 showMessage("No se pudo completar el registro. Intente nuevamente.", "error");
                             }
