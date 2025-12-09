@@ -42,7 +42,6 @@ public class PdfViewerUtil {
             // Configurar ventana
             Stage stage = new Stage();
             stage.setTitle("Visor PDF - " + titulo);
-            stage.initModality(Modality.APPLICATION_MODAL);
             stage.initStyle(StageStyle.DECORATED);
 
             Scene scene = new Scene(root, 1000, 700);

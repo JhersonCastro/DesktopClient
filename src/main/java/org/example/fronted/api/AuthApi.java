@@ -1,7 +1,5 @@
 package org.example.fronted.api;
 
-import org.example.fronted.dto.LoginRequestDTO;
-import org.example.fronted.dto.UserResponseDTO;
 import org.example.fronted.models.Rol;
 import org.example.fronted.models.User;
 import org.example.fronted.util.SessionManager;
@@ -68,22 +66,6 @@ public class AuthApi extends ApiWebClient {
                 });
     }
 
-
-    public Mono<UserResponseDTO> getCurrentUser() {
-        if (!SessionManager.getInstance().isLoggedIn()) {
-            return Mono.error(new RuntimeException("No hay usuario logueado"));
-        }
-
-        return addAuthHeader(webClient.get()
-                .uri("/api/auth/me"))
-                .retrieve()
-                .onStatus(status -> status == HttpStatus.UNAUTHORIZED,
-                        response -> {
-                            SessionManager.getInstance().clearSession();
-                            return Mono.error(new RuntimeException("Sesion expirada"));
-                        })
-                .bodyToMono(UserResponseDTO.class);
-    }
 
     public Mono<Boolean> logout() {
         return addAuthHeader(webClient.post()
