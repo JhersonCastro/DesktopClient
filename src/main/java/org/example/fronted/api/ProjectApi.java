@@ -143,13 +143,17 @@ public class ProjectApi extends ApiWebClient {
                                 .path("/{idProyecto}/evaluar")
                                 .queryParam("aprobado", dto.isAprobado())
                                 .queryParam("observaciones", dto.getObservaciones())
+                                .queryParam("evaluadorEmail", dto.getEvaluadorEmail()) // <-- AGREGAR ESTE
                                 .build(dto.getIdProyecto()))
         );
 
         return spec.retrieve()
                 .bodyToMono(Void.class)
                 .map(v -> true)
-                .onErrorResume(err -> Mono.just(false));
+                .onErrorResume(err -> {
+                    System.err.println("Error evaluando Formato A: " + err.getMessage());
+                    return Mono.just(false);
+                });
     }
 
     // ================= 7. REINTENTAR FORMATO A (DOCENTE) =================

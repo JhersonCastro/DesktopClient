@@ -9,11 +9,13 @@ import javafx.stage.StageStyle;
 import org.example.fronted.controllers.VisorPdfController;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 
 public class PdfViewerUtil {
 
+    /**
+     * Muestra un PDF desde un archivo local
+     */
     public static void mostrarPDF(String pdfPath, String titulo) {
         try {
             // Verificar que el archivo existe
@@ -30,52 +32,70 @@ public class PdfViewerUtil {
             }
 
             // Cargar FXML
-
             URL fxmlUrl = PdfViewerUtil.class.getResource("/views/utils/visor-pdf.fxml");
-
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
-
             Parent root = loader.load();
+
             VisorPdfController controller = loader.getController();
             controller.setPdfPath(pdfPath, titulo);
 
             // Configurar ventana
-            Stage stage = new Stage();
-            stage.setTitle("Visor PDF - " + titulo);
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initStyle(StageStyle.DECORATED);
+            crearVentanaVisor(root, titulo, controller);
 
-            Scene scene = new Scene(root, 1000, 700);
-            stage.setScene(scene);
-
-            // Manejar cierre de ventana
-            stage.setOnCloseRequest(event -> {
-                controller.limpiarRecursos();
-            });
-
-            stage.show();
-
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             mostrarError("No se pudo cargar el visor PDF: " + e.getMessage());
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            mostrarError("Archivo FXML no encontrado");
         }
+    }
+
+    /**
+     * Muestra un PDF descargado desde el servidor
+     */
+    public static void mostrarPDFDesdeServidor(Long documentoId, String titulo) {
+        try {
+            // Cargar FXML
+            URL fxmlUrl = PdfViewerUtil.class.getResource("/views/utils/visor-pdf.fxml");
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            Parent root = loader.load();
+
+            VisorPdfController controller = loader.getController();
+
+            // Usar el nuevo método para documentos del servidor
+            controller.setDocumentoDesdeServidor(documentoId, titulo);
+
+            // Configurar ventana
+            crearVentanaVisor(root, titulo, controller);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarError("No se pudo cargar el documento desde el servidor: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Crea y configura la ventana del visor
+     */
+    private static void crearVentanaVisor(Parent root, String titulo, VisorPdfController controller) {
+        Stage stage = new Stage();
+        stage.setTitle("Visor PDF - " + titulo);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initStyle(StageStyle.DECORATED);
+
+        Scene scene = new Scene(root, 1000, 700);
+        stage.setScene(scene);
+
+        // Manejar cierre de ventana
+        stage.setOnCloseRequest(event -> {
+            if (controller != null) {
+                controller.limpiarRecursos();
+            }
+        });
+
+        stage.show();
     }
 
     private static void mostrarError(String mensaje) {
         System.err.println("Error PDF Viewer: " + mensaje);
-
-        // Opcional: mostrar diálogo de error
-        /*
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Error al abrir PDF");
-            alert.setContentText(mensaje);
-            alert.show();
-        });
-        */
+        // Puedes agregar un diálogo de error aquí si lo necesitas
     }
 }
