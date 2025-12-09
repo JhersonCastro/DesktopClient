@@ -14,6 +14,9 @@ import reactor.core.publisher.Mono;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ProyectoApi extends ApiWebClient {
 
@@ -156,13 +159,56 @@ public class ProyectoApi extends ApiWebClient {
                 // MAPEO A TU DTO
                 .map(p -> new ProjectCardDTO(
                         p.getTitulo(),
-                        p.getEstudiante1Email(),   // o estudiante2 si quieres combinar
+                        unirEstudiantes(p),
                         p.getModalidad(),
                         p.getDirectorEmail()
                 ))
 
                 .collectList();
     }
+
+    // =================================
+    // OBTENER EVALUACIONES POR DOCENTE
+    // =================================
+    public Mono<List<ProjectCardDTO>> obtenerProyectosParaEvaluar(String emailDocente) {
+
+        WebClient.RequestHeadersSpec<?> req = webClient.get()
+                .uri("/api/v1/proyectos");
+
+        return addAuthHeader(req)
+                .retrieve()
+                .bodyToFlux(ProyectoGrado.class)
+
+                // FILTRAR SOLO LOS PROYECTOS DONDE EL DOCENTE ES EVALUADOR
+                .filter(p -> emailDocente.equals(p.getEvaluador1Email())
+                        || emailDocente.equals(p.getEvaluador2Email()))
+
+                // FILTRAR SOLO LOS QUE ESTÁN PENDIENTES DE EVALUAR
+                .filter(p -> "ANTEPROYECTO_EN_EVALUACION".equals(p.getEstadoActual()))
+
+                // MAPEAR AL DTO QUE VAS A MOSTRAR EN LA VISTA
+                .map(p -> new ProjectCardDTO(
+                        p.getTitulo(),
+                        unirEstudiantes(p),
+                        p.getModalidad(),
+                        p.getDirectorEmail()
+                ))
+
+                .collectList();
+    }
+
+    // =============================
+    // UNIR ESTUDIANTES PARA TARJETA
+    // =============================
+
+    private String unirEstudiantes(ProyectoGrado p) {
+        return Stream.of(p.getEstudiante1Email(), p.getEstudiante2Email())
+                .filter(Objects::nonNull)
+                .filter(s -> !s.isBlank())
+                .collect(Collectors.joining(" / "));
+    }
+
+
 
 
     // =========================
