@@ -54,32 +54,6 @@
                 <ColumnConstraints hgrow="ALWAYS" prefWidth="450"/>
             </columnConstraints>
 
-            <!-- ANTEPROYECTO -->
-            <Label text="* Anteproyecto:"
-                   GridPane.rowIndex="0" GridPane.columnIndex="0"
-                   styleClass="ev-label-required"/>
-
-            <VBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                <TextField
-                        fx:id="anteproyectoTexField"
-                        promptText="Escriba nombre del anteproyecto y presione ENTER..."
-                        styleClass="form-autocomplete" />
-
-                <HBox alignment="CENTER_LEFT" spacing="10">
-                    <ImageView fitHeight="16" fitWidth="16">
-                        <Image url="@../../images/icons/info.png" />
-                    </ImageView>
-                    <Label
-                            styleClass="formato-a-hint"
-                            text="Presione ENTER después de escribir para buscar anteproyectos" />
-                </HBox>
-            </VBox>
-
-            <!--<ComboBox fx:id="anteproyectoComboBox"
-                      promptText="Seleccione el anteproyecto..."
-                      GridPane.rowIndex="0" GridPane.columnIndex="1"
-                      styleClass="ev-combobox"/>-->
-
             <!-- EVALUADOR 1 -->
             <Label text="* Evaluador 1:"
                    GridPane.rowIndex="1" GridPane.columnIndex="0"
@@ -90,13 +64,9 @@
                         fx:id="evaluador1TextField"
                         promptText="Escriba nombre del docente y presione ENTER..."
                         styleClass="form-autocomplete" />
-
+                <VBox fx:id="resultadosEvaluador1" spacing="5"
+                      styleClass="ev-resultados" managed="false" visible="false"/>
             </VBox>
-
-            <!--<ComboBox fx:id="evaluador1ComboBox"
-                      promptText="Seleccione el primer evaluador..."
-                      GridPane.rowIndex="1" GridPane.columnIndex="1"
-                      styleClass="ev-combobox"/>-->
 
             <!-- EVALUADOR 2 -->
             <Label text="* Evaluador 2:"
@@ -108,6 +78,8 @@
                         fx:id="evaluador2TextField"
                         promptText="Escriba nombre del docente y presione ENTER..."
                         styleClass="form-autocomplete" />
+                <VBox fx:id="resultadosEvaluador2" spacing="5"
+                      styleClass="ev-resultados" managed="false" visible="false"/>
 
                 <HBox alignment="CENTER_LEFT" spacing="10">
                     <ImageView fitHeight="16" fitWidth="16">
@@ -118,11 +90,6 @@
                             text="Presione ENTER después de escribir para buscar docentes" />
                 </HBox>
             </VBox>
-
-            <!--<ComboBox fx:id="evaluador2ComboBox"
-                      promptText="Seleccione el segundo evaluador..."
-                      GridPane.rowIndex="2" GridPane.columnIndex="1"
-                      styleClass="ev-combobox"/>-->
 
             <!-- HINT -->
             <HBox spacing="10" alignment="CENTER_LEFT"

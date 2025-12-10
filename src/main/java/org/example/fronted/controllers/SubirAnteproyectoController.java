@@ -1,129 +1,209 @@
 package org.example.fronted.controllers;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import javafx.stage.FileChooser;
-import org.example.fronted.api.ProjectApi;
-import org.example.fronted.dto.SubirAnteproyectoDTO;
+import org.example.fronted.api.ProyectoApi;
+import org.example.fronted.models.ProyectoGrado;
 import org.example.fronted.util.SessionManager;
+import org.springframework.core.io.ByteArrayResource;
+import reactor.core.publisher.Mono;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
-public class SubirAnteproyectoController extends UIBase {
+public class SubirAnteproyectoController extends UIBase implements Initializable {
 
-    @FXML private Label proyectoTitleLabel;
-    @FXML private Label estudianteLabel;
-    @FXML private Label directorLabel;
-    @FXML private TextField archivoPrincipalField;
-    @FXML private TextField anexosField;
-    @FXML private TextArea observacionesArea;
+    // ====== FXML (coinciden con tu subir_anteproyecto.fxml) ======
+
+    @FXML
+    private ComboBox<ProyectoGrado> proyectoComboBox;
+
+    @FXML
+    private TextField tituloTextField;
+
+    @FXML
+    private TextField estudianteTextField;
+
+    @FXML
+    private TextField modalidadTextField;
+
+    @FXML
+    private TextField tituloAnteproyectoTextField;
+
+    @FXML
+    private TextArea resumenTextArea;
+
+    @FXML
+    private TextField palabrasClaveTextField;
+
+    @FXML
+    private TextField archivoPrincipalTextField;
+
+    @FXML
+    private TextField anexosTextField;
+
+    @FXML
+    private DatePicker fechaEstimadaDatePicker;
+
+    // ====== Estado interno ======
+
+    private final ProyectoApi proyectoApi = new ProyectoApi();
+    private final SessionManager sessionManager = SessionManager.getInstance();
 
     private File archivoPrincipal;
-    private File archivoAnexos;
-    private Long proyectoId; // ID del proyecto al que pertenece
-    private ProjectApi projectApi;
+    // (los anexos de momento solo se muestran, no se envían al backend)
+    private List<File> anexosSeleccionados;
 
-    // Este método debe llamarse desde el controlador que abre esta vista
-    public void setProyectoData(Long proyectoId, String titulo, String estudiante, String director) {
-        this.proyectoId = proyectoId;
-        this.projectApi = new ProjectApi();
+    // ====== Ciclo de vida ======
 
-        proyectoTitleLabel.setText(titulo);
-        estudianteLabel.setText("Estudiante: " + estudiante);
-        directorLabel.setText("Director: " + director);
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        cargarProyectosAprobados();
+        configurarListenerProyecto();
     }
+
+    /**
+     * Carga proyectos del ESTUDIANTE actual y filtra solo los que tienen
+     * Formato A aprobado.
+     */
+    private void cargarProyectosAprobados() {
+        String emailEstudiante = sessionManager.getCurrentUser().getEmail();
+
+        Mono<List<ProyectoGrado>> mono = proyectoApi.obtenerPorEstudiante(emailEstudiante);
+
+        mono.subscribe(proyectos -> {
+            List<ProyectoGrado> aprobados = proyectos.stream()
+                    .filter(this::tieneFormatoAAprobado)
+                    .collect(Collectors.toList());
+
+            Platform.runLater(() -> {
+                proyectoComboBox.getItems().clear();
+                proyectoComboBox.getItems().addAll(aprobados);
+            });
+
+        }, error -> {
+            error.printStackTrace();
+            Platform.runLater(() ->
+                    mostrarAlerta("Error",
+                            "Error al cargar proyectos aprobados: " + error.getMessage(),
+                            Alert.AlertType.ERROR)
+            );
+        });
+    }
+
+    /**
+     * Regla simple: consideramos Formato A aprobado si el estadoActual
+     * es exactamente "FORMATO_A_APROBADO" (ajusta al valor real que maneje tu backend).
+     */
+    private boolean tieneFormatoAAprobado(ProyectoGrado p) {
+        return p.getEstadoActual() != null
+                && p.getEstadoActual().equalsIgnoreCase("FORMATO_A_APROBADO");
+    }
+
+    /**
+     * Cuando se selecciona un proyecto en el ComboBox, rellenamos los campos
+     * de título, estudiante y modalidad (solo lectura).
+     */
+    private void configurarListenerProyecto() {
+        proyectoComboBox.getSelectionModel().selectedItemProperty()
+                .addListener((obs, oldVal, nuevo) -> {
+                    if (nuevo != null) {
+                        tituloTextField.setText(nuevo.getTitulo());
+                        estudianteTextField.setText(
+                                nuevo.getEstudiante1Email() != null ? nuevo.getEstudiante1Email() : ""
+                        );
+                        modalidadTextField.setText(nuevo.getModalidad());
+                    } else {
+                        tituloTextField.clear();
+                        estudianteTextField.clear();
+                        modalidadTextField.clear();
+                    }
+                });
+    }
+
+    // ====== Métodos llamados desde el FXML ======
 
     @FXML
     public void seleccionarArchivoPrincipal(ActionEvent actionEvent) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Seleccionar Anteproyecto Principal");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf")
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Seleccionar anteproyecto (PDF)");
+        chooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("PDF", "*.pdf")
         );
-
-        File archivo = fileChooser.showOpenDialog(archivoPrincipalField.getScene().getWindow());
-        if (archivo != null) {
-            archivoPrincipalField.setText(archivo.getAbsolutePath());
-            archivoPrincipal = archivo;
+        File file = chooser.showOpenDialog(null);
+        if (file != null) {
+            archivoPrincipal = file;
+            archivoPrincipalTextField.setText(file.getName());
         }
     }
 
     @FXML
     public void seleccionarAnexos(ActionEvent actionEvent) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Seleccionar Anexos (opcional)");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf"),
-                new FileChooser.ExtensionFilter("Archivos ZIP", "*.zip"),
-                new FileChooser.ExtensionFilter("Todos los archivos", "*.*")
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Seleccionar anexos");
+        chooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("PDF", "*.pdf"),
+                new FileChooser.ExtensionFilter("ZIP", "*.zip"),
+                new FileChooser.ExtensionFilter("DOCX", "*.docx")
         );
-
-        File archivo = fileChooser.showOpenDialog(anexosField.getScene().getWindow());
-        if (archivo != null) {
-            anexosField.setText(archivo.getAbsolutePath());
-            archivoAnexos = archivo;
+        List<File> files = chooser.showOpenMultipleDialog(null);
+        if (files != null && !files.isEmpty()) {
+            anexosSeleccionados = files;
+            String nombres = files.stream()
+                    .map(File::getName)
+                    .collect(Collectors.joining(", "));
+            anexosTextField.setText(nombres);
         }
     }
 
     @FXML
     public void cancelar(ActionEvent actionEvent) {
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar cancelación");
-        confirmacion.setHeaderText("¿Desea cancelar la subida del anteproyecto?");
-        confirmacion.setContentText("Se perderán los archivos seleccionados.");
-
-        if (confirmacion.showAndWait().orElse(null) == ButtonType.OK) {
-            regresarAlDashboard(actionEvent);
-        }
+        limpiarFormulario();
+        loadView("/views/professor/dashboard_professor.fxml");
     }
 
     @FXML
     public void guardarBorrador(ActionEvent actionEvent) {
-        // Aquí podrías guardar localmente o en una base temporal
-        mostrarAlerta("Borrador guardado",
-                "Los archivos se han guardado como borrador. Puede continuar más tarde.",
+        // Por ahora no hay endpoint para borradores → solo mostramos un mensaje
+        mostrarAlerta("Borrador",
+                "La opción de guardar borrador aún no está implementada en el backend.",
                 Alert.AlertType.INFORMATION);
     }
 
     @FXML
     public void enviarAnteproyecto(ActionEvent actionEvent) {
-        // Validaciones
-        if (proyectoId == null) {
-            mostrarAlerta("Error", "No se ha identificado el proyecto", Alert.AlertType.ERROR);
+        if (!validarFormulario()) {
             return;
         }
 
-        if (archivoPrincipal == null) {
-            mostrarAlerta("Error", "Debe seleccionar el archivo principal del anteproyecto",
-                    Alert.AlertType.ERROR);
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmar envío");
+        confirm.setHeaderText("¿Desea enviar el anteproyecto?");
+        confirm.setContentText("Una vez enviado, no podrá modificarlo hasta la evaluación.");
+
+        if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) {
             return;
         }
 
-        // Confirmación
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar envío");
-        confirmacion.setHeaderText("¿Está seguro de enviar el anteproyecto?");
-        confirmacion.setContentText("El anteproyecto será enviado al jefe de departamento para evaluación.");
-
-        if (confirmacion.showAndWait().orElse(null) != ButtonType.OK) {
-            return;
-        }
-
-        // Enviar al microservicio
         new Thread(() -> {
-            boolean exito = enviarAnteproyectoAlServidor();
+            boolean ok = procesarEnvioAnteproyecto();
 
-            javafx.application.Platform.runLater(() -> {
-                if (exito) {
+            Platform.runLater(() -> {
+                if (ok) {
                     mostrarAlerta("Éxito",
-                            "Anteproyecto enviado correctamente. Se notificará al jefe de departamento.",
+                            "Anteproyecto enviado correctamente. Se ha notificado al jefe de departamento.",
                             Alert.AlertType.INFORMATION);
-                    regresarAlDashboard(actionEvent);
+                    limpiarFormulario();
+                    loadView("/views/professor/dashboard_professor.fxml");
                 } else {
                     mostrarAlerta("Error",
                             "No se pudo enviar el anteproyecto. Intente nuevamente.",
@@ -133,38 +213,94 @@ public class SubirAnteproyectoController extends UIBase {
         }).start();
     }
 
-    private boolean enviarAnteproyectoAlServidor() {
+    @FXML
+    public void regresarAlDashboard(ActionEvent actionEvent) {
+        loadView("/views/professor/dashboard_professor.fxml");
+    }
+
+    // ====== Lógica interna ======
+
+    private boolean validarFormulario() {
+        StringBuilder errores = new StringBuilder();
+
+        if (proyectoComboBox.getValue() == null) {
+            errores.append("- Debe seleccionar un proyecto.\n");
+        }
+        if (tituloAnteproyectoTextField.getText() == null ||
+                tituloAnteproyectoTextField.getText().isBlank()) {
+            errores.append("- El título del anteproyecto es obligatorio.\n");
+        }
+        if (resumenTextArea.getText() == null || resumenTextArea.getText().isBlank()) {
+            errores.append("- El resumen ejecutivo es obligatorio.\n");
+        }
+        if (palabrasClaveTextField.getText() == null ||
+                palabrasClaveTextField.getText().isBlank()) {
+            errores.append("- Las palabras clave son obligatorias.\n");
+        }
+        if (archivoPrincipal == null) {
+            errores.append("- Debe seleccionar el documento principal (PDF).\n");
+        }
+        if (fechaEstimadaDatePicker.getValue() == null) {
+            errores.append("- Debe seleccionar una fecha estimada de finalización.\n");
+        }
+
+        if (errores.length() > 0) {
+            mostrarAlerta("Formulario incompleto",
+                    errores.toString(),
+                    Alert.AlertType.WARNING);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Llama a ProyectoApi.subirAnteproyecto(...)
+     */
+    private boolean procesarEnvioAnteproyecto() {
         try {
-            SubirAnteproyectoDTO dto = new SubirAnteproyectoDTO();
-            dto.setIdProyecto(proyectoId);
-            dto.setAnteproyectoPdf(archivoPrincipal);
+            ProyectoGrado seleccionado = proyectoComboBox.getValue();
+            if (seleccionado == null) return false;
 
-            // Obtener email del jefe de departamento (aquí necesitas lógica específica)
-            // Por ahora, obtén el email del usuario logueado si es jefe
-            String jefeEmail = obtenerEmailJefeDepartamento();
-            dto.setJefeDepartamentoEmail(jefeEmail);
+            Long idProyecto = seleccionado.getId();
 
-            // Llamada al API
-            return projectApi.subirAnteproyecto(dto).block(); // block() porque estamos en hilo aparte
+            byte[] bytes = Files.readAllBytes(archivoPrincipal.toPath());
+            ByteArrayResource resource = new ByteArrayResource(bytes) {
+                @Override
+                public String getFilename() {
+                    return archivoPrincipal.getName();
+                }
+            };
 
-        } catch (Exception e) {
+            // TODO: aquí deberías poner el email REAL del jefe de departamento.
+            // De momento uso el email del usuario actual como placeholder.
+            String jefeEmail = sessionManager.getCurrentUser().getEmail();
+
+
+            Mono<Void> mono = proyectoApi.subirAnteproyecto(idProyecto, jefeEmail, resource);
+
+            // bloquea en el hilo secundario (no en el hilo de JavaFX)
+            mono.block();
+            return true;
+
+        } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    private String obtenerEmailJefeDepartamento() {
-        // Aquí necesitas lógica para obtener el email del jefe de departamento
-        // Opciones:
-        // 1. Del usuario logueado si tiene rol JEFE_DEPARTAMENTO
-        // 2. De una lista predefinida
-        // 3. De una llamada a otro servicio
-
-        // Por ahora, retorna el email del usuario logueado
-        if (SessionManager.getInstance().getCurrentUser() != null) {
-            return SessionManager.getInstance().getCurrentUser().getEmail();
-        }
-        return "jefe.departamento@unicauca.edu.co"; // Fallback
+    private void limpiarFormulario() {
+        proyectoComboBox.getSelectionModel().clearSelection();
+        tituloTextField.clear();
+        estudianteTextField.clear();
+        modalidadTextField.clear();
+        tituloAnteproyectoTextField.clear();
+        resumenTextArea.clear();
+        palabrasClaveTextField.clear();
+        archivoPrincipalTextField.clear();
+        anexosTextField.clear();
+        fechaEstimadaDatePicker.setValue(null);
+        archivoPrincipal = null;
+        anexosSeleccionados = null;
     }
 
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
@@ -173,10 +309,5 @@ public class SubirAnteproyectoController extends UIBase {
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
         alerta.showAndWait();
-    }
-
-    @FXML
-    public void regresarAlDashboard(ActionEvent actionEvent) {
-        loadView("/views/professor/dashboard_professor.fxml");
     }
 }

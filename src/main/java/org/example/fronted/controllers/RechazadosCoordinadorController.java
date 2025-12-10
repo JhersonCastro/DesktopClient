@@ -27,7 +27,7 @@ public class RechazadosCoordinadorController extends UIBase implements ListContr
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        proyectoApi.obtenerProyectosAprobados()
+        proyectoApi.obtenerProyectosRechazados()
                 .subscribe(
                         lista -> {
                             Platform.runLater(() -> {

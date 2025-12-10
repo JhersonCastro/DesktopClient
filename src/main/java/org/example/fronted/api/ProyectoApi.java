@@ -349,7 +349,7 @@ public class ProyectoApi extends ApiWebClient {
     // =========================
     // ASIGNAR EVALUADORES
     // =========================
-    public Mono<Void> asignarEvaluadores(
+    public Mono<String> asignarEvaluadores(
             Long idProyecto,
             String jefeEmail,
             String evaluador1,
@@ -364,7 +364,8 @@ public class ProyectoApi extends ApiWebClient {
 
         return addAuthHeader(req)
                 .retrieve()
-                .bodyToMono(Void.class);
+                .bodyToMono(String.class) // Cambiar a String en lugar de Void
+                .onErrorResume(e -> Mono.error(e));
     }
     public Mono<List<ProyectoGrado>> obtenerProyectosPendientes() {
         WebClient.RequestHeadersSpec<?> req = webClient.get()
@@ -486,6 +487,43 @@ public class ProyectoApi extends ApiWebClient {
                     return proyectos;
                 });
     }
+    public Mono<List<ProjectCardDTO>> obtenerProyectosPorJefe(
+            String emailJefe
+    ) {
+        WebClient.RequestHeadersSpec<?> req = webClient.get()
+                .uri("/api/v1/proyectos/anteproyectos/jefe/{emailJefe}", emailJefe);
 
+        return addAuthHeader(req)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
+                .map(lista -> {
+                    List<ProjectCardDTO> proyectos = new ArrayList<>();
 
+                    for (Map<String, Object> data : lista) {
+                        ProjectCardDTO p = new ProjectCardDTO();
+
+                        p.setId(Long.parseLong(data.get("id").toString()));
+                        p.setTitulo((String) data.get("titulo"));
+                        p.setModalidad((String) data.get("modalidad"));
+                        p.setDirector((String) data.get("directorEmail"));
+                        p.setEstudiante((String) data.get("estudiante1Email"));
+                        proyectos.add(p);
+                    }
+
+                    return proyectos;
+                });
+    }
+    // =========================
+    // SUBIR FORMATO A
+    // =========================
+    public Mono<Void> subirFormatoA(Long idProyecto, ByteArrayResource archivoFormatoA) {
+        WebClient.RequestHeadersSpec<?> req = webClient.post()
+                .uri("/api/v1/proyectos/{idProyecto}/formatoA", idProyecto)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData("file", archivoFormatoA));
+
+        return addAuthHeader(req)
+                .retrieve()
+                .bodyToMono(Void.class);
+    }
 }

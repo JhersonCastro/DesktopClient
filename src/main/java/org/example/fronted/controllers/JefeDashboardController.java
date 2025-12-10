@@ -15,6 +15,7 @@ import org.example.fronted.models.ProyectoGrado;
 import org.example.fronted.models.User;
 import org.example.fronted.util.SessionManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class JefeDashboardController extends UIBase {
@@ -51,17 +52,33 @@ public class JefeDashboardController extends UIBase {
                 if (sessionManager.getCurrentUser() != null) {
                     emailJefe = sessionManager.getCurrentUser().getEmail();
                 }
+                //TODO remove that
+                ProyectoApi ps = new ProyectoApi();
 
                 if (!emailJefe.isEmpty()) {
-                    List<ProyectoGrado> proyectos = proyectoApi.obtenerAnteproyectosPorJefe(emailJefe).block();
+                    List<ProyectoGrado> proyectos = new ArrayList<>();
+                            proyectoApi.obtenerProyectosPorJefe(emailJefe)
+                            .subscribe(DTO ->{
+                                for(int i = 0; i<DTO.size(); i++){
+                                    ProyectoGrado pg = new ProyectoGrado();
+                                    pg.setId(DTO.get(i).getId());
+                                    pg.setTitulo(DTO.get(i).getTitulo());
+                                    pg.setEstadoActual(DTO.get(i).getEstado());
+                                    pg.setEstudiante1Email(DTO.get(i).getEstudiante());
+                                    proyectos.add(pg);
+                                }
+                                Platform.runLater(() -> {
+                                    if (proyectos != null) {
+                                        anteproyectosData.setAll(proyectos);
+                                        anteproyectosTable.setItems(anteproyectosData);
+                                        cargarEstadisticas(proyectos);
+                                    }
+                                });
+                                    }
 
-                    Platform.runLater(() -> {
-                        if (proyectos != null) {
-                            anteproyectosData.setAll(proyectos);
-                            anteproyectosTable.setItems(anteproyectosData);
-                            cargarEstadisticas(proyectos);
-                        }
-                    });
+                            );
+
+
                 } else {
                     Platform.runLater(() -> System.err.println("No se pudo identificar el email del jefe de departamento."));
                 }
@@ -92,7 +109,6 @@ public class JefeDashboardController extends UIBase {
     private void configurarColumnasTabla() {
         TableColumn<ProyectoGrado, String> colTitulo = new TableColumn<>("Título");
         TableColumn<ProyectoGrado, String> colEstudiante = new TableColumn<>("Estudiante");
-        TableColumn<ProyectoGrado, String> colFecha = new TableColumn<>("Fecha");
         TableColumn<ProyectoGrado, String> colEstado = new TableColumn<>("Estado");
         TableColumn<ProyectoGrado, Void> colAcciones = new TableColumn<>("Acciones");
 
@@ -104,8 +120,6 @@ public class JefeDashboardController extends UIBase {
                 new SimpleStringProperty(cellData.getValue().getEstudiante1Email() != null ? cellData.getValue().getEstudiante1Email() : "N/A"));
 
         // Usamos fechaAnteproyecto o fechaFormatoA según corresponda
-        colFecha.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getFechaAnteproyecto() != null ? cellData.getValue().getFechaAnteproyecto() : "-"));
 
         colEstado.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getEstadoActual() != null ? cellData.getValue().getEstadoActual() : "DESCONOCIDO"));
@@ -143,7 +157,7 @@ public class JefeDashboardController extends UIBase {
         });
 
         anteproyectosTable.getColumns().clear();
-        anteproyectosTable.getColumns().addAll(colTitulo, colEstudiante, colFecha, colEstado, colAcciones);
+        anteproyectosTable.getColumns().addAll(colTitulo, colEstudiante, colEstado, colAcciones);
     }
 
     private void cargarNotificaciones() {
@@ -241,7 +255,7 @@ public class JefeDashboardController extends UIBase {
         if(proyecto == null) return;
         System.out.println("Asignando evaluadores a proyecto: " + proyecto.getId());
 
-        loadView("/views/DepartmentHead/evaluators_Assignment.fxml");
+        loadView("/views/DepartmentHead/evaluators_Assignment.fxml", proyecto.getId(), SessionManager.getInstance().getCurrentUser().getEmail());
     }
 
     private void verDetalleAnteproyecto(ProyectoGrado proyecto) {

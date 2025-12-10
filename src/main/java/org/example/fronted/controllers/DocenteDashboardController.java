@@ -16,7 +16,7 @@ public class DocenteDashboardController  extends UIBase{
     @FXML private VBox notificacionesContainer;
     @FXML private VBox notificacionesList;
 
-    private SessionManager sessionManager;
+    private SessionManager  sessionManager;
     private ProyectoApi proyectoApi = new  ProyectoApi();
 
     @FXML

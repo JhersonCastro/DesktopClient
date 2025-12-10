@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.example.fronted.api.AuthApi;
 import org.example.fronted.api.DebugApi;
+import org.example.fronted.api.ProyectoApi;
 import org.example.fronted.util.SessionManager;
 import reactor.core.scheduler.Schedulers;
 import javafx.application.Platform;
