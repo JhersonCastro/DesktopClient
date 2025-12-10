@@ -1,81 +1,116 @@
 package org.example.fronted.controllers;
 
+import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.HBox;
+import org.example.fronted.api.MessagingApi;
+import org.example.fronted.api.ProyectoApi;
+import org.example.fronted.models.MensajeInterno;
+import org.example.fronted.models.ProyectoGrado;
+import org.example.fronted.models.User;
 import org.example.fronted.util.SessionManager;
 
-public class JefeDashboardController extends UIBase{
+import java.util.List;
 
-    @FXML private TableView<Anteproyecto> anteproyectosTable;
+public class JefeDashboardController extends UIBase {
+
+    @FXML private TableView<ProyectoGrado> anteproyectosTable;
     @FXML private VBox notificacionesContainer;
     @FXML private VBox notificacionesList;
+    @FXML private Label lblTotalProyectos;
+    @FXML private Label lblPendientes;
+    @FXML private Label lblEnRevision;
 
     private SessionManager sessionManager;
-    private ObservableList<Anteproyecto> anteproyectosData;
+    private ProyectoApi proyectoApi;
+    private MessagingApi messagingApi;
+    private ObservableList<ProyectoGrado> anteproyectosData;
 
     @FXML
     public void initialize() {
         sessionManager = SessionManager.getInstance();
+        proyectoApi = new ProyectoApi(); // Instancia directa, no Singleton
+        messagingApi = new MessagingApi(); // Instancia directa
         anteproyectosData = FXCollections.observableArrayList();
 
-        cargarEstadisticas();
-        cargarAnteproyectosRecientes();
+        configurarColumnasTabla();
+        cargarDatos();
         cargarNotificaciones();
     }
 
-    private void cargarEstadisticas() {
-        // Aquí se cargarían las estadísticas reales desde el backend
+    private void cargarDatos() {
 
+        new Thread(() -> {
+            try {
+                String emailJefe = "";
+                if (sessionManager.getCurrentUser() != null) {
+                    emailJefe = sessionManager.getCurrentUser().getEmail();
+                }
+
+                if (!emailJefe.isEmpty()) {
+                    List<ProyectoGrado> proyectos = proyectoApi.obtenerAnteproyectosPorJefe(emailJefe).block();
+
+                    Platform.runLater(() -> {
+                        if (proyectos != null) {
+                            anteproyectosData.setAll(proyectos);
+                            anteproyectosTable.setItems(anteproyectosData);
+                            cargarEstadisticas(proyectos);
+                        }
+                    });
+                } else {
+                    Platform.runLater(() -> System.err.println("No se pudo identificar el email del jefe de departamento."));
+                }
+            } catch (Exception e) {
+                Platform.runLater(() -> System.err.println("Error cargando proyectos del jefe: " + e.getMessage()));
+            }
+        }).start();
     }
 
-    private void cargarAnteproyectosRecientes() {
-        // Datos de ejemplo - en producción vendrían del backend
-        anteproyectosData.add(new Anteproyecto(
-                "Sistema de Gestión de Proyectos",
-                "Dr. Carlos Mendoza",
-                "15 Nov 2025",
-                "Pendiente"
-        ));
+    private void cargarEstadisticas(List<ProyectoGrado> proyectos) {
+        if (proyectos == null) return;
 
-        anteproyectosData.add(new Anteproyecto(
-                "IA para Diagnóstico Médico",
-                "Dra. Ana López",
-                "14 Nov 2025",
-                "Asignado"
-        ));
+        long total = proyectos.size();
+        long pendientes = proyectos.stream()
+                .filter(p -> p.getEstadoActual() != null && p.getEstadoActual().toUpperCase().contains("PENDIENTE"))
+                .count();
+        long revision = proyectos.stream()
+                .filter(p -> p.getEstadoActual() != null &&
+                        (p.getEstadoActual().toUpperCase().contains("REVISION") ||
+                                p.getEstadoActual().toUpperCase().contains("EVALUACION")))
+                .count();
 
-        anteproyectosData.add(new Anteproyecto(
-                "App Móvil Educativa",
-                "Mg. Pedro Gómez",
-                "12 Nov 2025",
-                "En Evaluación"
-        ));
-
-        // Configurar la tabla
-        configurarColumnasTabla();
-        anteproyectosTable.setItems(anteproyectosData);
+        if (lblTotalProyectos != null) lblTotalProyectos.setText(String.valueOf(total));
+        if (lblPendientes != null) lblPendientes.setText(String.valueOf(pendientes));
+        if (lblEnRevision != null) lblEnRevision.setText(String.valueOf(revision));
     }
 
     private void configurarColumnasTabla() {
-        // Configurar las columnas de la tabla
-        TableColumn<Anteproyecto, String> colTitulo = new TableColumn<>("Título");
-        TableColumn<Anteproyecto, String> colDocente = new TableColumn<>("Docente");
-        TableColumn<Anteproyecto, String> colFecha = new TableColumn<>("Fecha");
-        TableColumn<Anteproyecto, String> colEstado = new TableColumn<>("Estado");
-        TableColumn<Anteproyecto, Void> colAcciones = new TableColumn<>("Acciones");
+        TableColumn<ProyectoGrado, String> colTitulo = new TableColumn<>("Título");
+        TableColumn<ProyectoGrado, String> colEstudiante = new TableColumn<>("Estudiante");
+        TableColumn<ProyectoGrado, String> colFecha = new TableColumn<>("Fecha");
+        TableColumn<ProyectoGrado, String> colEstado = new TableColumn<>("Estado");
+        TableColumn<ProyectoGrado, Void> colAcciones = new TableColumn<>("Acciones");
 
-        // Configurar cell value factories
-        colTitulo.setCellValueFactory(cellData -> cellData.getValue().tituloProperty());
-        colDocente.setCellValueFactory(cellData -> cellData.getValue().docenteProperty());
-        colFecha.setCellValueFactory(cellData -> cellData.getValue().fechaProperty());
-        colEstado.setCellValueFactory(cellData -> cellData.getValue().estadoProperty());
+        colTitulo.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getTitulo() != null ? cellData.getValue().getTitulo() : "Sin Título"));
 
-        // Configurar columna de acciones con botones
-        colAcciones.setCellFactory(param -> new TableCell<Anteproyecto, Void>() {
+        // En ProyectoGrado tienes estudiante1Email, no getIdEstudiante(). Ajustamos.
+        colEstudiante.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getEstudiante1Email() != null ? cellData.getValue().getEstudiante1Email() : "N/A"));
+
+        // Usamos fechaAnteproyecto o fechaFormatoA según corresponda
+        colFecha.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getFechaAnteproyecto() != null ? cellData.getValue().getFechaAnteproyecto() : "-"));
+
+        colEstado.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getEstadoActual() != null ? cellData.getValue().getEstadoActual() : "DESCONOCIDO"));
+
+        colAcciones.setCellFactory(param -> new TableCell<ProyectoGrado, Void>() {
             private final Button btnAsignar = new Button("Asignar");
             private final Button btnVer = new Button("Ver");
 
@@ -84,13 +119,13 @@ public class JefeDashboardController extends UIBase{
                 btnVer.getStyleClass().add("table-button-ver");
 
                 btnAsignar.setOnAction(event -> {
-                    Anteproyecto anteproyecto = getTableView().getItems().get(getIndex());
-                    asignarEvaluadoresAnteproyecto(anteproyecto);
+                    ProyectoGrado proyecto = getTableView().getItems().get(getIndex());
+                    asignarEvaluadoresAnteproyecto(proyecto);
                 });
 
                 btnVer.setOnAction(event -> {
-                    Anteproyecto anteproyecto = getTableView().getItems().get(getIndex());
-                    verDetalleAnteproyecto(anteproyecto);
+                    ProyectoGrado proyecto = getTableView().getItems().get(getIndex());
+                    verDetalleAnteproyecto(proyecto);
                 });
             }
 
@@ -107,107 +142,122 @@ public class JefeDashboardController extends UIBase{
             }
         });
 
-        // Limpiar y agregar columnas
         anteproyectosTable.getColumns().clear();
-        anteproyectosTable.getColumns().addAll(colTitulo, colDocente, colFecha, colEstado, colAcciones);
+        anteproyectosTable.getColumns().addAll(colTitulo, colEstudiante, colFecha, colEstado, colAcciones);
     }
 
     private void cargarNotificaciones() {
-        // Cargar notificaciones importantes
-        boolean tieneNotificaciones = true; // Ejemplo
-        notificacionesContainer.setVisible(tieneNotificaciones);
+        if (notificacionesList == null || notificacionesContainer == null) return;
+        notificacionesList.getChildren().clear();
+
+        new Thread(() -> {
+            try {
+                String email = null;
+                User u = sessionManager.getCurrentUser();
+                if (u != null) {
+                    email = u.getEmail();
+                }
+
+                if (email != null) {
+                    List<MensajeInterno> mensajes = messagingApi.getMensajesRecibidos(email).block();
+
+                    Platform.runLater(() -> {
+                        if (mensajes != null && !mensajes.isEmpty()) {
+                            notificacionesContainer.setVisible(true);
+                            for (MensajeInterno msg : mensajes) {
+                                Label msgLabel = new Label("• " + (msg.getAsunto() != null ? msg.getAsunto() : "Mensaje nuevo"));
+                                msgLabel.getStyleClass().add("notification-item");
+                                notificacionesList.getChildren().add(msgLabel);
+                            }
+                        } else {
+                            notificacionesContainer.setVisible(false);
+                        }
+                    });
+                } else {
+                    Platform.runLater(() -> notificacionesContainer.setVisible(false));
+                }
+
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    System.err.println("Error en notificaciones: " + e.getMessage());
+                    notificacionesContainer.setVisible(false);
+                });
+            }
+        }).start();
     }
 
     // ============ HANDLERS DE BOTONES ============
 
     @FXML
     private void verAnteproyectosPendientes() {
-        System.out.println("Navegando a anteproyectos pendientes...");
-        // loadView("/views/jefe/lista_anteproyectos.fxml");
-    }
-
-    @FXML
-    private void verEvaluacionesEnCurso() {
-        System.out.println("Navegando a evaluaciones en curso...");
-        // loadView("/views/jefe/seguimiento_evaluaciones.fxml");
-    }
-
-    @FXML
-    private void verDocentesDisponibles() {
-        System.out.println("Navegando a docentes disponibles...");
-        // loadView("/views/jefe/docentes_disponibles.fxml");
+        // Ejemplo: Cargar solo pendientes usando el método existente en API
+        new Thread(() -> {
+            try {
+                List<ProyectoGrado> pendientes = proyectoApi.obtenerProyectosPendientes().block();
+                Platform.runLater(() -> {
+                    if(pendientes != null) {
+                        anteproyectosData.setAll(pendientes);
+                    }
+                });
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     @FXML
     private void verTodosAnteproyectos() {
-        System.out.println("Navegando a todos los anteproyectos...");
-        verAnteproyectosPendientes();
+        cargarDatos();
     }
 
     @FXML
     private void asignarEvaluadores() {
-        System.out.println("Navegando a asignar evaluadores...");
-        // loadView("/views/jefe/asignar_evaluadores.fxml");
+        loadView("/views/DepartmentHead/evaluators_Assignment.fxml");
+    }
+
+    @FXML
+    private void verEvaluacionesEnCurso() {
+        // Implementar navegación
+    }
+
+    @FXML
+    private void verDocentesDisponibles() {
+        // Implementar navegación
     }
 
     @FXML
     private void generarReportes() {
-        System.out.println("Generando reportes...");
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Reportes");
-        alert.setHeaderText("Generando reportes de evaluación");
-        alert.setContentText("Los reportes se generarán en segundo plano.");
-        alert.showAndWait();
+        mostrarAlerta("Reportes", "Funcionalidad en construcción.");
     }
 
     @FXML
     private void abrirConfiguracion() {
-        System.out.println("Abriendo configuración...");
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Configuración");
-        alert.setHeaderText("Configuración del Sistema");
-        alert.setContentText("Aquí se configurarían los parámetros del sistema.");
-        alert.showAndWait();
+        mostrarAlerta("Configuración", "Panel de configuración.");
     }
 
     // ============ MÉTODOS AUXILIARES ============
 
-    private void asignarEvaluadoresAnteproyecto(Anteproyecto anteproyecto) {
-        System.out.println("Asignando evaluadores para: " + anteproyecto.getTitulo());
-        // Aquí se abriría un diálogo para asignar evaluadores
+    private void asignarEvaluadoresAnteproyecto(ProyectoGrado proyecto) {
+        if(proyecto == null) return;
+        System.out.println("Asignando evaluadores a proyecto: " + proyecto.getId());
+
         loadView("/views/DepartmentHead/evaluators_Assignment.fxml");
     }
 
-    private void verDetalleAnteproyecto(Anteproyecto anteproyecto) {
-        System.out.println("Viendo detalle de: " + anteproyecto.getTitulo());
-        // Aquí se cargaría la vista de detalle
+    private void verDetalleAnteproyecto(ProyectoGrado proyecto) {
+        if(proyecto == null) return;
+
+        loadView("/views/utils/visor-pdf.fxml", proyecto);
     }
 
-    // ============ CLASE MODELO PARA ANTEPROYECTO ============
 
-    public static class Anteproyecto {
-        private final javafx.beans.property.SimpleStringProperty titulo;
-        private final javafx.beans.property.SimpleStringProperty docente;
-        private final javafx.beans.property.SimpleStringProperty fecha;
-        private final javafx.beans.property.SimpleStringProperty estado;
 
-        public Anteproyecto(String titulo, String docente, String fecha, String estado) {
-            this.titulo = new javafx.beans.property.SimpleStringProperty(titulo);
-            this.docente = new javafx.beans.property.SimpleStringProperty(docente);
-            this.fecha = new javafx.beans.property.SimpleStringProperty(fecha);
-            this.estado = new javafx.beans.property.SimpleStringProperty(estado);
-        }
 
-        public String getTitulo() { return titulo.get(); }
-        public javafx.beans.property.StringProperty tituloProperty() { return titulo; }
-
-        public String getDocente() { return docente.get(); }
-        public javafx.beans.property.StringProperty docenteProperty() { return docente; }
-
-        public String getFecha() { return fecha.get(); }
-        public javafx.beans.property.StringProperty fechaProperty() { return fecha; }
-
-        public String getEstado() { return estado.get(); }
-        public javafx.beans.property.StringProperty estadoProperty() { return estado; }
+    private void mostrarAlerta(String titulo, String contenido) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(contenido);
+        alert.showAndWait();
     }
 }
