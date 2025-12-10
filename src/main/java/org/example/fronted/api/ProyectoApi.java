@@ -1,6 +1,8 @@
 package org.example.fronted.api;
 
+import org.example.fronted.dto.ProjectCardDTO;
 import org.example.fronted.dto.ProyectoRequest;
+import org.example.fronted.dto.StatsDocenteDTO;
 import org.example.fronted.models.Estado;
 import org.example.fronted.models.ProyectoGrado;
 import org.springframework.core.ParameterizedTypeReference;
@@ -13,6 +15,9 @@ import reactor.core.publisher.Mono;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ProyectoApi extends ApiWebClient {
 
@@ -135,6 +140,121 @@ public class ProyectoApi extends ApiWebClient {
                 .bodyToFlux(ProyectoGrado.class)
                 .collectList();
     }
+    // ===========================
+    // OBTENER PROYECTOS DOCENTE
+    // ===========================
+    public Mono<List<ProjectCardDTO>> obtenerProyectosPorDocente(
+            String emailDocente,
+            String estado
+    ) {
+        WebClient.RequestHeadersSpec<?> req = webClient.get()
+                .uri("/api/v1/proyectos/docente/{emailDocente}", emailDocente);
+
+        return addAuthHeader(req)
+                .retrieve()
+                .bodyToFlux(ProyectoGrado.class)
+
+                // FILTRO POR ESTADO
+                .filter(p -> estado == null || estado.equals(p.getEstadoActual()))
+
+                // MAPEO A TU DTO
+                .map(p -> new ProjectCardDTO(
+                        p.getTitulo(),
+                        unirEstudiantes(p),
+                        p.getModalidad(),
+                        p.getDirectorEmail()
+                ))
+
+                .collectList();
+    }
+
+    // =================================
+    // OBTENER EVALUACIONES POR DOCENTE
+    // =================================
+    public Mono<List<ProjectCardDTO>> obtenerProyectosParaEvaluar(String emailDocente) {
+
+        WebClient.RequestHeadersSpec<?> req = webClient.get()
+                .uri("/api/v1/proyectos/evaluador/{emailDocente}", emailDocente);
+
+        return addAuthHeader(req)
+                .retrieve()
+                .bodyToFlux(ProyectoGrado.class)
+
+                // FILTRAR SOLO LOS PROYECTOS DONDE EL DOCENTE ES EVALUADOR
+                .filter(p -> emailDocente.equals(p.getEvaluador1Email())
+                        || emailDocente.equals(p.getEvaluador2Email()))
+
+                // MAPEAR AL DTO QUE VAS A MOSTRAR EN LA VISTA
+                .map(p -> new ProjectCardDTO(
+                        p.getTitulo(),
+                        unirEstudiantes(p),
+                        p.getModalidad(),
+                        p.getDirectorEmail()
+                ))
+
+                .collectList();
+    }
+
+    // =============================
+    // UNIR ESTUDIANTES PARA TARJETA
+    // =============================
+
+    private String unirEstudiantes(ProyectoGrado p) {
+        return Stream.of(p.getEstudiante1Email(), p.getEstudiante2Email())
+                .filter(Objects::nonNull)
+                .filter(s -> !s.isBlank())
+                .collect(Collectors.joining(" / "));
+    }
+
+    // =============================
+    // ESTADISTICAS DOCENTE
+    // =============================
+
+    public Mono<StatsDocenteDTO> obtenerEstadisticasDocente(String emailDocente) {
+
+        Mono<List<ProyectoGrado>> proyectosDocente = addAuthHeader(
+                webClient.get().uri("/api/v1/proyectos/docente/{email}", emailDocente)
+        )
+                .retrieve()
+                .bodyToFlux(ProyectoGrado.class)
+                .collectList();
+
+        Mono<List<ProyectoGrado>> evaluacionesPendientes = addAuthHeader(
+                webClient.get().uri("/api/v1/proyectos/evaluador/{email}", emailDocente)
+        )
+                .retrieve()
+                .bodyToFlux(ProyectoGrado.class)
+                .collectList();
+
+        return Mono.zip(proyectosDocente, evaluacionesPendientes)
+                .map(tuple -> {
+                    List<ProyectoGrado> listaProyectos = tuple.getT1();
+                    List<ProyectoGrado> listaPendientesEval = tuple.getT2();
+
+                    long formatoAPendiente = listaProyectos.stream()
+                            .filter(p -> emailDocente.equals(p.getDirectorEmail()) ||
+                                    emailDocente.equals(p.getCodirectorEmail()))
+                            .filter(p -> "FORMATO_A_PENDIENTE".equals(p.getEstadoActual()))
+                            .count();
+
+                    long formatoAAprobado = listaProyectos.stream()
+                            .filter(p -> emailDocente.equals(p.getDirectorEmail()) ||
+                                    emailDocente.equals(p.getCodirectorEmail()))
+                            .filter(p -> "FORMATO_A_APROBADO".equals(p.getEstadoActual()))
+                            .count();
+
+                    long pendientesEvaluar = listaPendientesEval.size();
+
+                    return new StatsDocenteDTO(
+                            formatoAPendiente,
+                            formatoAAprobado,
+                            pendientesEvaluar
+                    );
+                });
+    }
+
+
+
 
     // =========================
     // SUBIR ANTEPROYECTO
