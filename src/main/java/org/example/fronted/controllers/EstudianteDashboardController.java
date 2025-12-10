@@ -350,7 +350,6 @@ public class EstudianteDashboardController extends UIBase {
         alerta.setContentText(mensaje);
         alerta.showAndWait();
     }
-
     @FXML
     private void verTodasNotificaciones() {
         loadView("/views/student/notificaciones_list.fxml");
