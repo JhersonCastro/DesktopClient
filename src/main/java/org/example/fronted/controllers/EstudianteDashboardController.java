@@ -353,7 +353,7 @@ public class EstudianteDashboardController extends UIBase {
 
     @FXML
     private void verTodasNotificaciones() {
-        loadView("/views/student/notificaciones_list.fxml");
+        loadView("/views/utils/centro_notificaciones.fxml");
         System.out.println("Navegar a lista completa de notificaciones...");
     }
 }
