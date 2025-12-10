@@ -22,9 +22,9 @@ public class DocenteDashboardController  extends UIBase{
     @FXML
     public void initialize() {
         sessionManager = SessionManager.getInstance();
-        cargarEstadisticas();
-        cargarProyectosRecientes();
-        cargarNotificaciones();
+        //cargarEstadisticas();
+        //cargarProyectosRecientes();
+        //cargarNotificaciones();
     }
 
     private void cargarEstadisticas() {

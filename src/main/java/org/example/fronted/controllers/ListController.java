@@ -16,16 +16,16 @@ public interface ListController {
         card.setPadding(new Insets(15));
         card.setSpacing(8);
 
-        Label title = new Label(proyecto.titulo);
+        Label title = new Label(proyecto.getTitulo());
         title.getStyleClass().add("card-title");
 
-        Label estudiante = new Label("Estudiante: " + proyecto.estudiante);
+        Label estudiante = new Label("Estudiante: " + proyecto.getEstudiante());
         estudiante.getStyleClass().add("card-info");
 
-        Label modalidad = new Label("Modalidad: " + proyecto.modalidad);
+        Label modalidad = new Label("Modalidad: " + proyecto.getModalidad());
         modalidad.getStyleClass().add("card-info");
 
-        Label director = new Label("Director: " + proyecto.director);
+        Label director = new Label("Director: " + proyecto.getDirector());
         director.getStyleClass().add("card-info");
 
         Button evaluarBtn = getButton();

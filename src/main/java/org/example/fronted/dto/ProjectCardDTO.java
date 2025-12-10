@@ -1,7 +1,11 @@
 package org.example.fronted.dto;
 
-import java.io.Serializable;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.io.Serializable;
+@Getter
+@Setter
 public class ProjectCardDTO implements Serializable {
     private Long id;
     private String titulo;
@@ -10,7 +14,22 @@ public class ProjectCardDTO implements Serializable {
     private String director;
     private String estado;
     private String tipo;
+    public ProjectCardDTO(Long id, String titulo, String estudiante, String modalidad, String director, String tipo) {
+        this.id = id;
+        this.titulo = titulo;
+        this.estudiante = estudiante;
+        this.modalidad = modalidad;
+        this.director = director;
+        this.tipo = tipo;
 
+    }
+    public ProjectCardDTO(Long id, String titulo, String estudiante, String modalidad, String director){
+        this.id = id;
+        this.titulo = titulo;
+        this.estudiante = estudiante;
+        this.modalidad = modalidad;
+        this.director = director;
+    }
     // Constructor para compatibilidad
     public ProjectCardDTO(String titulo, String estudiante, String modalidad, String director) {
         this.titulo = titulo;

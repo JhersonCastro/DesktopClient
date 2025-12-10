@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import org.example.fronted.api.ProjectApi;
+import org.example.fronted.api.UserApi;
 import org.example.fronted.dto.SubirFormatoADTO;
 import org.example.fronted.dto.SubirFormatoAResponseDTO;
 import org.example.fronted.util.SessionManager;
@@ -17,6 +18,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -51,12 +53,14 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
     private SessionManager sessionManager;
     private EstudianteAutoComplete estudianteSeleccionado;
 
-    // Fachada al microservicio de proyectos
+    // APIs
     private final ProjectApi projectApi = new ProjectApi();
+    private UserApi userApi;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         sessionManager = SessionManager.getInstance();
+        userApi = new UserApi();
 
         // 1. Inicializar ToggleGroup
         inicializarToggleGroup();
@@ -105,6 +109,7 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
         estudianteTextField.setTooltip(tooltip);
     }
 
+    /* --------- BÚSQUEDA EN SERVIDOR ---------- */
     private void buscarEstudiantesEnServidor(String busqueda) {
         resultadosBusquedaContainer.setVisible(true);
         resultadosBusquedaContainer.setManaged(true);
@@ -115,86 +120,76 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
         loadingLabel.setStyle("-fx-text-fill: #7f8c8d; -fx-font-style: italic;");
         resultadosList.getChildren().add(loadingLabel);
 
-        new Thread(() -> {
-            try {
-                Thread.sleep(500); // Simulación
+        // Llamada REAL al servidor usando UserApi
+        userApi.buscarUsuarios(busqueda).subscribe(usuarios -> Platform.runLater(() -> {
+            resultadosList.getChildren().clear();
 
-                List<EstudianteAutoComplete> resultados = new ArrayList<>();
-
-                if (busqueda.toLowerCase().contains("juan") || busqueda.contains("perez")) {
-                    resultados.add(new EstudianteAutoComplete(
-                            "Juan Carlos Pérez", "201810123", "jcperez@unicauca.edu.co", "Ingeniería de Sistemas"
-                    ));
-                    resultados.add(new EstudianteAutoComplete(
-                            "Juan David Martínez", "201810456", "jdmartinez@unicauca.edu.co", "Ingeniería Electrónica"
-                    ));
-                }
-
-                if (busqueda.toLowerCase().contains("maria")) {
-                    resultados.add(new EstudianteAutoComplete(
-                            "María Fernanda Gómez", "201810789", "mfgomez@unicauca.edu.co", "Automática Industrial"
-                    ));
-                }
-
-                if (busqueda.contains("@")) {
-                    resultados.add(new EstudianteAutoComplete(
-                            "Estudiante por Email", "201810999", busqueda, "Tecnología en Telemática"
-                    ));
-                }
-
-                Platform.runLater(() -> mostrarResultadosBusqueda(resultados, busqueda));
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                Platform.runLater(() -> mostrarErrorBusqueda("Error en la búsqueda: " + e.getMessage()));
+            if (usuarios == null || usuarios.isEmpty()) {
+                Label noResultsLabel = new Label("No se encontraron estudiantes para: \"" + busqueda + "\"");
+                noResultsLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-style: italic;");
+                resultadosList.getChildren().add(noResultsLabel);
+                return;
             }
-        }).start();
-    }
 
-    private void mostrarResultadosBusqueda(List<EstudianteAutoComplete> resultados, String busqueda) {
-        resultadosList.getChildren().clear();
+            for (Map<String, Object> usuario : usuarios) {
+                String nombre = (String) usuario.get("nombreCompleto");
+                String email = (String) usuario.get("email");
+                String codigo = (String) usuario.getOrDefault("codigo", "N/A");
+                String programa = (String) usuario.getOrDefault("programa", "N/A");
 
-        if (resultados.isEmpty()) {
-            Label noResultsLabel = new Label("No se encontraron estudiantes para: \"" + busqueda + "\"");
-            noResultsLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-style: italic;");
-            resultadosList.getChildren().add(noResultsLabel);
-            return;
-        }
 
-        for (EstudianteAutoComplete estudiante : resultados) {
-            Button resultButton = new Button();
-            resultButton.setMaxWidth(Double.MAX_VALUE);
-            resultButton.setStyle(
-                    "-fx-background-color: white; -fx-border-color: #ddd; -fx-border-width: 1; " +
-                            "-fx-text-alignment: left; -fx-alignment: CENTER_LEFT; -fx-padding: 10px;"
-            );
+                // Crear objeto EstudianteAutoComplete
+                EstudianteAutoComplete estudiante = new EstudianteAutoComplete(
+                        nombre, codigo, email, programa
+                );
 
-            VBox content = new VBox(3);
+                // Crear botón de resultado
+                Button resultButton = new Button();
+                resultButton.setMaxWidth(Double.MAX_VALUE);
+                resultButton.setStyle(
+                        "-fx-background-color: white; -fx-border-color: #ddd; -fx-border-width: 1; " +
+                                "-fx-text-alignment: left; -fx-alignment: CENTER_LEFT; -fx-padding: 10px;"
+                );
 
-            Label nombreLabel = new Label("Nombre: " + estudiante.getNombreCompleto());
-            nombreLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: black");
+                VBox content = new VBox(3);
 
-            HBox infoRow = new HBox(15);
-            Label codigoLabel = new Label("Código: " + estudiante.getCodigo());
-            codigoLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
-            Label emailLabel = new Label("Email: " + estudiante.getEmail());
-            emailLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #3498db;");
-            Label programaLabel = new Label("Programa: " + estudiante.getPrograma());
-            programaLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
+                Label nombreLabel = new Label("Nombre: " + estudiante.getNombreCompleto());
+                nombreLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: black");
 
-            infoRow.getChildren().addAll(codigoLabel, emailLabel, programaLabel);
-            content.getChildren().addAll(nombreLabel, infoRow);
+                HBox infoRow = new HBox(15);
+                Label codigoLabel = new Label("Código: " + estudiante.getCodigo());
+                codigoLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
+                Label emailLabel = new Label("Email: " + estudiante.getEmail());
+                emailLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #3498db;");
+                Label programaLabel = new Label("Programa: " + estudiante.getPrograma());
+                programaLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
 
-            resultButton.setGraphic(content);
+                infoRow.getChildren().addAll(codigoLabel, emailLabel, programaLabel);
+                content.getChildren().addAll(nombreLabel, infoRow);
 
-            resultButton.setOnAction(e -> seleccionarEstudiante(estudiante));
+                resultButton.setGraphic(content);
+                resultButton.setOnAction(e -> seleccionarEstudiante(estudiante));
+                resultadosList.getChildren().add(resultButton);
+            }
 
-            resultadosList.getChildren().add(resultButton);
-        }
+            if (resultadosList.getChildren().isEmpty()) {
+                Label noResultsLabel = new Label("No se encontraron estudiantes para: \"" + busqueda + "\"");
+                noResultsLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-style: italic;");
+                resultadosList.getChildren().add(noResultsLabel);
+            } else {
+                Label countLabel = new Label("Encontrados " + resultadosList.getChildren().size() + " estudiantes");
+                countLabel.setStyle("-fx-text-fill: #27ae60; -fx-font-size: 12px; -fx-padding: 5 0 0 0;");
+                resultadosList.getChildren().add(countLabel);
+            }
 
-        Label countLabel = new Label("Encontrados " + resultados.size() + " estudiantes");
-        countLabel.setStyle("-fx-text-fill: #27ae60; -fx-font-size: 12px; -fx-padding: 5 0 0 0;");
-        resultadosList.getChildren().add(countLabel);
+        }), error -> {
+            Platform.runLater(() -> {
+                resultadosList.getChildren().clear();
+                Label errorLabel = new Label("Error al buscar estudiantes: " + error.getMessage());
+                errorLabel.setStyle("-fx-text-fill: #e74c3c;");
+                resultadosList.getChildren().add(errorLabel);
+            });
+        });
     }
 
     private void seleccionarEstudiante(EstudianteAutoComplete estudiante) {
@@ -204,13 +199,6 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
         resultadosBusquedaContainer.setManaged(false);
 
         mostrarMensaje("Estudiante seleccionado: " + estudiante.getNombreCompleto(), Alert.AlertType.INFORMATION);
-    }
-
-    private void mostrarErrorBusqueda(String error) {
-        resultadosList.getChildren().clear();
-        Label errorLabel = new Label(error);
-        errorLabel.setStyle("-fx-text-fill: #e74c3c;");
-        resultadosList.getChildren().add(errorLabel);
     }
 
     private void cargarDatosIniciales() {
@@ -303,11 +291,19 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
             return;
         }
 
-        // Ejecutar el envío en un hilo aparte para no bloquear la UI
+        // Mostrar indicador de carga
+        Alert loading = new Alert(Alert.AlertType.INFORMATION);
+        loading.setTitle("Enviando Formato A");
+        loading.setHeaderText(null);
+        loading.setContentText("Por favor espere...");
+        loading.show();
+
+        // Ejecutar el envío en un hilo aparte
         new Thread(() -> {
             boolean exito = procesarEnvioFormatoA();
 
             Platform.runLater(() -> {
+                loading.close();
                 if (exito) {
                     mostrarAlerta("Éxito", "Formato A enviado correctamente. Se ha notificado al coordinador.", Alert.AlertType.INFORMATION);
                     regresarAlDashboard();

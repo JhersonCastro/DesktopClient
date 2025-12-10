@@ -64,11 +64,11 @@ public class PendientesListaController extends UIBase implements Initializable, 
     private void abrirEvaluacion(ProjectCardDTO proyecto) {
         // Aquí cargamos EvaluarFormatoA.fxml y le pasamos datos simulados
 
-        System.out.println("Evaluando proyecto: " + proyecto.titulo);
+        System.out.println("Evaluando proyecto: " + proyecto.getTitulo());
         // UIBase.loadView("/views/coordinator/evaluar_formato_a.fxml");
-        showError("Mira el id " + proyecto.id);
+        showError("Mira el id " + proyecto.getId());
 
-        loadView("/views/coordinator/evaluar_formatoA.fxml", proyecto.id);
+        loadView("/views/coordinator/evaluar_formatoA.fxml", proyecto.getId());
         // Ejemplo: pasar datos a EvaluarFormatoAController
         // EvaluarFormatoAController.setProyectoActual(proyecto);
     }

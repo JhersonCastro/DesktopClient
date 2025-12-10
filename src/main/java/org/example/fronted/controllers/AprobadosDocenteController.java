@@ -72,7 +72,7 @@ public class AprobadosDocenteController extends UIBase implements ListController
 
     private void subirAnteproyecto(ProjectCardDTO proyecto) {
         // Aquí cargamos EvaluarFormatoA.fxml y le pasamos datos simulados
-        System.out.println("Subiendo Anteproyecto: " + proyecto.titulo);
+        System.out.println("Subiendo Anteproyecto: " + proyecto.getTitulo());
         loadView("/views/professor/subir_anteproyecto.fxml");
 
         // Ejemplo: pasar datos a EvaluarFormatoAController

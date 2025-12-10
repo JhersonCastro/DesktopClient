@@ -69,7 +69,7 @@ public class MisProyectosDocenteController extends UIBase implements ListControl
 
     private void abrirProyecto(ProjectCardDTO proyecto) {
         // Aquí cargamos EvaluarFormatoA.fxml y le pasamos datos simulados
-        System.out.println("Abriendo Proyecto: " + proyecto.titulo);
+        System.out.println("Abriendo Proyecto: " + proyecto.getTitulo());
 
         // Ejemplo: pasar datos a EvaluarFormatoAController
         // EvaluarFormatoAController.setProyectoActual(proyecto);

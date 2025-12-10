@@ -82,9 +82,9 @@ public class RechazadosCoordinadorController extends UIBase implements ListContr
 
     private void verProyecto(ProjectCardDTO proyecto) {
         // Aquí cargamos EvaluarFormatoA.fxml y le pasamos datos simulados
-        System.out.println("Viendo proyecto: " + proyecto.titulo);
+        System.out.println("Viendo proyecto: " + proyecto.getTitulo());
         // UIBase.loadView("/views/coordinator/evaluar_formato_a.fxml");
-        loadView("/views/coordinator/project_viewer.fxml", proyecto.id, "/views/coordinator/rechazados_list.fxml");
+        loadView("/views/coordinator/project_viewer.fxml", proyecto.getId(), "/views/coordinator/rechazados_list.fxml");
         // Ejemplo: pasar datos a EvaluarFormatoAController
         // EvaluarFormatoAController.setProyectoActual(proyecto);
     }

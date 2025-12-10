@@ -77,7 +77,7 @@ public class PendientesDocenteController extends UIBase implements ListControlle
 
     private void verFormatoA(ProjectCardDTO proyecto) {
         // Aquí cargamos EvaluarFormatoA.fxml y le pasamos datos simulados
-        System.out.println("Abriendo Formato A: " + proyecto.titulo);
+        System.out.println("Abriendo Formato A: " + proyecto.getTitulo());
 
         // Ejemplo: pasar datos a EvaluarFormatoAController
         // EvaluarFormatoAController.setProyectoActual(proyecto);

@@ -3,6 +3,7 @@ package org.example.fronted.api;
 import org.example.fronted.config.ApiConfig;
 import org.example.fronted.dto.MensajeDTO;
 import org.example.fronted.dto.ConversacionDTO;
+import org.example.fronted.models.MensajeInterno;
 import org.springframework.core.ParameterizedTypeReference;
 import reactor.core.publisher.Mono;
 
@@ -81,5 +82,14 @@ public class MessagingApi extends ApiWebClient.MessagingApiClient {
 
         public List<String> getParticipantes() { return participantes; }
         public String getTitulo() { return titulo; }
+    }
+    public Mono<List<MensajeInterno>> getMensajesRecibidos(String email) {
+        return addAuthHeader(
+                webClient.get()
+                        .uri("/api/mensajes/recibidos/{email}", email)
+        )
+                .retrieve()
+                .bodyToFlux(MensajeInterno.class)
+                .collectList();
     }
 }
