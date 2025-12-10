@@ -174,7 +174,7 @@ public class ProyectoApi extends ApiWebClient {
     public Mono<List<ProjectCardDTO>> obtenerProyectosParaEvaluar(String emailDocente) {
 
         WebClient.RequestHeadersSpec<?> req = webClient.get()
-                .uri("/api/v1/proyectos");
+                .uri("/api/v1/proyectos/evaluador/{emailDocente}", emailDocente);
 
         return addAuthHeader(req)
                 .retrieve()
@@ -212,32 +212,38 @@ public class ProyectoApi extends ApiWebClient {
 
     public Mono<StatsDocenteDTO> obtenerEstadisticasDocente(String emailDocente) {
 
-        WebClient.RequestHeadersSpec<?> req = webClient.get()
-                .uri("/api/v1/proyectos/docente/{email}", emailDocente);
-
-        return addAuthHeader(req)
+        Mono<List<ProyectoGrado>> proyectosDocente = addAuthHeader(
+                webClient.get().uri("/api/v1/proyectos/docente/{email}", emailDocente)
+        )
                 .retrieve()
                 .bodyToFlux(ProyectoGrado.class)
-                .collectList()
-                .map(lista -> {
+                .collectList();
 
-                    long formatoAPendiente = lista.stream()
+        Mono<List<ProyectoGrado>> evaluacionesPendientes = addAuthHeader(
+                webClient.get().uri("/api/v1/proyectos/evaluador/{email}", emailDocente)
+        )
+                .retrieve()
+                .bodyToFlux(ProyectoGrado.class)
+                .collectList();
+
+        return Mono.zip(proyectosDocente, evaluacionesPendientes)
+                .map(tuple -> {
+                    List<ProyectoGrado> listaProyectos = tuple.getT1();
+                    List<ProyectoGrado> listaPendientesEval = tuple.getT2();
+
+                    long formatoAPendiente = listaProyectos.stream()
                             .filter(p -> emailDocente.equals(p.getDirectorEmail()) ||
                                     emailDocente.equals(p.getCodirectorEmail()))
-                            .filter(p -> "FORMATOA_PENDIENTE".equals(p.getEstadoActual()))
+                            .filter(p -> "FORMATO_A_PENDIENTE".equals(p.getEstadoActual()))
                             .count();
 
-                    long formatoAAprobado = lista.stream()
+                    long formatoAAprobado = listaProyectos.stream()
                             .filter(p -> emailDocente.equals(p.getDirectorEmail()) ||
                                     emailDocente.equals(p.getCodirectorEmail()))
-                            .filter(p -> "FORMATOA_APROBADO".equals(p.getEstadoActual()))
+                            .filter(p -> "FORMATO_A_APROBADO".equals(p.getEstadoActual()))
                             .count();
 
-                    long pendientesEvaluar = lista.stream()
-                            .filter(p -> emailDocente.equals(p.getEvaluador1Email()) ||
-                                    emailDocente.equals(p.getEvaluador2Email()))
-                            .filter(p -> "ANTEPROYECTO_EN_EVALUACION".equals(p.getEstadoActual()))
-                            .count();
+                    long pendientesEvaluar = listaPendientesEval.size();
 
                     return new StatsDocenteDTO(
                             formatoAPendiente,
@@ -246,6 +252,7 @@ public class ProyectoApi extends ApiWebClient {
                     );
                 });
     }
+
 
 
 
