@@ -2,6 +2,7 @@ package org.example.fronted.api;
 
 import org.example.fronted.dto.ProjectCardDTO;
 import org.example.fronted.dto.ProyectoRequest;
+import org.example.fronted.dto.StatsDocenteDTO;
 import org.example.fronted.models.Estado;
 import org.example.fronted.models.ProyectoGrado;
 import org.springframework.core.ParameterizedTypeReference;
@@ -208,6 +209,46 @@ public class ProyectoApi extends ApiWebClient {
                 .collect(Collectors.joining(" / "));
     }
 
+    // =============================
+    // ESTADISTICAS DOCENTE
+    // =============================
+
+    public Mono<StatsDocenteDTO> obtenerEstadisticasDocente(String emailDocente) {
+
+        WebClient.RequestHeadersSpec<?> req = webClient.get()
+                .uri("/api/v1/proyectos");
+
+        return addAuthHeader(req)
+                .retrieve()
+                .bodyToFlux(ProyectoGrado.class)
+                .collectList()
+                .map(lista -> {
+
+                    long formatoAPendiente = lista.stream()
+                            .filter(p -> emailDocente.equals(p.getDirectorEmail()) ||
+                                    emailDocente.equals(p.getCodirectorEmail()))
+                            .filter(p -> "FORMATOA_PENDIENTE".equals(p.getEstadoActual()))
+                            .count();
+
+                    long formatoAAprobado = lista.stream()
+                            .filter(p -> emailDocente.equals(p.getDirectorEmail()) ||
+                                    emailDocente.equals(p.getCodirectorEmail()))
+                            .filter(p -> "FORMATOA_APROBADO".equals(p.getEstadoActual()))
+                            .count();
+
+                    long pendientesEvaluar = lista.stream()
+                            .filter(p -> emailDocente.equals(p.getEvaluador1Email()) ||
+                                    emailDocente.equals(p.getEvaluador2Email()))
+                            .filter(p -> "ANTEPROYECTO_EN_EVALUACION".equals(p.getEstadoActual()))
+                            .count();
+
+                    return new StatsDocenteDTO(
+                            formatoAPendiente,
+                            formatoAAprobado,
+                            pendientesEvaluar
+                    );
+                });
+    }
 
 
 

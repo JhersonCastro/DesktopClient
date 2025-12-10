@@ -3,6 +3,8 @@ package org.example.fronted.controllers;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import org.example.fronted.api.ProyectoApi;
+import org.example.fronted.dto.StatsDocenteDTO;
 import org.example.fronted.util.SessionManager;
 
 public class DocenteDashboardController  extends UIBase{
@@ -15,6 +17,7 @@ public class DocenteDashboardController  extends UIBase{
     @FXML private VBox notificacionesList;
 
     private SessionManager sessionManager;
+    private ProyectoApi proyectoApi;
 
     @FXML
     public void initialize() {
@@ -26,9 +29,11 @@ public class DocenteDashboardController  extends UIBase{
 
     private void cargarEstadisticas() {
         // Aquí se cargarían las estadísticas reales desde el backend
-        pendientesCount.setText("3");
-        aprobadosCount.setText("2");
-        evaluacionesCount.setText("1");
+        StatsDocenteDTO stats = proyectoApi.obtenerEstadisticasDocente(sessionManager.getCurrentUser().getEmail()).block();
+        assert stats != null;
+        pendientesCount.setText(stats.formatoAPendiente + "");
+        aprobadosCount.setText(stats.formatoAAprobado + "");
+        evaluacionesCount.setText(stats.pendientesEvaluar + "");
     }
 
     private void cargarProyectosRecientes() {
@@ -59,7 +64,7 @@ public class DocenteDashboardController  extends UIBase{
     @FXML
     private void verEvaluacionesAsignadas() {
         System.out.println("Navegando a evaluaciones asignadas...");
-        loadView("/views/professor/evaluaciones_list.fxml");
+        loadView("/views/professor/evaluaciones_list.fxml") ;
     }
 
     @FXML
