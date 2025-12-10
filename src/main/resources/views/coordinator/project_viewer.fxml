@@ -6,7 +6,7 @@
 
 <VBox xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.example.fronted.controllers.EvaluarFormatoAController"
+      fx:controller="org.example.fronted.controllers.ProjectViewerController"
       stylesheets="@../../css/evaluar-formato-a.css"
       styleClass="dashboard-content"
       spacing="30">
@@ -83,27 +83,9 @@
         <TextArea fx:id="observacionesTextArea"
                   promptText="Escribe las observaciones aquí..."
                   prefRowCount="6"
-                  wrapText="true"/>
+                  wrapText="true"
+        disable="true"/>
 
     </VBox>
-
-    <!-- ACCIONES -->
-    <HBox spacing="20" alignment="CENTER">
-        <Button fx:id="aprobarButton" text="Aprobar" onAction="#aprobarFormatoA" styleClass="action-button">
-            <graphic>
-                <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
-                    <Image url="@../../images/icons/check.png"/>
-                </ImageView>
-            </graphic>
-        </Button>
-
-        <Button fx:id="rechazarButton" text="Rechazar" onAction="#rechazarFormatoA" styleClass="action-button">
-            <graphic>
-                <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
-                    <Image url="@../../images/icons/x.png"/>
-                </ImageView>
-            </graphic>
-        </Button>
-    </HBox>
 
 </VBox>

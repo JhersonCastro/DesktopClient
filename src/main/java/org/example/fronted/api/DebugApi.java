@@ -8,7 +8,6 @@ import java.util.Map;
 public class DebugApi extends ApiWebClient {
 
     public DebugApi() {
-        // Ajusta la URL base al puerto donde corre tu aplicación
         super("http://localhost:8082");
     }
 
