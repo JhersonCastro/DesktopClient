@@ -213,7 +213,7 @@ public class ProyectoApi extends ApiWebClient {
     public Mono<StatsDocenteDTO> obtenerEstadisticasDocente(String emailDocente) {
 
         WebClient.RequestHeadersSpec<?> req = webClient.get()
-                .uri("/api/v1/proyectos");
+                .uri("/api/v1/proyectos/docente/{email}", emailDocente);
 
         return addAuthHeader(req)
                 .retrieve()
