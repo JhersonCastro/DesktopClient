@@ -6,33 +6,25 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.example.fronted.api.DocumentApi;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
 
 public class VisorPdfController implements Initializable {
 
@@ -47,13 +39,12 @@ public class VisorPdfController implements Initializable {
     @FXML private VBox imageContainer;
 
     // Variables de estado
-    private String pdfPath;
     private String nombreArchivo;
     private PDDocument document;
     private PDFRenderer renderer;
     private List<Image> paginas = new ArrayList<>();
     private List<ImageView> imageViews = new ArrayList<>();
-    private List<VBox> paginaBoxes = new ArrayList<>(); // NUEVA: lista para almacenar los VBox de cada página
+    private List<VBox> paginaBoxes = new ArrayList<>();
     private int paginaActual = 0;
     private double zoomLevel = 1.0;
     private final double ZOOM_STEP = 0.1;
@@ -61,9 +52,15 @@ public class VisorPdfController implements Initializable {
     private long fileSize;
     private int totalPaginas = 0;
 
+    // API para documentos
+    private DocumentApi documentApi;
+    private Long documentoId;
+    private File archivoDescargado;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         executorService = Executors.newSingleThreadExecutor();
+        documentApi = new DocumentApi();
 
         // Configurar el scroll pane
         scrollPane.setFitToWidth(true);
@@ -73,7 +70,7 @@ public class VisorPdfController implements Initializable {
         // Inicializar etiquetas
         zoomLabel.setText("100%");
         paginaActualLabel.setText("Página 1");
-        estadoLabel.setText("Listo");
+        estadoLabel.setText("Esperando documento...");
 
         // Configurar el contenedor de imágenes
         imageContainer.setAlignment(Pos.TOP_CENTER);
@@ -81,28 +78,72 @@ public class VisorPdfController implements Initializable {
         imageContainer.setStyle("-fx-padding: 20;");
     }
 
+    /**
+     * Método para establecer el documento desde el servidor
+     */
+    public void setDocumentoDesdeServidor(Long documentoId, String nombre) {
+        this.documentoId = documentoId;
+        this.nombreArchivo = nombre;
+        this.nombreArchivoLabel.setText(nombre != null ? nombre : "Documento #" + documentoId);
+
+        // Descargar y cargar el PDF
+        descargarYCargarPDF();
+    }
+
+    /**
+     * Método para establecer documento desde archivo local (mantener compatibilidad)
+     */
     public void setPdfPath(String path, String nombre) {
-        this.pdfPath = path;
         this.nombreArchivo = nombre;
         this.nombreArchivoLabel.setText(nombre);
 
-        // Cargar el PDF en un hilo separado
-        cargarPDF();
+        // Cargar desde archivo local
+        cargarPDFLocal(path);
     }
 
-    private void cargarPDF() {
+    private void descargarYCargarPDF() {
+        if (documentoId == null) {
+            mostrarError("No se ha especificado un documento para visualizar");
+            return;
+        }
+
+        estadoLabel.setText("Descargando documento...");
+        progressBar.setVisible(true);
+        progressBar.setProgress(-1);
+
+        documentApi.descargarDocumento(documentoId)
+                .subscribe(
+                        archivo -> {
+                            archivoDescargado = archivo;
+                            Platform.runLater(() -> {
+                                estadoLabel.setText("Documento descargado, cargando...");
+                                cargarPDFLocal(archivo.getAbsolutePath());
+                            });
+                        },
+                        error -> {
+                            Platform.runLater(() -> {
+                                estadoLabel.setText("Error descargando documento");
+                                mostrarError("No se pudo descargar el documento: " + error.getMessage());
+                                progressBar.setVisible(false);
+                            });
+                            System.err.println("Error descargando documento: " + error.getMessage());
+                        }
+                );
+    }
+
+    private void cargarPDFLocal(String path) {
         estadoLabel.setText("Cargando PDF...");
         progressBar.setVisible(true);
-        progressBar.setProgress(-1); // Progreso indeterminado
+        progressBar.setProgress(-1);
 
         executorService.submit(() -> {
             try {
                 // Verificar que el archivo existe
-                File file = new File(pdfPath);
+                File file = new File(path);
                 if (!file.exists()) {
                     Platform.runLater(() -> {
                         estadoLabel.setText("Error: Archivo no encontrado");
-                        mostrarError("El archivo no existe: " + pdfPath);
+                        mostrarError("El archivo no existe: " + path);
                     });
                     return;
                 }
@@ -220,27 +261,20 @@ public class VisorPdfController implements Initializable {
             Platform.runLater(() -> {
                 try {
                     // Calcular posición aproximada para desplazar
-                    double targetY = IntStream.range(0, numeroPagina).filter(i -> i < paginaBoxes.size()).mapToObj(i -> paginaBoxes.get(i)).mapToDouble(box -> box.getHeight() + imageContainer.getSpacing()).sum();
-
-                    // Usar scrollTo para desplazar suavemente
-                    scrollPane.setVvalue(0); // Primero ir al inicio
-
-                    // Desplazar después de un pequeño delay para asegurar que se haya renderizado
-                    new Thread(() -> {
-                        try {
-                            Thread.sleep(100);
-                            Platform.runLater(() -> {
-                                // Calcular el valor V basado en la posición
-                                double totalHeight = imageContainer.getHeight();
-                                if (totalHeight > 0) {
-                                    double vvalue = targetY / totalHeight;
-                                    scrollPane.setVvalue(vvalue);
-                                }
-                            });
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                    double targetY = 0;
+                    for (int i = 0; i < numeroPagina && i < paginaBoxes.size(); i++) {
+                        VBox box = paginaBoxes.get(i);
+                        if (box != null) {
+                            targetY += box.getHeight() + imageContainer.getSpacing();
                         }
-                    }).start();
+                    }
+
+                    // Calcular el valor V basado en la posición
+                    double totalHeight = imageContainer.getHeight();
+                    if (totalHeight > 0) {
+                        double vvalue = targetY / totalHeight;
+                        scrollPane.setVvalue(vvalue);
+                    }
 
                 } catch (Exception e) {
                     System.err.println("Error al desplazar a la página: " + e.getMessage());
@@ -267,7 +301,7 @@ public class VisorPdfController implements Initializable {
         });
     }
 
-    // Métodos de navegación CORREGIDOS
+    // Métodos de navegación
     @FXML
     private void primeraPagina() {
         mostrarPagina(0);
@@ -294,7 +328,7 @@ public class VisorPdfController implements Initializable {
         }
     }
 
-    // Métodos de zoom CORREGIDOS
+    // Métodos de zoom
     @FXML
     private void zoomIn() {
         if (zoomLevel < 3.0) {
@@ -313,149 +347,89 @@ public class VisorPdfController implements Initializable {
 
     @FXML
     private void descargarPDF() {
-        estadoLabel.setText("Descargando...");
+        if (archivoDescargado == null || !archivoDescargado.exists()) {
+            mostrarError("No hay documento descargado para guardar");
+            return;
+        }
 
-        executorService.submit(() -> {
-            try {
-                File sourceFile = new File(pdfPath);
-                if (!sourceFile.exists()) {
+        estadoLabel.setText("Guardando copia...");
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Guardar documento como...");
+        fileChooser.setInitialFileName(archivoDescargado.getName());
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf")
+        );
+
+        File destino = fileChooser.showSaveDialog(nombreArchivoLabel.getScene().getWindow());
+        if (destino != null) {
+            executorService.submit(() -> {
+                try {
+                    Files.copy(
+                            archivoDescargado.toPath(),
+                            destino.toPath(),
+                            StandardCopyOption.REPLACE_EXISTING
+                    );
+
                     Platform.runLater(() -> {
-                        estadoLabel.setText("Archivo no encontrado");
+                        estadoLabel.setText("Documento guardado");
+                        mostrarAlerta("Éxito", "Documento guardado en: " + destino.getAbsolutePath(),
+                                Alert.AlertType.INFORMATION);
                     });
-                    return;
+                } catch (Exception e) {
+                    Platform.runLater(() -> {
+                        estadoLabel.setText("Error al guardar");
+                        mostrarError("Error guardando documento: " + e.getMessage());
+                    });
                 }
-
-                String userHome = System.getProperty("user.home");
-                File downloadDir = new File(userHome + "/Downloads");
-                if (!downloadDir.exists()) {
-                    downloadDir.mkdirs();
-                }
-
-                File destFile = new File(downloadDir, nombreArchivo +".pdf");
-
-                // Copiar archivo
-                Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-                Platform.runLater(() -> {
-                    estadoLabel.setText("Descargado exitosamente");
-
-                    // Mostrar confirmación
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Descarga completada");
-                    alert.setHeaderText("PDF descargado exitosamente");
-                    alert.setContentText("El archivo se ha guardado en:\n" + destFile.getPath());
-                    alert.show();
-                });
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                Platform.runLater(() -> {
-                    estadoLabel.setText("Error en descarga");
-                    mostrarError("Error al descargar: " + e.getMessage());
-                });
-            }
-        });
+            });
+        } else {
+            estadoLabel.setText("Operación cancelada");
+        }
     }
 
     @FXML
     private void imprimirPDF() {
+        if (archivoDescargado == null || !archivoDescargado.exists()) {
+            mostrarError("No hay documento para imprimir");
+            return;
+        }
+
         estadoLabel.setText("Preparando para imprimir...");
 
         try {
-            if (document != null) {
-                // Guardar PDF temporalmente
-                File tempFile = File.createTempFile("imprimir_", ".pdf");
-                document.save(tempFile);
+            // Abrir con aplicación predeterminada
+            if (java.awt.Desktop.isDesktopSupported()) {
+                java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+                if (desktop.isSupported(java.awt.Desktop.Action.OPEN)) {
+                    desktop.open(archivoDescargado);
+                    estadoLabel.setText("PDF abierto - Ctrl+P para imprimir");
 
-                // Abrir con navegador predeterminado
-                boolean exito = abrirConNavegadorPredeterminado(tempFile);
-
-                if (exito) {
-                    estadoLabel.setText("PDF abierto en navegador - Ctrl+P para imprimir");
-
-                    // Mostrar mensaje informativo
                     Platform.runLater(() -> {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Listo para imprimir");
                         alert.setHeaderText(null);
-                        alert.setContentText("PDF abierto en su navegador\nPresione Ctrl+P para imprimir");
+                        alert.setContentText("PDF abierto en su visor predeterminado\nPresione Ctrl+P para imprimir");
                         alert.show();
                     });
-                } else {
-                    Platform.runLater(() -> {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Error al imprimir");
-                        alert.setHeaderText(null);
-                        alert.setContentText("No se pudo imprimir, intenta descargarlo para posteriormente imprimir");
-                        alert.show();
-                    });
+                    return;
                 }
-
-                // Eliminar después de 5 minutos
-                programarEliminacion(tempFile);
             }
+
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("No se puede imprimir");
+                alert.setHeaderText(null);
+                alert.setContentText("No se pudo abrir el PDF para imprimir.\nDescárguelo e imprímalo manualmente.");
+                alert.show();
+                estadoLabel.setText("No se pudo abrir para imprimir");
+            });
+
         } catch (Exception e) {
-            e.printStackTrace();
             estadoLabel.setText("Error al imprimir");
             mostrarError("Error: " + e.getMessage());
         }
     }
-    private void programarEliminacion(File file) {
-        // Eliminar después de 5 minutos
-        Timer timer = new Timer(true);
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (file.exists()) {
-                    file.delete();
-                }
-            }
-        }, 300000); // 5 minutos = 300,000 ms
-    }
-    private boolean abrirConNavegadorPredeterminado(File pdfFile) {
-        try {
-            // Método 1: Usar Desktop (abre con aplicación predeterminada)
-            if (Desktop.isDesktopSupported()) {
-                Desktop desktop = Desktop.getDesktop();
-                desktop.open(pdfFile);
-                return true;
-            }
-            return false;
-        } catch (Exception e) {
-            // Si Desktop falla, intentar métodos alternativos
-            return abrirConNavegadorAlternativo(pdfFile);
-        }
-    }
-    private boolean abrirConNavegadorAlternativo(File pdfFile) {
-        try {
-            // Método 2: Usar comando start de Windows (abre con aplicación predeterminada)
-            ProcessBuilder pb = new ProcessBuilder(
-                    "cmd", "/c", "start", "", pdfFile.getAbsolutePath()
-            );
-            Process process = pb.start();
-            return process.isAlive() || process.exitValue() == 0;
-        } catch (Exception e1) {
-            try {
-                // Método 3: Usar Runtime.exec
-                Runtime.getRuntime().exec(
-                        "cmd /c start \"\" \"" + pdfFile.getAbsolutePath() + "\""
-                );
-                return true;
-            } catch (Exception e2) {
-                try {
-                    // Método 4: Usar explorer
-                    ProcessBuilder pb = new ProcessBuilder(
-                            "explorer", pdfFile.getAbsolutePath()
-                    );
-                    pb.start();
-                    return true;
-                } catch (Exception e3) {
-                    return false;
-                }
-            }
-        }
-    }
-
 
     @FXML
     private void cerrarVisor() {
@@ -482,9 +456,19 @@ public class VisorPdfController implements Initializable {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
-            alert.setHeaderText("Error al cargar PDF");
+            alert.setHeaderText(null);
             alert.setContentText(mensaje);
             alert.show();
+        });
+    }
+
+    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
+        Platform.runLater(() -> {
+            Alert alerta = new Alert(tipo);
+            alerta.setTitle(titulo);
+            alerta.setHeaderText(null);
+            alerta.setContentText(mensaje);
+            alerta.showAndWait();
         });
     }
 

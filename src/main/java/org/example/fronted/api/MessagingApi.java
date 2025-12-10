@@ -1,73 +1,85 @@
 package org.example.fronted.api;
 
-import org.example.fronted.models.MensajeInterno;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.MultipartBodyBuilder;
+import org.example.fronted.config.ApiConfig;
+import org.example.fronted.dto.MensajeDTO;
+import org.example.fronted.dto.ConversacionDTO;
+import org.springframework.core.ParameterizedTypeReference;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-public class MessagingApi extends ApiWebClient {
+public class MessagingApi extends ApiWebClient.MessagingApiClient {
 
-    public MessagingApi() {
-        super("http://localhost:8085"); // microservicio de mensajería
+    /**
+     * Obtener conversaciones del usuario
+     */
+    public Mono<List<ConversacionDTO>> obtenerConversaciones() {
+        return addAuthHeader(webClient.get()
+                .uri(ApiConfig.MessagingEndpoints.CONVERSATIONS))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<ConversacionDTO>>() {})
+                .onErrorResume(error -> {
+                    System.err.println("Error obteniendo conversaciones: " + error.getMessage());
+                    return Mono.just(List.of());
+                });
     }
 
-    // Enviar mensaje con adjunto opcional
-    public Mono<String> enviarMensaje(
-            String remitenteEmail,
-            String destinatariosEmail,
-            String asunto,
-            String cuerpo,
-            byte[] archivoBytes,
-            String nombreArchivo
-    ) {
+    /**
+     * Obtener mensajes de una conversación
+     */
+    public Mono<List<MensajeDTO>> obtenerMensajes(Long conversacionId) {
+        return addAuthHeader(webClient.get()
+                .uri(ApiConfig.MessagingEndpoints.MESSAGES, conversacionId))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<MensajeDTO>>() {})
+                .onErrorResume(error -> {
+                    System.err.println("Error obteniendo mensajes: " + error.getMessage());
+                    return Mono.just(List.of());
+                });
+    }
 
-        MultipartBodyBuilder builder = new MultipartBodyBuilder();
-        builder.part("remitenteEmail", remitenteEmail);
-        builder.part("destinatariosEmail", destinatariosEmail);
-        builder.part("asunto", asunto);
-        builder.part("cuerpo", cuerpo);
+    /**
+     * Enviar mensaje
+     */
+    public Mono<Boolean> enviarMensaje(MensajeDTO mensaje) {
+        return addAuthHeader(webClient.post()
+                .uri(ApiConfig.MessagingEndpoints.SEND)
+                .bodyValue(mensaje))
+                .retrieve()
+                .bodyToMono(Void.class)
+                .map(v -> true)
+                .onErrorResume(error -> {
+                    System.err.println("Error enviando mensaje: " + error.getMessage());
+                    return Mono.just(false);
+                });
+    }
 
-        if (archivoBytes != null) {
-            builder.part("documentoAdjunto", new ByteArrayResource(archivoBytes) {
-                @Override
-                public String getFilename() {
-                    return nombreArchivo;
-                }
-            }).contentType(MediaType.APPLICATION_OCTET_STREAM);
+    /**
+     * Crear nueva conversación
+     */
+    public Mono<Long> crearConversacion(List<String> participantesEmails, String titulo) {
+        return addAuthHeader(webClient.post()
+                .uri(ApiConfig.MessagingEndpoints.START_CONVERSATION)
+                .bodyValue(new CrearConversacionRequest(participantesEmails, titulo)))
+                .retrieve()
+                .bodyToMono(Long.class)
+                .onErrorResume(error -> {
+                    System.err.println("Error creando conversación: " + error.getMessage());
+                    return Mono.just(-1L);
+                });
+    }
+
+    // Clase interna para request
+    private static class CrearConversacionRequest {
+        private List<String> participantes;
+        private String titulo;
+
+        public CrearConversacionRequest(List<String> participantes, String titulo) {
+            this.participantes = participantes;
+            this.titulo = titulo;
         }
 
-        return addAuthHeader(
-                webClient.post()
-                        .uri("/api/mensajes/enviar")
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
-                        .bodyValue(builder.build())
-        )
-                .retrieve()
-                .bodyToMono(String.class);
-    }
-
-    // Obtener mensajes enviados
-    public Mono<List<MensajeInterno>> getMensajesEnviados(String email) {
-        return addAuthHeader(
-                webClient.get()
-                        .uri("/api/mensajes/enviados/{email}", email)
-        )
-                .retrieve()
-                .bodyToFlux(MensajeInterno.class)
-                .collectList();
-    }
-
-    // Obtener mensajes recibidos
-    public Mono<List<MensajeInterno>> getMensajesRecibidos(String email) {
-        return addAuthHeader(
-                webClient.get()
-                        .uri("/api/mensajes/recibidos/{email}", email)
-        )
-                .retrieve()
-                .bodyToFlux(MensajeInterno.class)
-                .collectList();
+        public List<String> getParticipantes() { return participantes; }
+        public String getTitulo() { return titulo; }
     }
 }

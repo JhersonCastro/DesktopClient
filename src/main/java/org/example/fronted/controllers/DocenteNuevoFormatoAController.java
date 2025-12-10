@@ -6,17 +6,17 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
+import org.example.fronted.api.ProjectApi;
+import org.example.fronted.dto.SubirFormatoADTO;
+import org.example.fronted.dto.SubirFormatoAResponseDTO;
 import org.example.fronted.util.SessionManager;
-import org.example.fronted.api.UserApi; // Importar la API
-import reactor.core.publisher.Mono; // Importar Mono
 
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -50,12 +50,13 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
     private File cartaAceptacionSeleccionada;
     private SessionManager sessionManager;
     private EstudianteAutoComplete estudianteSeleccionado;
-    private UserApi userApi; // Instancia de la API
+
+    // Fachada al microservicio de proyectos
+    private final ProjectApi projectApi = new ProjectApi();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         sessionManager = SessionManager.getInstance();
-        userApi = new UserApi(); // Inicializar la API
 
         // 1. Inicializar ToggleGroup
         inicializarToggleGroup();
@@ -89,7 +90,6 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
     }
 
     private void configurarBusquedaPorEnter() {
-        // Configurar para que al presionar Enter en el TextField, se realice la búsqueda
         estudianteTextField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 String busqueda = estudianteTextField.getText().trim();
@@ -101,77 +101,57 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
             }
         });
 
-        // Tooltip para indicar al usuario que use Enter
         Tooltip tooltip = new Tooltip("Escriba nombre, email o código y presione ENTER para buscar");
         estudianteTextField.setTooltip(tooltip);
     }
 
     private void buscarEstudiantesEnServidor(String busqueda) {
-        // Mostrar contenedor de resultados
         resultadosBusquedaContainer.setVisible(true);
         resultadosBusquedaContainer.setManaged(true);
 
-        // Limpiar resultados anteriores
         resultadosList.getChildren().clear();
 
-        // Mostrar indicador de carga
         Label loadingLabel = new Label("Buscando estudiantes...");
         loadingLabel.setStyle("-fx-text-fill: #7f8c8d; -fx-font-style: italic;");
         resultadosList.getChildren().add(loadingLabel);
 
-        // Usar el método real de la API
-        userApi.buscarUsuarios(busqueda)
-                .subscribe(usuarios -> {
-                    Platform.runLater(() -> {
-                        mostrarResultadosBusqueda(convertirUsuariosAEstudiantes(usuarios), busqueda);
-                    });
-                }, error -> {
-                    Platform.runLater(() -> {
-                        mostrarErrorBusqueda("Error en la búsqueda: " + error.getMessage());
-                    });
-                });
-    }
+        new Thread(() -> {
+            try {
+                Thread.sleep(500); // Simulación
 
-    private List<EstudianteAutoComplete> convertirUsuariosAEstudiantes(List<Map<String, Object>> usuarios) {
-        List<EstudianteAutoComplete> estudiantes = new ArrayList<>();
+                List<EstudianteAutoComplete> resultados = new ArrayList<>();
 
-        if (usuarios != null) {
-            for (Map<String, Object> usuario : usuarios) {
-                try {
-                    // Extraer datos del mapa según la estructura esperada del backend
-                    String nombreCompleto = (String) usuario.get("nombreCompleto");
-                    String codigo = (String) usuario.get("codigo");
-                    String email = (String) usuario.get("email");
-
-                    // El campo "programa" podría venir de diferentes formas
-                    String programa = "";
-                    if (usuario.get("programa") != null) {
-                        programa = (String) usuario.get("programa");
-                    } else if (usuario.get("programaAcademico") != null) {
-                        programa = (String) usuario.get("programaAcademico");
-                    }
-
-                    // Filtrar solo estudiantes (opcional, si la API no filtra por rol)
-                    String rol = (String) usuario.get("rol");
-                    if (rol == null || "ESTUDIANTE".equalsIgnoreCase(rol) || "estudiante".equalsIgnoreCase(rol)) {
-                        estudiantes.add(new EstudianteAutoComplete(
-                                nombreCompleto != null ? nombreCompleto : "Nombre no disponible",
-                                codigo != null ? codigo : "N/A",
-                                email != null ? email : "N/A",
-                                programa != null ? programa : "Programa no especificado"
-                        ));
-                    }
-                } catch (Exception e) {
-                    System.err.println("Error procesando usuario: " + e.getMessage());
+                if (busqueda.toLowerCase().contains("juan") || busqueda.contains("perez")) {
+                    resultados.add(new EstudianteAutoComplete(
+                            "Juan Carlos Pérez", "201810123", "jcperez@unicauca.edu.co", "Ingeniería de Sistemas"
+                    ));
+                    resultados.add(new EstudianteAutoComplete(
+                            "Juan David Martínez", "201810456", "jdmartinez@unicauca.edu.co", "Ingeniería Electrónica"
+                    ));
                 }
-            }
-        }
 
-        return estudiantes;
+                if (busqueda.toLowerCase().contains("maria")) {
+                    resultados.add(new EstudianteAutoComplete(
+                            "María Fernanda Gómez", "201810789", "mfgomez@unicauca.edu.co", "Automática Industrial"
+                    ));
+                }
+
+                if (busqueda.contains("@")) {
+                    resultados.add(new EstudianteAutoComplete(
+                            "Estudiante por Email", "201810999", busqueda, "Tecnología en Telemática"
+                    ));
+                }
+
+                Platform.runLater(() -> mostrarResultadosBusqueda(resultados, busqueda));
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                Platform.runLater(() -> mostrarErrorBusqueda("Error en la búsqueda: " + e.getMessage()));
+            }
+        }).start();
     }
 
     private void mostrarResultadosBusqueda(List<EstudianteAutoComplete> resultados, String busqueda) {
-        // Limpiar resultados
         resultadosList.getChildren().clear();
 
         if (resultados.isEmpty()) {
@@ -181,17 +161,17 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
             return;
         }
 
-        // Mostrar cada resultado como un botón seleccionable
         for (EstudianteAutoComplete estudiante : resultados) {
             Button resultButton = new Button();
             resultButton.setMaxWidth(Double.MAX_VALUE);
-            resultButton.setStyle("-fx-background-color: white; -fx-border-color: #ddd; -fx-border-width: 1; " +
-                    "-fx-text-alignment: left; -fx-alignment: CENTER_LEFT; -fx-padding: 10px;");
+            resultButton.setStyle(
+                    "-fx-background-color: white; -fx-border-color: #ddd; -fx-border-width: 1; " +
+                            "-fx-text-alignment: left; -fx-alignment: CENTER_LEFT; -fx-padding: 10px;"
+            );
 
-            // Crear contenido del botón
             VBox content = new VBox(3);
 
-            Label nombreLabel = new Label(estudiante.getNombreCompleto()); // CORREGIDO: Quité "Nombre" extra
+            Label nombreLabel = new Label("Nombre: " + estudiante.getNombreCompleto());
             nombreLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: black");
 
             HBox infoRow = new HBox(15);
@@ -207,15 +187,11 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
 
             resultButton.setGraphic(content);
 
-            // Acción al hacer clic en el resultado
-            resultButton.setOnAction(e -> {
-                seleccionarEstudiante(estudiante);
-            });
+            resultButton.setOnAction(e -> seleccionarEstudiante(estudiante));
 
             resultadosList.getChildren().add(resultButton);
         }
 
-        // Agregar contador de resultados
         Label countLabel = new Label("Encontrados " + resultados.size() + " estudiantes");
         countLabel.setStyle("-fx-text-fill: #27ae60; -fx-font-size: 12px; -fx-padding: 5 0 0 0;");
         resultadosList.getChildren().add(countLabel);
@@ -227,13 +203,7 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
         resultadosBusquedaContainer.setVisible(false);
         resultadosBusquedaContainer.setManaged(false);
 
-        // Mostrar mensaje de confirmación
         mostrarMensaje("Estudiante seleccionado: " + estudiante.getNombreCompleto(), Alert.AlertType.INFORMATION);
-
-        // Opcional: Automáticamente cargar el programa del estudiante en el ComboBox
-        if (estudiante.getPrograma() != null && !estudiante.getPrograma().isEmpty()) {
-            programaComboBox.setValue(estudiante.getPrograma());
-        }
     }
 
     private void mostrarErrorBusqueda(String error) {
@@ -244,7 +214,6 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
     }
 
     private void cargarDatosIniciales() {
-        // Cargar codirectores
         codirectorComboBox.getItems().addAll(
                 "Ninguno",
                 "Dra. María Fernández",
@@ -252,20 +221,9 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
                 "Dr. Jorge Hernández"
         );
         codirectorComboBox.getSelectionModel().select(0);
-
-        // Cargar programas académicos (puedes cargarlos desde la API si es necesario)
-        programaComboBox.getItems().addAll(
-                "Ingeniería de Sistemas",
-                "Ingeniería Electrónica",
-                "Automática Industrial",
-                "Tecnología en Telemática",
-                "Ingeniería Civil",
-                "Ingeniería Ambiental"
-        );
     }
 
     private void configurarListeners() {
-        // Mostrar/ocultar carta de aceptación según modalidad
         modalidadToggleGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal == radioPracticaProfesional) {
                 cartaAceptacionContainer.setVisible(true);
@@ -278,7 +236,6 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
             }
         });
 
-        // Limpiar selección de estudiante si se modifica el texto manualmente
         estudianteTextField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (estudianteSeleccionado != null &&
                     !newVal.equals(estudianteSeleccionado.getDisplayText())) {
@@ -319,7 +276,6 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
 
     @FXML
     private void agregarObjetivoEspecifico() {
-        // Mostrar diálogo para agregar objetivo
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Agregar Objetivo Específico");
         dialog.setHeaderText("Nuevo objetivo específico");
@@ -347,15 +303,19 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
             return;
         }
 
-        // Lógica de envío
-        boolean exito = procesarEnvioFormatoA();
+        // Ejecutar el envío en un hilo aparte para no bloquear la UI
+        new Thread(() -> {
+            boolean exito = procesarEnvioFormatoA();
 
-        if (exito) {
-            mostrarAlerta("Éxito", "Formato A enviado correctamente. Se ha notificado al coordinador.", Alert.AlertType.INFORMATION);
-            regresarAlDashboard();
-        } else {
-            mostrarAlerta("Error", "No se pudo enviar el Formato A. Intente nuevamente.", Alert.AlertType.ERROR);
-        }
+            Platform.runLater(() -> {
+                if (exito) {
+                    mostrarAlerta("Éxito", "Formato A enviado correctamente. Se ha notificado al coordinador.", Alert.AlertType.INFORMATION);
+                    regresarAlDashboard();
+                } else {
+                    mostrarAlerta("Error", "No se pudo enviar el Formato A. Intente nuevamente.", Alert.AlertType.ERROR);
+                }
+            });
+        }).start();
     }
 
     @FXML
@@ -410,20 +370,52 @@ public class DocenteNuevoFormatoAController extends UIBase implements Initializa
         return true;
     }
 
+    /**
+     * Ahora sí, implementación real: llama a ProjectApi.subirFormatoA(...)
+     */
     private boolean procesarEnvioFormatoA() {
-        // Implementar lógica real de envío al backend
-        // 1. Crear DTO con datos del formulario
-        // 2. Llamar servicio para guardar en BD
-        // 3. Subir archivos
-        // 4. Enviar notificación al coordinador
+        try {
+            SubirFormatoADTO dto = new SubirFormatoADTO();
 
-        // Ejemplo de cómo podrías usar los datos:
-        System.out.println("Estudiante seleccionado: " + estudianteSeleccionado.getNombreCompleto());
-        System.out.println("Código estudiante: " + estudianteSeleccionado.getCodigo());
-        System.out.println("Título: " + tituloTextField.getText());
-        System.out.println("Modalidad: " + (radioInvestigacion.isSelected() ? "Investigación" : "Práctica Profesional"));
+            dto.setTitulo(tituloTextField.getText().trim());
+            dto.setModalidad(radioInvestigacion.isSelected() ? "INVESTIGACION" : "PRACTICA_PROFESIONAL");
 
-        return true;
+            // Director: el docente logueado
+            // Ajusta el getter según tu SessionManager (getEmail/getUserEmail)
+            if (sessionManager.getCurrentUser() != null && sessionManager.getCurrentUser().getEmail() != null) {
+                dto.setDirectorEmail(sessionManager.getCurrentUser().getEmail());
+            } else {
+                // Manejo de error o valor por defecto
+                mostrarAlerta("Error", "No se pudo obtener el email del docente", Alert.AlertType.ERROR);
+                return false;
+            }
+
+            // Codirector: por ahora mandamos null si es "Ninguno"
+            String codirectorSeleccionado = codirectorComboBox.getValue();
+            if (codirectorSeleccionado != null && !codirectorSeleccionado.equalsIgnoreCase("Ninguno")) {
+                // Aquí idealmente deberías mapear el nombre a un email real.
+                // Por ahora lo dejamos null o un valor dummy si tu backend lo requiere email.
+                dto.setCodirectorEmail(null);
+            }
+
+            dto.setEstudiante1Email(estudianteSeleccionado.getEmail());
+            dto.setPdfFormatoA(archivoPdfSeleccionado);
+            dto.setCartaAceptacion(cartaAceptacionSeleccionada);
+
+            // Llamada al microservicio (bloqueante, pero en hilo aparte)
+            SubirFormatoAResponseDTO resp = projectApi.subirFormatoA(dto).block();
+
+            if (resp != null && resp.getIdProyecto() != null) {
+                System.out.println("Formato A enviado. ID proyecto = " + resp.getIdProyecto());
+                return true;
+            } else {
+                return false;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
