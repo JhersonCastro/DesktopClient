@@ -29,8 +29,9 @@ public class DocenteDashboardController  extends UIBase{
 
     private void cargarEstadisticas() {
         // Aquí se cargarían las estadísticas reales desde el backend
-        StatsDocenteDTO stats = proyectoApi.obtenerEstadisticasDocente(sessionManager.getCurrentUser().getEmail()).block();
-        assert stats != null;
+        StatsDocenteDTO stats = new StatsDocenteDTO();
+        stats = proyectoApi.obtenerEstadisticasDocente(sessionManager.getCurrentUser().getEmail()).block();
+
         pendientesCount.setText(stats.formatoAPendiente + "");
         aprobadosCount.setText(stats.formatoAAprobado + "");
         evaluacionesCount.setText(stats.pendientesEvaluar + "");

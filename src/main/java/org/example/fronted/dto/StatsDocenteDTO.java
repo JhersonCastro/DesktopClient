@@ -10,6 +10,9 @@ public class StatsDocenteDTO {
         this.formatoAAprobado = formatoAAprobado;
         this.pendientesEvaluar = pendientesEvaluar;
     }
+
+    public StatsDocenteDTO() {
+    }
 }
 
 
