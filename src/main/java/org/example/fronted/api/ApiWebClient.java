@@ -9,12 +9,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 public abstract class ApiWebClient {
     protected final WebClient webClient;
 
-    // Constructor por defecto: sigue apuntando al user-microservice
     protected ApiWebClient() {
         this("http://localhost:8081");
     }
 
-    // Constructor general: permite otros baseUrl (ej. proyectos)
     protected ApiWebClient(String baseUrl) {
         ExchangeStrategies strategies = ExchangeStrategies.builder()
                 .codecs(cfg -> cfg

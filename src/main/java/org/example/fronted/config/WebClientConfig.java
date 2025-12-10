@@ -13,12 +13,12 @@ public class WebClientConfig {
         ExchangeStrategies strategies = ExchangeStrategies.builder()
                 .codecs(config -> config
                         .defaultCodecs()
-                        .maxInMemorySize(10 * 1024 * 1024) // 10MB
+                        .maxInMemorySize(10 * 1024 * 1024)
                 )
                 .build();
 
         return WebClient.builder()
-                .baseUrl("http://localhost:8083") // ajusta si es otro puerto
+                .baseUrl("http://localhost:8083")
                 .exchangeStrategies(strategies)
                 .build();
     }
