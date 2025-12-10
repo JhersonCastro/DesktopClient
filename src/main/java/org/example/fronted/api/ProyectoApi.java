@@ -184,9 +184,6 @@ public class ProyectoApi extends ApiWebClient {
                 .filter(p -> emailDocente.equals(p.getEvaluador1Email())
                         || emailDocente.equals(p.getEvaluador2Email()))
 
-                // FILTRAR SOLO LOS QUE ESTÁN PENDIENTES DE EVALUAR
-                .filter(p -> "ANTEPROYECTO_EN_EVALUACION".equals(p.getEstadoActual()))
-
                 // MAPEAR AL DTO QUE VAS A MOSTRAR EN LA VISTA
                 .map(p -> new ProjectCardDTO(
                         p.getTitulo(),

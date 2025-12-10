@@ -33,7 +33,11 @@ public class PendientesDocenteController extends UIBase implements ListControlle
     private void cargarProyectosDocente() {
         String emailDocente = obtenerCorreoActual();
 
-        proyectoApi.obtenerProyectosPorDocente(emailDocente, "FORMATOA_EN_EVALUACION")
+        proyectoApi.obtenerProyectosPorDocente(emailDocente, "EN_PRIMERA_EVALUACION_FORMATO_A")
+                .subscribe(this::pintarProyectos, this::manejarError);
+        proyectoApi.obtenerProyectosPorDocente(emailDocente, "EN_SEGUNDA_EVALUACION_FORMATO_A")
+                .subscribe(this::pintarProyectos, this::manejarError);
+        proyectoApi.obtenerProyectosPorDocente(emailDocente, "EN_TERCERA_EVALUACION_FORMATO_A")
                 .subscribe(this::pintarProyectos, this::manejarError);
     }
 

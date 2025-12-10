@@ -32,7 +32,7 @@ public class AprobadosDocenteController extends UIBase implements ListController
     private void cargarProyectosDocente() {
         String emailDocente = obtenerCorreoActual();
 
-        proyectoApi.obtenerProyectosPorDocente(emailDocente, "FORMATOA_APROBADO")
+        proyectoApi.obtenerProyectosPorDocente(emailDocente, "FORMATO_A_APROBADO")
                 .subscribe(this::pintarProyectos, this::manejarError);
     }
 
